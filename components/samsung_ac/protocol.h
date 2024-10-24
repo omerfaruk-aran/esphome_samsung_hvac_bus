@@ -12,6 +12,7 @@ namespace esphome
         extern bool non_nasa_keepalive;
         extern bool debug_log_undefined_messages;
         extern bool debug_log_messages;
+        extern int non_nasa_registration_delay_interval;
 
         enum class DecodeResult
         {
