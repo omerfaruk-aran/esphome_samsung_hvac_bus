@@ -17,7 +17,12 @@ namespace esphome
     {
         std::list<NonNasaRequestQueueItem> nonnasa_requests;
         bool controller_registered = false;
-        bool indoor_unit_awake = true;
+        bool controller_register_allow = false;
+	
+	unsigned uint32_t start_millis = millis();
+	const long delay_interval = (1*60 * 1000UL);
+
+	bool indoor_unit_awake = true;
 
         uint8_t build_checksum(std::vector<uint8_t> &data)
         {
@@ -646,16 +651,22 @@ namespace esphome
 
         void NonNasaProtocol::protocol_update(MessageTarget *target)
         {
-            // If we're not currently registered, keep sending a registration request until it has
+            const uint32_t now = millis();
+	    
+	    // If we're not currently registered, keep sending a registration request until it has
             // been confirmed by the outdoor unit.
             if (!controller_registered)
             {
-                send_register_controller(target);
+                if (now - start_millis >= delay_interval) {
+		    controller_register_allow = true;
+		}
+		if (controller_register_allow) {
+		    send_register_controller(target);
+		}
             }
 
             // If we have *any* messages in the queue for longer than 15s, assume failure and
             // remove from queue (the AC or UART connection is likely offline).
-            const uint32_t now = millis();
             nonnasa_requests.remove_if([&](const NonNasaRequestQueueItem &item)
                                        { return now - item.time > 15000; });
 
