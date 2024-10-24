@@ -20,7 +20,7 @@ namespace esphome
         bool controller_register_allow = false;
 	
 	const uint32_t start_millis = millis();
-	const long delay_interval = (60 *60 * 1000UL);
+	const long delay_interval = (1 *60 * 1000UL);
 
 	bool indoor_unit_awake = true;
 
