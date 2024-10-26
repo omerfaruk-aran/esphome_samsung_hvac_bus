@@ -657,7 +657,9 @@ namespace esphome
             // been confirmed by the outdoor unit.
             if (!controller_registered)
             {
-                if (now - start_millis >= delay_interval) {
+                // Some outdoor units might have problems to reply to registration request is the request loop start too soon. Time interval since startup can be configured
+		// to wait with first registration attempt
+		if (now - start_millis >= delay_interval) {
 		    controller_register_allow = true;
 		}
 		if (controller_register_allow) {
