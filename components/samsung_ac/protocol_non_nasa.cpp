@@ -21,7 +21,7 @@ namespace esphome
 	
 	const uint32_t start_millis = millis();
 	//const long delay_interval = (1 *60 * 1000UL);
-	const long delay_interval = (non_nasa_registration_delay_interval * 1000UL);
+	//const long delay_interval = (non_nasa_registration_delay_interval * 1000UL);
 
 	bool indoor_unit_awake = true;
 
@@ -653,7 +653,8 @@ namespace esphome
         void NonNasaProtocol::protocol_update(MessageTarget *target)
         {
             const uint32_t now = millis();
-	    
+	    long delay_interval = (non_nasa_registration_delay_interval * 1000);
+
 	    // If we're not currently registered, keep sending a registration request until it has
             // been confirmed by the outdoor unit.
 	    ESP_LOGW(TAG, "NonNASA: Settings - KeepAlive is %d, Delay is %d, Interval is %d", non_nasa_keepalive, non_nasa_registration_delay_interval, delay_interval);
