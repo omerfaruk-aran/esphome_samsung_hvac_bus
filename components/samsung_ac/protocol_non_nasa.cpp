@@ -656,7 +656,7 @@ namespace esphome
 	    
 	    // If we're not currently registered, keep sending a registration request until it has
             // been confirmed by the outdoor unit.
-	    ESP_LOGW(TAG, "NonNASA: Settings - KeepAlive is %d, Delay is %d", non_nasa_keepalive, non_nasa_registration_delay_interval);
+	    ESP_LOGW(TAG, "NonNASA: Settings - KeepAlive is %d, Delay is %d, Interval is %d", non_nasa_keepalive, non_nasa_registration_delay_interval, delay_interval);
             if (!controller_registered)
             {
                 if (now - start_millis >= delay_interval) {
