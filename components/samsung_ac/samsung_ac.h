@@ -52,6 +52,10 @@ namespace esphome
       {
         non_nasa_keepalive = value;
       }
+      void set_non_nasa_registration_delay_interval(int value)
+      {
+        non_nasa_registration_delay_interval = value;
+      }
       void set_debug_log_undefined_messages(bool value)
       {
         debug_log_undefined_messages = value;

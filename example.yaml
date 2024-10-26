@@ -55,6 +55,10 @@ samsung_ac:
   # For NonNASA devices the following option can be enabled to prevent the device from sleeping when idle. This allows
   # values like internal and external temperature to continue to be tracked when the device isn't in use.
   non_nasa_keepalive: true
+
+  # For NonNASA devices the following option can be enabled to introduce registration delay towards outdoor units. It prevents too early registration requests 
+  # to be sent which may lead to not succeeding the registration for some units.
+  non_nasa_registration_delay_interval: 0
   
   # When enabled (set to true), this option will log the messages associated with undefined codes on the device. This is useful for debugging and identifying any unexpected or unknown codes that the device may receive during operation.
   debug_log_undefined_messages: false

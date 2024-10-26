@@ -12,6 +12,7 @@ namespace esphome
         bool non_nasa_keepalive = false;
         bool debug_log_undefined_messages = false;
         bool debug_log_messages = false;
+        int non_nasa_registration_delay_interval = 0;
 
         ProtocolProcessing protocol_processing = ProtocolProcessing::Auto;
 
