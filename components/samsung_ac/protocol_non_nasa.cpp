@@ -651,7 +651,6 @@ namespace esphome
         void NonNasaProtocol::protocol_update(MessageTarget *target)
         {
             const uint32_t now = millis();
-	    long delay_interval = (non_nasa_registration_delay_interval * 1000);
 
 	    // If we're not currently registered, keep sending a registration request until it has
             // been confirmed by the outdoor unit.
@@ -659,6 +658,7 @@ namespace esphome
             {
                 // Some outdoor units might have problems to reply to registration request is the request loop start too soon. Time interval since startup can be configured
 		// to wait with first registration attempt
+		long delay_interval = (non_nasa_registration_delay_interval * 1000);
 		if (now - start_millis >= delay_interval) {
 		    controller_register_allow = true;
 		}
