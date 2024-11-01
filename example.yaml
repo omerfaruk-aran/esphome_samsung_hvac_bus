@@ -126,29 +126,34 @@ samsung_ac:
         name: "Kitchen humidity"
       
     - address: "10.00.00" # Outdoor device address as the following components are dependent on an outdoor unit.
+    
       # This sensor captures and monitors specific error codes returned by the HVAC system.
       # When an error occurs, the sensor detects the error code and updates its value accordingly.
       # Additionally, by using the blueprint available at https://github.com/omerfaruk-aran/esphome_samsung_ac_blueprint,
       # you can automatically send detailed error messages to your mobile devices based on the captured error codes.
       error_code:
         name: error_code
-        
-      # This sensor measures the instantaneous power consumption of the outdoor unit in Watts.
+
+      #[NASA or NonNASA]  
+      outdoor_temperature: # Should be used with outdoor device address
+        name: "Outdoor temperature"
+
+      # [NASA or NonNASA] This sensor measures the instantaneous power consumption of the outdoor unit in Watts.
       # The captured value represents the current power draw of the outdoor HVAC components, helping track energy usage patterns.
       outdoor_instantaneous_power:
         name: "Outdoor Instantaneous Power"
 
-      # This sensor records the cumulative energy consumption of the outdoor unit in kWh.
+      # [NASA or NonNASA] This sensor records the cumulative energy consumption of the outdoor unit in kWh.
       # It calculates the total energy consumed over time, allowing users to monitor and analyze energy efficiency.
       outdoor_cumulative_energy:
         name: "Outdoor Cumulative Energy"
 
-      # This sensor measures the current drawn by the outdoor unit in Amperes.
+      # [NASA or NonNASA] This sensor measures the current drawn by the outdoor unit in Amperes.
       # Monitoring current values helps identify electrical irregularities and ensure safe power levels in the system.
       outdoor_current:
         name: "Outdoor Current"
 
-      # This sensor tracks the voltage supplied to the outdoor unit in Volts.
+      # [NASA or NonNASA] This sensor tracks the voltage supplied to the outdoor unit in Volts.
       # Consistent voltage readings indicate stable power delivery, while deviations can help detect electrical issues in the system.
       outdoor_voltage:
         name: "Outdoor Voltage"
@@ -160,5 +165,3 @@ samsung_ac:
         name: "Hot Water Target Temperature"
       water_heater_mode:
         name: "Hotwater Mode"
-      outdoor_temperature: # Should be used with outdoor device address
-        name: "Outdoor temperature"
