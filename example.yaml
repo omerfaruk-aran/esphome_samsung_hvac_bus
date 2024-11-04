@@ -26,6 +26,7 @@ api:
 
 # Enable OTA firmware update, you will be able to upload the firmware over WiFi without connecting the device by cables
 ota:
+  platform: esphome
 
 # Setup your WiFi password
 wifi:
@@ -46,7 +47,7 @@ uart:
 
 # Import custom component from GitHub
 external_components:
-  - source: github://lanwin/esphome_samsung_ac@stable # use @main if you want the latest development (possibly unstable?)
+  - source: github://brazoayeye/esphome_samsung_ac@main
     components: [samsung_ac]
 
 # Configuration of AC component
@@ -57,18 +58,18 @@ samsung_ac:
   # Capabilities configure the features alle devices of your AC system have (all parts of this section are optional). 
   # All capabilities are off by default, you need to enable only those your devices have.
   # You can override or configure them also on a per devices basis (look below for that).
-  capabilities: 
-    vertical_swing: true
-    horizontal_swing: true
+  #capabilities: 
+  #  vertical_swing: true
+  #  horizontal_swing: true
     # Presets define special AC modes like Windfree and so on. 
     # The following modes are available: sleep, quiet, fast, longreach, windfree
-    presets: 
+  #  presets: 
       # short version
-      quiet: true
+  #    quiet: true
       # long version - allows to locilize names
-      quiet:
-        name: "Makes no sound"
-        enabled: true
+  #    quiet:
+  #      name: "Makes no sound"
+  #      enabled: true
 
   devices:
     # Skip everything below on the first run! Wait a minute, watch your ESPHome logs until you see the "Discovered devices:" section and you see some addresses:
@@ -85,44 +86,44 @@ samsung_ac:
 
       # Configures/overrides the capabilites for this devices. 
       # Look above for all options.
-      capabilities:
-        horizontal_swing: false # This device have no h swing. 
+      #capabilities:
+      #  horizontal_swing: false # This device have no h swing. 
 
       # Creates climate control in Home Assistant. A climate control combines multiple of the controls below (like temperature, mode etc.)
-      climate:
-        name: "Kitchen climate"
+      #climate:
+      #  name: "Kitchen climate"
 
       # The controls directly below are all included in the climate control. Its adviced to only add the climate control and skip the extra controls.
-      room_temperature:
-        name: "Kitchen temperature"
-      target_temperature:
-        name: "Kitchen target temperature"
-      power:
-        name: "Kitchen power"
-      mode:
-        name: "Kitchen mode"
+      #room_temperature:
+      #  name: "Kitchen temperature"
+      #target_temperature:
+      #  name: "Kitchen target temperature"
+      #power:
+      #  name: "Kitchen power"
+      #mode:
+      #  name: "Kitchen mode"
 
       # If your AC sits near or inside the ceiling, the reported room temperature is often a little bit heigher then whats 
       # measured below. This property can be used to correct that value.
-      room_temperature_offset: -1.4
+      #room_temperature_offset: -1.4
 
       # Only supported on NASA devices
-      room_humidity:
-        name: "Kitchen humidity"
+      #room_humidity:
+      #  name: "Kitchen humidity"
 
       # Only supported on NASA based heatpumps
-      water_temperature:
-        name: "Warm water"
-      outdoor_temperature: # Should be used with outdoor device address
-        name: "Outdoor temperature"
-      power_consumption: # Should be used with outdoor device address
-        name: "Power consumption"
-      energy_consumption: # Should be used with outdoor device address
-        name: "Energy consumption"
-      energy_produced: # Indoor
-        name: "Energy Produced"
-      indoor_power_consumption: # Never seen on my setup
-        name: "Indoor consumption"
+      #water_temperature:
+      #  name: "Warm water"
+      #outdoor_temperature: # Should be used with outdoor device address
+      #  name: "Outdoor temperature"
+      #power_consumption: # Should be used with outdoor device address
+      #  name: "Power consumption"
+      #energy_consumption: # Should be used with outdoor device address
+      #  name: "Energy consumption"
+      #energy_produced: # Indoor
+      #  name: "Energy Produced"
+      #indoor_power_consumption: # Never seen on my setup
+      #  name: "Indoor consumption"
 
       # custom climate allow to define custom addresses and behaviour for many climate components
       # Addresses are more or less described on the file xlxs (link)
@@ -146,6 +147,12 @@ samsung_ac:
             ClimatePreset5Value: 0 # CLIMATE_PRESET_ECO => 0 Eco
             ClimatePreset6Value: -1 # CLIMATE_PRESET_SLEEP 
             ClimatePreset7Value: 3 # CLIMATE_PRESET_ACTIVITY  => 3 Force
+          visual:
+            temperature_step:
+              target_temperature: 1
+              current_temperature: 0.1
+
+            
         - name: "Heating"
           status_addr: 0x4238
           set_addr: 0x4247
@@ -163,4 +170,62 @@ samsung_ac:
             ClimateMode3Value: 4 # Default -1. Setting = 4 the value CLIMATE_MODE_HEAT==3 is translated as 4 into mode->addr
             #ClimateMode4Value: -1
             #ClimateMode5Value: -1
-            ClimateMode6Value: 0 # Default -1. Setting = 4 the value CLIMATE_MODE_AUTO==6 is translated as 0 into mode->addr
+            ClimateMode6Value: 0 # Default -1. Setting = 4 the value CLIMATE_MODE_AUTO==6 is translated as 0 into mode->add
+          visual:
+            temperature_step:
+              target_temperature: 0.1
+              current_temperature: 0.1
+              
+      custom_sensor:
+        - name: Produced energy
+          message: 0x4427
+          device_class: energy
+          state_class: total_increasing
+          unit_of_measurement: kWh
+
+    - address: "10.00.00" # external unit
+      custom_sensor:
+        - name: External temperature
+          message: 0x8204
+          device_class: temperature
+          state_class: measurement
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
+          accuracy_decimals: 1
+        - name: Power consumption
+          message: 0x8413
+          device_class: power
+          state_class: measurement
+          unit_of_measurement: W
+        - name: Consumed energy
+          message: 0x8414
+          device_class: energy
+          state_class: total_increasing
+          unit_of_measurement: kWh
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.001
+        - name: Heat pump voltage
+          message: 0x24fc
+          device_class: voltage
+          state_class: measurement
+          unit_of_measurement: V
+        - name: Compressor Frequency
+          message: 0x8238
+          device_class: frequency
+          state_class: measurement
+          unit_of_measurement: Hz
+          accuracy_decimals: 1
+        - name: Target Compressor Frequency
+          message: 0x8237
+          device_class: frequency
+          state_class: measurement
+          unit_of_measurement: Hz
+          accuracy_decimals: 1
+        - name: Fan Speed
+          message: 0x823D
+          state_class: measurement
+          unit_of_measurement: RPM
+          accuracy_decimals: 1
+
