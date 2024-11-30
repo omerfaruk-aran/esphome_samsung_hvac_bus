@@ -46,9 +46,13 @@ namespace esphome
 
       traits.set_supported_fan_modes(fan);
 
-      std::set<std::string> customFan;
-      customFan.insert("Turbo");
-      traits.set_supported_custom_fan_modes(customFan);
+      bool t = device->supports_turbo_mode();
+      if (t)
+      {
+        std::set<std::string> customFan;
+        customFan.insert("Turbo");
+        traits.set_supported_custom_fan_modes(customFan);
+      }
 
       auto supported = device->get_supported_alt_modes();
       if (!supported->empty())
