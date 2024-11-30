@@ -31,7 +31,7 @@ namespace esphome
 
       std::set<climate::ClimateFanMode> fan = {
           climate::ClimateFanMode::CLIMATE_FAN_HIGH,
-          climate::ClimateFanMode::CLIMATE_FAN_MIDDLE,
+          climate::ClimateFanMode::CLIMATE_FAN_MEDIUM,
           climate::ClimateFanMode::CLIMATE_FAN_LOW};
 
       if (this->mode != climate::CLIMATE_MODE_FAN_ONLY)
