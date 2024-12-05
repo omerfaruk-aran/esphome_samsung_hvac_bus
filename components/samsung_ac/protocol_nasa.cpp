@@ -17,7 +17,6 @@ namespace esphome
             int retry_count;
             uint32_t last_sent_time;
 
-            // Add this operator==
             bool operator==(const PacketInfo& other) const {
                 return this->packet.command.packetNumber == other.packet.command.packetNumber;
             }
