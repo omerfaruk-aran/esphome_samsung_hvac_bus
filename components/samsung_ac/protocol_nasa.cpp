@@ -12,11 +12,15 @@ namespace esphome
 {
     namespace samsung_ac
     {
-        struct PacketInfo
-        {
+        struct PacketInfo {
             Packet packet;
             int retry_count;
             uint32_t last_sent_time;
+
+            // Add this operator==
+            bool operator==(const PacketInfo& other) const {
+                return this->packet.command.packetNumber == other.packet.command.packetNumber;
+            }
         };
 
         int variable_to_signed(int value)
@@ -837,6 +841,7 @@ namespace esphome
                     if (it->packet.command.packetNumber == packet_.command.packetNumber)
                     {
                         ESP_LOGW(TAG, "found Ack for packet number %d", it->packet.command.packetNumber);
+                        ESP_LOGW(TAG, "Erasing packet number %d from sent_packets", it->packet.command.packetNumber);
                         sent_packets.erase(it);
                         ack_found = true;
                         break;
@@ -887,19 +892,27 @@ namespace esphome
             }
 
             uint32_t now = millis();
-            for (auto &info : sent_packets)
-            {
-                if (now - info.last_sent_time > 1000 && info.retry_count < 3)
-                {
+            for (auto it = sent_packets.begin(); it != sent_packets.end(); ++it) {
+                auto &info = *it;
+
+                uint32_t time_since_last_sent = now - info.last_sent_time;
+    
+                uint32_t backoff_time = (1 << info.retry_count) * 1000;
+    
+                if (time_since_last_sent > backoff_time && info.retry_count < 8) {
                     info.retry_count++;
                     info.last_sent_time = now;
+        
                     auto data = info.packet.encode();
                     target->publish_data(data);
-                    ESP_LOGW(TAG, "Resending packet %d number of attempts: %d", info.packet.command.packetNumber, info.retry_count);
+        
+                    ESP_LOGW(TAG, "Resending packet %d number of attempts: %d, wait time: %d ms", 
+                             info.packet.command.packetNumber, info.retry_count, backoff_time);
                 }
-                else if (info.retry_count >= 3)
-                {
-                    ESP_LOGW(TAG, "Packet %d failed after 3 attempts.", info.packet.command.packetNumber);
+                else if (info.retry_count >= 8) {
+                    ESP_LOGW(TAG, "Packet %d failed after %d attempts. Removing from sent_packets.", 
+                             info.packet.command.packetNumber, info.retry_count);
+                    sent_packets.erase(it);
                 }
             }
         }
