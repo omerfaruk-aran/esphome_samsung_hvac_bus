@@ -124,6 +124,7 @@ namespace esphome
                 break;
             case Variable:
                 set.value = (int)data[index + 2] << 8 | (int)data[index + 3];
+                if (set.value > 32768) set.value -= 65535;
                 set.size = 4;
                 break;
             case LongVariable:
@@ -165,6 +166,7 @@ namespace esphome
                 data.push_back((uint8_t)value);
                 break;
             case Variable:
+                if (value < 0) value += 65535;
                 data.push_back((uint8_t)(value >> 8) & 0xff);
                 data.push_back((uint8_t)(value & 0xff));
                 break;
