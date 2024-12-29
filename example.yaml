@@ -68,6 +68,7 @@ samsung_ac:
   capabilities: 
     vertical_swing: true
     horizontal_swing: true
+    turbo_mode: true
     # Presets define special AC modes like Windfree, Eco, and so on. 
     # The following modes are available: sleep, quiet, fast, longreach, windfree, eco.
     presets: 
