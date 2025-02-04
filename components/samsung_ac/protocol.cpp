@@ -92,6 +92,10 @@ namespace esphome
             {
                 // is logged within decoder
             }
+            else if (result == DecodeResult::UnknownCommand)
+            {
+                // is logged within decoder
+            }
             return DataResult::Clear;
         }
 

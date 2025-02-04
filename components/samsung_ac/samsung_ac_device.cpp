@@ -39,10 +39,10 @@ namespace esphome
         fan.insert(climate::ClimateFanMode::CLIMATE_FAN_AUTO);
       }
 
-      if (is_nasa_address(device->address))
-      {
+      //if (is_nasa_address(device->address))
+      //{
         // fan.insert(climate::ClimateFanMode::CLIMATE_FAN_DIFFUSE);
-      }
+      //}
 
       traits.set_supported_fan_modes(fan);
 
