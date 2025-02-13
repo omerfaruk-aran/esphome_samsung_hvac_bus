@@ -15,7 +15,9 @@ namespace esphome
     {
         bool debug_mqtt_connected()
         {
+#if defined(USE_ESP8266) || defined(USE_ESP32)
             if (mqtt_client == nullptr)
+#endif
                 return false;
 
 #if defined(USE_ESP8266)
@@ -75,7 +77,9 @@ namespace esphome
 
         bool debug_mqtt_publish(const std::string &topic, const std::string &payload)
         {
+#if defined(USE_ESP8266) || defined(USE_ESP32)
             if (mqtt_client == nullptr)
+#endif
                 return false;
 
 #if defined(USE_ESP8266)
