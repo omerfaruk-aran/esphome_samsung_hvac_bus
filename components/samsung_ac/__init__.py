@@ -117,6 +117,18 @@ PRESETS = {
     "windfree": {"value": 9, "displayName": "WindFree"},
 }
 
+
+CONF_WATER_HEATER_MODES = "water_heater_modes"
+
+def water_heater_modes_entry(name: str, value: bool):
+    return (
+        cv.Optional(name, default=True),
+        cv.boolean,
+    )
+
+WATER_HEATER_MODES = ["Eco", "Standard", "Power", "Force"]
+
+
 CAPABILITIES_SCHEMA = cv.Schema(
     {
         cv.Optional(CONF_CAPABILITIES_HORIZONTAL_SWING, default=False): cv.boolean,
@@ -128,6 +140,14 @@ CAPABILITIES_SCHEMA = cv.Schema(
                         name, PRESETS[name]["value"], PRESETS[name]["displayName"]
                     )
                     for name in PRESETS
+                ]
+            )
+        ),
+        cv.Optional(CONF_WATER_HEATER_MODES): cv.Schema(
+            dict(
+                [
+                    water_heater_modes_entry(name.lower(), True)
+                    for name in WATER_HEATER_MODES
                 ]
             )
         ),
@@ -509,7 +529,9 @@ async def to_code(config):
 
         if CONF_DEVICE_WATER_HEATER_MODE in device:
             conf = device[CONF_DEVICE_WATER_HEATER_MODE]
-            values = ["Eco", "Standard", "Power", "Force"]
+            water_heater_modes = capabilities.get(CONF_WATER_HEATER_MODES, {})
+            values = [value for value in WATER_HEATER_MODES
+                if water_heater_modes.get(value.lower(), True)]
             sel = await select.new_select(conf, options=values)
             cg.add(var_dev.set_water_heater_mode_select(sel))
 
