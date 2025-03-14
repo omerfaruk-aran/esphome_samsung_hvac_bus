@@ -5,6 +5,7 @@
 #include <optional>
 #include "protocol.h"
 #include "util.h"
+#include "esphome/components/sensor/sensor.h"
 
 namespace esphome
 {
@@ -187,7 +188,7 @@ namespace esphome
             std::vector<uint8_t> encode();
             std::string to_string();
 
-            static NonNasaRequest create(std::string dst_address);
+            static NonNasaRequest create(const std::string &dst_address);
         };
 
         struct NonNasaRequestQueueItem
@@ -213,6 +214,9 @@ namespace esphome
 
             void publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request) override;
             void protocol_update(MessageTarget *target) override;
+
+        private:
+            uint32_t start_millis;
         };
     } // namespace samsung_ac
 } // namespace esphome
