@@ -15,6 +15,7 @@ namespace esphome
     {
         bool debug_mqtt_connected()
         {
+#if defined(USE_ESP8266) || defined(USE_ESP32)
             if (mqtt_client == nullptr)
                 return false;
 
@@ -22,6 +23,9 @@ namespace esphome
             return mqtt_client->connected();
 #elif defined(USE_ESP32)
             return true;
+#endif
+#else
+        return false;
 #endif
         }
 
@@ -75,6 +79,7 @@ namespace esphome
 
         bool debug_mqtt_publish(const std::string &topic, const std::string &payload)
         {
+#if defined(USE_ESP8266) || defined(USE_ESP32)
             if (mqtt_client == nullptr)
                 return false;
 
@@ -82,6 +87,9 @@ namespace esphome
             return mqtt_client->publish(topic.c_str(), 0, false, payload.c_str()) != 0;
 #elif defined(USE_ESP32)
             return esp_mqtt_client_publish(mqtt_client, topic.c_str(), payload.c_str(), payload.length(), 0, false) != -1;
+#endif
+#else
+        return false;
 #endif
         }
     } // namespace samsung_ac
