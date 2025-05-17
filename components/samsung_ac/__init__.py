@@ -81,6 +81,16 @@ CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = "outdoor_cumulative_energy"
 CONF_DEVICE_OUT_SENSOR_CT1 = "outdoor_current"
 CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
 
+CONF_DEVICE_PIPE_IN3_TEMPERATURE = "pipe_in3_temperature"
+CONF_DEVICE_PIPE_IN4_TEMPERATURE = "pipe_in4_temperature"
+CONF_DEVICE_PIPE_IN5_TEMPERATURE = "pipe_in5_temperature"
+CONF_DEVICE_PIPE_OUT1_TEMPERATURE = "pipe_out1_temperature"
+CONF_DEVICE_WATTMETER_1UNIT = "wattmeter_1unit"
+CONF_DEVICE_WATTMETER_TOTAL_SUM = "wattmeter_total_sum"
+CONF_DEVICE_WATTMETER_TOTAL_SUM_ACCUM = "wattmeter_total_sum_accum"
+CONF_DEVICE_WATTMETER_TOTAL_PRODUCED = "wattmeter_total_produced"
+CONF_DEVICE_WATTMETER_ACTUAL_PRODUCED = "wattmeter_actual_produced"
+CONF_DEVICE_CAPACITY_REQUEST = "capacity_request"
 
 CONF_CAPABILITIES = "capabilities"
 CONF_CAPABILITIES_HORIZONTAL_SWING = "horizontal_swing"
@@ -298,12 +308,69 @@ DEVICE_SCHEMA = cv.Schema(
                 cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x24FC): cv.hex_int,
             }
         ),
+        # Add new temperature sensors
+        cv.Optional(CONF_DEVICE_PIPE_IN3_TEMPERATURE): temperature_sensor_schema(0x4238),
+        cv.Optional(CONF_DEVICE_PIPE_IN4_TEMPERATURE): temperature_sensor_schema(0x4239),
+        cv.Optional(CONF_DEVICE_PIPE_IN5_TEMPERATURE): temperature_sensor_schema(0x423A),
+        cv.Optional(CONF_DEVICE_PIPE_OUT1_TEMPERATURE): temperature_sensor_schema(0x423B),
+        # Add new energy monitoring sensors
+        cv.Optional(CONF_DEVICE_WATTMETER_1UNIT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:flash",
+        ),
+        cv.Optional(CONF_DEVICE_WATTMETER_TOTAL_SUM): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:flash",
+        ),
+        cv.Optional(CONF_DEVICE_WATTMETER_TOTAL_SUM_ACCUM): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ),
+        cv.Optional(CONF_DEVICE_WATTMETER_TOTAL_PRODUCED): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ),
+        cv.Optional(CONF_DEVICE_WATTMETER_ACTUAL_PRODUCED): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ),
+        cv.Optional(CONF_DEVICE_CAPACITY_REQUEST): sensor.sensor_schema(
+            unit_of_measurement="%",
+            accuracy_decimals=0,
+            icon="mdi:gauge",
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
     }
 )
 
 CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_WATER_TEMPERATURE,
     CONF_DEVICE_ROOM_HUMIDITY,
+    CONF_DEVICE_PIPE_IN3_TEMPERATURE,
+    CONF_DEVICE_PIPE_IN4_TEMPERATURE,
+    CONF_DEVICE_PIPE_IN5_TEMPERATURE,
+    CONF_DEVICE_PIPE_OUT1_TEMPERATURE,
+    CONF_DEVICE_WATTMETER_1UNIT,
+    CONF_DEVICE_WATTMETER_TOTAL_SUM,
+    CONF_DEVICE_WATTMETER_TOTAL_SUM_ACCUM,
+    CONF_DEVICE_WATTMETER_TOTAL_PRODUCED,
+    CONF_DEVICE_WATTMETER_ACTUAL_PRODUCED,
+    CONF_DEVICE_CAPACITY_REQUEST,
 ]
 
 CONF_DEVICES = "devices"
@@ -458,6 +525,16 @@ async def to_code(config):
                 sensor.new_sensor,
                 var_dev.set_outdoor_voltage_sensor,
             ),
+            CONF_DEVICE_PIPE_IN3_TEMPERATURE: (sensor.new_sensor, var_dev.set_pipe_in3_temperature_sensor),
+            CONF_DEVICE_PIPE_IN4_TEMPERATURE: (sensor.new_sensor, var_dev.set_pipe_in4_temperature_sensor),
+            CONF_DEVICE_PIPE_IN5_TEMPERATURE: (sensor.new_sensor, var_dev.set_pipe_in5_temperature_sensor),
+            CONF_DEVICE_PIPE_OUT1_TEMPERATURE: (sensor.new_sensor, var_dev.set_pipe_out1_temperature_sensor),
+            CONF_DEVICE_WATTMETER_1UNIT: (sensor.new_sensor, var_dev.set_wattmeter_1unit_sensor),
+            CONF_DEVICE_WATTMETER_TOTAL_SUM: (sensor.new_sensor, var_dev.set_wattmeter_total_sum_sensor),
+            CONF_DEVICE_WATTMETER_TOTAL_SUM_ACCUM: (sensor.new_sensor, var_dev.set_wattmeter_total_sum_accum_sensor),
+            CONF_DEVICE_WATTMETER_TOTAL_PRODUCED: (sensor.new_sensor, var_dev.set_wattmeter_total_produced_sensor),
+            CONF_DEVICE_WATTMETER_ACTUAL_PRODUCED: (sensor.new_sensor, var_dev.set_wattmeter_actual_produced_sensor),
+            CONF_DEVICE_CAPACITY_REQUEST: (sensor.new_sensor, var_dev.set_capacity_request_sensor),
         }
 
         # Iterate over the actions

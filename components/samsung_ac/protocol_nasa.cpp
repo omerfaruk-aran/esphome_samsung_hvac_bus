@@ -696,10 +696,10 @@ namespace esphome
                 LOG_MESSAGE(VAR_in_temp_water_tank_f, (double)message.value, source, dest);
                 break;
             }
-            case MessageNumber::VAR_out_sensor_airout:
+            case MessageNumber::VAR_out_pipe_temp:
             {
                 double temp = (double)((int16_t)message.value) / (double)10;
-                LOG_MESSAGE(VAR_out_sensor_airout, temp, source, dest);
+                LOG_MESSAGE(VAR_out_pipe_temp, temp, source, dest);
                 target->set_outdoor_temperature(source, temp);
                 break;
             }
@@ -727,32 +727,421 @@ namespace esphome
                 target->set_error_code(source, code);
                 break;
             }
-            case MessageNumber::LVAR_OUT_CONTROL_WATTMETER_1W_1MIN_SUM:
+            case MessageNumber::VAR_out_power_status:
+                LOG_MESSAGE(VAR_out_power_status, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_power_status, message.value);
+                break;
+            case MessageNumber::VAR_out_operation_mode:
+                LOG_MESSAGE(VAR_out_operation_mode, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_operation_mode, message.value);
+                break;
+            case MessageNumber::VAR_out_operation_state:
+                LOG_MESSAGE(VAR_out_operation_state, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_operation_state, message.value);
+                break;
+            case MessageNumber::ENUM_out_operation_mode:
+                LOG_MESSAGE(ENUM_out_operation_mode, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_operation_mode, message.value);
+                break;
+            case MessageNumber::ENUM_out_heat_cool_mode:
+                LOG_MESSAGE(ENUM_out_heat_cool_mode, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_heat_cool_mode, message.value);
+                break;
+            case MessageNumber::VAR_out_compressor_freq:
+                LOG_MESSAGE(VAR_out_compressor_freq, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_compressor_freq, message.value);
+                break;
+            case MessageNumber::VAR_out_fan_speed:
+                LOG_MESSAGE(VAR_out_fan_speed, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_speed, message.value);
+                break;
+            case MessageNumber::ENUM_out_fan_mode:
+                LOG_MESSAGE(ENUM_out_fan_mode, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_fan_mode, message.value);
+                break;
+            case MessageNumber::ENUM_out_compressor_state:
+                LOG_MESSAGE(ENUM_out_compressor_state, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_compressor_state, message.value);
+                break;
+            case MessageNumber::ENUM_out_defrost_mode:
+                LOG_MESSAGE(ENUM_out_defrost_mode, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_defrost_mode, message.value);
+                break;
+            case MessageNumber::ENUM_out_4way_valve:
+                LOG_MESSAGE(ENUM_out_4way_valve, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_4way_valve, message.value);
+                break;
+            case MessageNumber::VAR_out_discharge_temp:
             {
-                double value = static_cast<double>(message.value);
-                LOG_MESSAGE(LVAR_OUT_CONTROL_WATTMETER_1W_1MIN_SUM, value, source, dest);
-                target->set_outdoor_instantaneous_power(source, value);
+                double temp = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_out_discharge_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_discharge_temp, temp);
                 break;
             }
-            case MessageNumber::LVAR_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM:
+            case MessageNumber::VAR_out_suction_temp:
             {
-                double value = static_cast<double>(message.value);
-                LOG_MESSAGE(LVAR_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM, value, source, dest);
-                target->set_outdoor_cumulative_energy(source, value);
+                double temp = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_out_suction_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_suction_temp, temp);
                 break;
             }
-            case MessageNumber::VAR_OUT_SENSOR_CT1:
+            case MessageNumber::VAR_out_ambient_temp:
             {
-                double value = static_cast<double>(message.value);
-                LOG_MESSAGE(VAR_OUT_SENSOR_CT1, value, source, dest);
-                target->set_outdoor_current(source, value);
+                double temp = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_out_ambient_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_ambient_temp, temp);
                 break;
             }
-            case MessageNumber::LVAR_NM_OUT_SENSOR_VOLTAGE:
+            case MessageNumber::VAR_out_condenser_temp:
             {
-                double value = static_cast<double>(message.value);
-                LOG_MESSAGE(LVAR_NM_OUT_SENSOR_VOLTAGE, value, source, dest);
-                target->set_outdoor_voltage(source, value);
+                double temp = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_out_condenser_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_condenser_temp, temp);
+                break;
+            }
+            case MessageNumber::VAR_out_evaporator_temp:
+            {
+                double temp = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_out_evaporator_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_evaporator_temp, temp);
+                break;
+            }
+            case MessageNumber::VAR_out_compressor_current:
+            {
+                double current = (double)message.value / 10.0; // Convert to Amperes
+                LOG_MESSAGE(VAR_out_compressor_current, current, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_compressor_current, current);
+                break;
+            }
+            case MessageNumber::VAR_out_compressor_power:
+            {
+                double power = (double)message.value; // Already in Watts
+                LOG_MESSAGE(VAR_out_compressor_power, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_compressor_power, power);
+                break;
+            }
+            case MessageNumber::VAR_out_fan_current:
+            {
+                double current = (double)message.value / 10.0; // Convert to Amperes
+                LOG_MESSAGE(VAR_out_fan_current, current, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_current, current);
+                break;
+            }
+            case MessageNumber::VAR_out_fan_power:
+            {
+                double power = (double)message.value; // Already in Watts
+                LOG_MESSAGE(VAR_out_fan_power, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_power, power);
+                break;
+            }
+            case MessageNumber::VAR_out_total_power:
+            {
+                double power = (double)message.value; // Already in Watts
+                LOG_MESSAGE(VAR_out_total_power, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_total_power, power);
+                break;
+            }
+            case MessageNumber::VAR_out_energy_accumulated:
+            {
+                double energy = (double)message.value / 1000.0; // Convert to kWh
+                LOG_MESSAGE(VAR_out_energy_accumulated, energy, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_energy_accumulated, energy);
+                break;
+            }
+            case MessageNumber::VAR_out_operation_time:
+            {
+                double hours = (double)message.value / 60.0; // Convert minutes to hours
+                LOG_MESSAGE(VAR_out_operation_time, hours, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_operation_time, hours);
+                break;
+            }
+            case MessageNumber::VAR_out_error_count:
+                LOG_MESSAGE(VAR_out_error_count, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_error_count, message.value);
+                break;
+            case MessageNumber::VAR_out_system_pressure:
+            {
+                double pressure = (double)message.value / 10.0; // Convert to bar
+                LOG_MESSAGE(VAR_out_system_pressure, pressure, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_system_pressure, pressure);
+                break;
+            }
+            case MessageNumber::VAR_out_phase_current:
+            {
+                double current = (double)message.value / 10.0; // Convert to Amperes
+                LOG_MESSAGE(VAR_out_phase_current, current, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_phase_current, current);
+                break;
+            }
+            case MessageNumber::VAR_out_phase_voltage:
+            {
+                double voltage = (double)message.value; // Already in Volts
+                LOG_MESSAGE(VAR_out_phase_voltage, voltage, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_phase_voltage, voltage);
+                break;
+            }
+            case MessageNumber::VAR_out_phase_power:
+            {
+                double power = (double)message.value; // Already in Watts
+                LOG_MESSAGE(VAR_out_phase_power, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_phase_power, power);
+                break;
+            }
+            case MessageNumber::VAR_out_compressor_speed:
+            {
+                double speed = (double)message.value; // Already in RPM
+                LOG_MESSAGE(VAR_out_compressor_speed, speed, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_compressor_speed, speed);
+                break;
+            }
+            case MessageNumber::VAR_out_fan_speed_rpm:
+            {
+                double speed = (double)message.value; // Already in RPM
+                LOG_MESSAGE(VAR_out_fan_speed_rpm, speed, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_speed_rpm, speed);
+                break;
+            }
+            case MessageNumber::VAR_out_power_factor:
+            {
+                double pf = (double)message.value / 100.0; // Convert to decimal
+                LOG_MESSAGE(VAR_out_power_factor, pf, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_power_factor, pf);
+                break;
+            }
+            case MessageNumber::VAR_out_efficiency:
+            {
+                double efficiency = (double)message.value / 100.0; // Convert to percentage
+                LOG_MESSAGE(VAR_out_efficiency, efficiency, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_efficiency, efficiency);
+                break;
+            }
+            case MessageNumber::VAR_out_capacity:
+            {
+                double capacity = (double)message.value / 10.0; // Convert to kW
+                LOG_MESSAGE(VAR_out_capacity, capacity, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_capacity, capacity);
+                break;
+            }
+            case MessageNumber::VAR_out_operation_count:
+                LOG_MESSAGE(VAR_out_operation_count, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_operation_count, message.value);
+                break;
+            case MessageNumber::LVAR_out_energy_total:
+            {
+                double energy = (double)message.value / 1000.0; // Convert to kWh
+                LOG_MESSAGE(LVAR_out_energy_total, energy, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_out_energy_total, energy);
+                break;
+            }
+            case MessageNumber::LVAR_out_operation_hours:
+            {
+                double hours = (double)message.value; // Already in hours
+                LOG_MESSAGE(LVAR_out_operation_hours, hours, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_out_operation_hours, hours);
+                break;
+            }
+            case MessageNumber::LVAR_out_compressor_hours:
+            {
+                double hours = (double)message.value; // Already in hours
+                LOG_MESSAGE(LVAR_out_compressor_hours, hours, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_out_compressor_hours, hours);
+                break;
+            }
+            case MessageNumber::LVAR_out_fan_hours:
+            {
+                double hours = (double)message.value; // Already in hours
+                LOG_MESSAGE(LVAR_out_fan_hours, hours, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_out_fan_hours, hours);
+                break;
+            }
+            case MessageNumber::VAR_in_pipe_temp:
+            {
+                double temp = (double)message.value / 10.0; // Convert to Celsius
+                LOG_MESSAGE(VAR_in_pipe_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_pipe_temp, temp);
+                break;
+            }
+            case MessageNumber::VAR_in_ambient_temp:
+            {
+                double temp = (double)message.value / 10.0; // Convert to Celsius
+                LOG_MESSAGE(VAR_in_ambient_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_ambient_temp, temp);
+                break;
+            }
+            case MessageNumber::VAR_in_operation_state:
+                LOG_MESSAGE(VAR_in_operation_state, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_operation_state, message.value);
+                break;
+            case MessageNumber::VAR_in_water_temp:
+            {
+                double temp = (double)message.value / 10.0; // Convert to Celsius
+                LOG_MESSAGE(VAR_in_water_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_temp, temp);
+                break;
+            }
+            case MessageNumber::VAR_in_water_flow:
+            {
+                double flow = (double)message.value / 10.0; // Convert to L/min
+                LOG_MESSAGE(VAR_in_water_flow, flow, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_flow, flow);
+                break;
+            }
+            case MessageNumber::VAR_in_water_pressure:
+            {
+                double pressure = (double)message.value / 10.0; // Convert to bar
+                LOG_MESSAGE(VAR_in_water_pressure, pressure, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pressure, pressure);
+                break;
+            }
+            case MessageNumber::VAR_in_water_valve:
+                LOG_MESSAGE(VAR_in_water_valve, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_valve, message.value);
+                break;
+            case MessageNumber::VAR_in_power_consumption:
+            {
+                double power = (double)message.value; // Already in Watts
+                LOG_MESSAGE(VAR_in_power_consumption, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_power_consumption, power);
+                break;
+            }
+            case MessageNumber::VAR_in_water_level:
+            {
+                double level = (double)message.value / 10.0; // Convert to percentage
+                LOG_MESSAGE(VAR_in_water_level, level, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_level, level);
+                break;
+            }
+            case MessageNumber::VAR_in_water_quality:
+            {
+                double quality = (double)message.value / 10.0; // Convert to percentage
+                LOG_MESSAGE(VAR_in_water_quality, quality, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_quality, quality);
+                break;
+            }
+            case MessageNumber::VAR_in_water_filter:
+                LOG_MESSAGE(VAR_in_water_filter, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_filter, message.value);
+                break;
+            case MessageNumber::VAR_in_water_pump:
+                LOG_MESSAGE(VAR_in_water_pump, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pump, message.value);
+                break;
+            case MessageNumber::VAR_in_water_heater:
+                LOG_MESSAGE(VAR_in_water_heater, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_heater, message.value);
+                break;
+            case MessageNumber::VAR_in_water_heater_temp:
+            {
+                double temp = (double)message.value / 10.0; // Convert to Celsius
+                LOG_MESSAGE(VAR_in_water_heater_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_heater_temp, temp);
+                break;
+            }
+            case MessageNumber::LVAR_in_energy_total:
+            {
+                double energy = (double)message.value / 1000.0; // Convert to kWh
+                LOG_MESSAGE(LVAR_in_energy_total, energy, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_energy_total, energy);
+                break;
+            }
+            case MessageNumber::LVAR_in_operation_hours:
+            {
+                double hours = (double)message.value; // Already in hours
+                LOG_MESSAGE(LVAR_in_operation_hours, hours, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_operation_hours, hours);
+                break;
+            }
+            case MessageNumber::LVAR_in_water_heater_hours:
+            {
+                double hours = (double)message.value; // Already in hours
+                LOG_MESSAGE(LVAR_in_water_heater_hours, hours, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_water_heater_hours, hours);
+                break;
+            }
+            case MessageNumber::VAR_unknown_82b2:
+            case MessageNumber::VAR_unknown_82b5:
+            case MessageNumber::VAR_unknown_82b8:
+            case MessageNumber::VAR_unknown_82bc:
+            case MessageNumber::VAR_unknown_82d1:
+            case MessageNumber::VAR_unknown_8298:
+            case MessageNumber::VAR_unknown_82a8:
+            case MessageNumber::VAR_unknown_82a9:
+            case MessageNumber::VAR_unknown_82aa:
+            case MessageNumber::VAR_unknown_8243:
+            case MessageNumber::VAR_unknown_8233:
+            {
+                LOG_MESSAGE(Unknown_VAR, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
+                break;
+            }
+            case MessageNumber::ENUM_unknown_808d:
+            case MessageNumber::ENUM_unknown_803f:
+            case MessageNumber::ENUM_unknown_80bf:
+            {
+                LOG_MESSAGE(Unknown_ENUM, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
+                break;
+            }
+            case MessageNumber::LONGVAR_unknown_8404:
+            {
+                LOG_MESSAGE(Unknown_LONGVAR, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_high_pressure:
+            {
+                double pressure = (double)message.value / 10.0; // Convert to bar
+                LOG_MESSAGE(VAR_out_high_pressure, pressure, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_high_pressure, pressure);
+                break;
+            }
+            case MessageNumber::VAR_out_low_pressure:
+            {
+                double pressure = (double)message.value / 10.0; // Convert to bar
+                LOG_MESSAGE(VAR_out_low_pressure, pressure, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_low_pressure, pressure);
+                break;
+            }
+            case MessageNumber::VAR_out_heat_exchanger_outlet:
+            {
+                double temp = (double)message.value / 10.0; // Convert to Celsius
+                LOG_MESSAGE(VAR_out_heat_exchanger_outlet, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_heat_exchanger_outlet, temp);
+                break;
+            }
+            case MessageNumber::VAR_out_ipm_temperature:
+            {
+                double temp = (double)message.value; // Already in Celsius
+                LOG_MESSAGE(VAR_out_ipm_temperature, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_ipm_temperature, temp);
+                break;
+            }
+            case MessageNumber::VAR_out_compressor_top_temp:
+            {
+                double temp = (double)message.value / 10.0; // Convert to Celsius
+                LOG_MESSAGE(VAR_out_compressor_top_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_compressor_top_temp, temp);
+                break;
+            }
+            case MessageNumber::VAR_out_high_side_sat_temp:
+            {
+                double temp = (double)message.value / 10.0; // Convert to Celsius
+                LOG_MESSAGE(VAR_out_high_side_sat_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_high_side_sat_temp, temp);
+                break;
+            }
+            case MessageNumber::VAR_out_low_side_sat_temp:
+            {
+                double temp = (double)message.value / 10.0; // Convert to Celsius
+                LOG_MESSAGE(VAR_out_low_side_sat_temp, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_low_side_sat_temp, temp);
+                break;
+            }
+            case MessageNumber::VAR_out_power:
+            {
+                double power = (double)message.value; // Already in Watts
+                LOG_MESSAGE(VAR_out_power, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_power, power);
                 break;
             }
             default:

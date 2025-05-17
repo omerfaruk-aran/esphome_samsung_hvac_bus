@@ -124,6 +124,18 @@ namespace esphome
       std::map<uint16_t, sensor::Sensor *> custom_sensor_map;
       float room_temperature_offset{0};
 
+      // Add new sensor pointers
+      sensor::Sensor *pipe_in3_temperature{nullptr};
+      sensor::Sensor *pipe_in4_temperature{nullptr};
+      sensor::Sensor *pipe_in5_temperature{nullptr};
+      sensor::Sensor *pipe_out1_temperature{nullptr};
+      sensor::Sensor *wattmeter_1unit{nullptr};
+      sensor::Sensor *wattmeter_total_sum{nullptr};
+      sensor::Sensor *wattmeter_total_sum_accum{nullptr};
+      sensor::Sensor *wattmeter_total_produced{nullptr};
+      sensor::Sensor *wattmeter_actual_produced{nullptr};
+      sensor::Sensor *capacity_request{nullptr};
+
       template <typename SwingType>
       void update_swing(SwingType &swing_variable, uint8_t mask, bool value)
       {
@@ -493,6 +505,47 @@ namespace esphome
         {
           protocol->protocol_update(target);
         }
+      }
+
+      // Add setter methods for new sensors
+      void set_pipe_in3_temperature_sensor(sensor::Sensor *sensor) {
+          pipe_in3_temperature = sensor;
+      }
+      
+      void set_pipe_in4_temperature_sensor(sensor::Sensor *sensor) {
+          pipe_in4_temperature = sensor;
+      }
+      
+      void set_pipe_in5_temperature_sensor(sensor::Sensor *sensor) {
+          pipe_in5_temperature = sensor;
+      }
+      
+      void set_pipe_out1_temperature_sensor(sensor::Sensor *sensor) {
+          pipe_out1_temperature = sensor;
+      }
+      
+      void set_wattmeter_1unit_sensor(sensor::Sensor *sensor) {
+          wattmeter_1unit = sensor;
+      }
+      
+      void set_wattmeter_total_sum_sensor(sensor::Sensor *sensor) {
+          wattmeter_total_sum = sensor;
+      }
+      
+      void set_wattmeter_total_sum_accum_sensor(sensor::Sensor *sensor) {
+          wattmeter_total_sum_accum = sensor;
+      }
+      
+      void set_wattmeter_total_produced_sensor(sensor::Sensor *sensor) {
+          wattmeter_total_produced = sensor;
+      }
+      
+      void set_wattmeter_actual_produced_sensor(sensor::Sensor *sensor) {
+          wattmeter_actual_produced = sensor;
+      }
+      
+      void set_capacity_request_sensor(sensor::Sensor *sensor) {
+          capacity_request = sensor;
       }
 
     protected:

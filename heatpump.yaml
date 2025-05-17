@@ -1,0 +1,258 @@
+## BASIC CONFIGURATION
+esphome:
+  name: esphome-web-fd4e7c
+  friendly_name: samsung_heatpump
+  comment: "Samsung AC Heatpump"
+  min_version: 2024.11.0
+  name_add_mac_suffix: false
+
+# Select chipset and board configuration - in this case M5STACK
+esp32:
+  board: m5stack-atom
+  framework:
+    type: esp-idf
+
+# [Optional] - Create web interface where you can control the AC from your web browser (without Home Assistant)
+web_server:
+  port: 80
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable native API for communication with Home Assistant, this can be removed if you do not plan to use it with Home Assistant
+api:
+
+# Enable OTA firmware update, you will be able to upload the firmware over WiFi without connecting the device by cables
+ota:
+  platform: esphome
+
+# Setup your WiFi password
+wifi:
+  ssid: "changeme"
+  password: "changeme"
+
+  # Add this if not present:
+  manual_ip:
+    static_ip: 192.168.1.234
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+captive_portal:
+
+# Specify pins used by the board to comunicate with RS485 board - in this case M5STACK
+uart:
+  id: uart_bus
+  tx_pin: GPIO19   # Use GPIO26 for ATOM Tail485 
+  rx_pin: GPIO22   # Use GPIO32 for ATOM Tail485
+  # For older devices it could also be 2400. But you should start with 9600.
+  baud_rate: 9600
+  parity: EVEN
+
+## SAMSUNG AC CONFIGURATION
+
+# Import custom component from GitHub
+external_components:
+  - source: ./components  # Point to the components directory
+    components: [samsung_ac]
+
+# Configuration of AC component
+samsung_ac:
+  id: samsung_ac_controller
+  uart_id: uart_bus
+  debug_mqtt_host: ""
+  debug_mqtt_port: 1883
+  debug_mqtt_username: ""
+  debug_mqtt_password: ""
+  
+  # When enabled (set to true), this option will log the messages associated with undefined codes on the device. This is useful for debugging and identifying any unexpected or unknown codes that the device may receive during operation.
+  debug_log_undefined_messages: true
+  
+  # When enabled (set to true), this option logs messages associated with defined codes on the device. This helps in monitoring the behavior of the device by recording the activity related to known, expected codes.
+  debug_log_messages: true
+
+  # Capabilities configure the features that all devices of your AC system have (all parts of this section are optional). 
+  # All capabilities are off by default, you need to enable only those your devices have.
+  # You can override or configure them also on a per-device basis (look below for that).
+  capabilities: 
+    vertical_swing: false
+    horizontal_swing: false
+
+  devices:
+    - address: "20.00.00" # Indoor device address 
+      capabilities:
+        horizontal_swing: false
+        vertical_swing: false
+
+      climate:
+        name: "Heat Pump climate"
+        id: climate_20_00_00
+
+      room_temperature:
+        name: "Heat Pump temperature"
+        id: room_temperature_20_00_00
+      target_temperature:
+        name: "Heat Pump target temperature"
+        id: target_temperature_20_00_00
+      power:
+        name: "Heat Pump power"
+        id: power_20_00_00
+      mode:
+        name: "Heat Pump mode"
+        id: mode_20_00_00
+
+      room_temperature_offset: -1.4
+
+    - address: "10.00.00" # Outdoor device address
+      capabilities:
+        horizontal_swing: false
+        vertical_swing: false
+
+      outdoor_temperature:
+        name: "Outdoor Temperature"
+        icon: "mdi:thermometer"
+        device_class: temperature
+        state_class: measurement
+        unit_of_measurement: "°C"
+        accuracy_decimals: 1
+        id: outdoor_temperature_10_00_00
+      outdoor_current:
+        name: "Outdoor Current"
+        icon: "mdi:current-ac"
+        device_class: current
+        state_class: measurement
+        unit_of_measurement: "A"
+        accuracy_decimals: 1
+        id: outdoor_current_10_00_00
+      power:
+        name: "Outdoor Power"
+        icon: "mdi:flash"
+        id: power_10_00_00
+      error_code:
+        name: "Error Code"
+        icon: "mdi:alert-circle"
+        id: error_code_10_00_00
+      water_temperature:
+        name: "Water Temperature"
+        icon: "mdi:thermometer-water"
+        device_class: temperature
+        state_class: measurement
+        unit_of_measurement: "°C"
+        accuracy_decimals: 1
+        id: water_temperature_10_00_00
+      water_target_temperature:
+        name: "Water Target Temperature"
+        icon: "mdi:thermometer-water"
+        device_class: temperature
+        unit_of_measurement: "°C"
+        id: water_target_temperature_10_00_00
+
+      # Custom sensors for undocumented but known message IDs
+      custom_sensor:
+        - name: "High Pressure"
+          message: 0x8206
+          unit_of_measurement: "kg/cm²"
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: high_pressure_10_00_00
+        - name: "Low Pressure"
+          message: 0x8208
+          unit_of_measurement: "kg/cm²"
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: low_pressure_10_00_00
+        - name: "Discharge Temperature"
+          message: 0x820A
+          unit_of_measurement: "°C"
+          device_class: temperature
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: discharge_temperature_10_00_00
+        - name: "Heat Exchanger Outlet Temp"
+          message: 0x8218
+          unit_of_measurement: "°C"
+          device_class: temperature
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: heat_exchanger_outlet_temp_10_00_00
+        - name: "Suction Temperature"
+          message: 0x821A
+          unit_of_measurement: "°C"
+          device_class: temperature
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: suction_temperature_10_00_00
+        - name: "Compressor Current"
+          message: 0x8217
+          unit_of_measurement: "A"
+          device_class: current
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: compressor_current_10_00_00
+        - name: "Compressor Frequency"
+          message: 0x8238
+          unit_of_measurement: "Hz"
+          state_class: measurement
+          accuracy_decimals: 1
+          id: compressor_frequency_10_00_00
+        - name: "IPM Temperature"
+          message: 0x8254
+          unit_of_measurement: "°C"
+          device_class: temperature
+          state_class: measurement
+          accuracy_decimals: 1
+          id: ipm_temperature_10_00_00
+        - name: "Compressor Top Temperature"
+          message: 0x8280
+          unit_of_measurement: "°C"
+          device_class: temperature
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: compressor_top_temp_10_00_00
+        - name: "High Side Saturation Temperature"
+          message: 0x829F
+          unit_of_measurement: "°C"
+          device_class: temperature
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: high_side_sat_temp_10_00_00
+        - name: "Low Side Saturation Temperature"
+          message: 0x82A0
+          unit_of_measurement: "°C"
+          device_class: temperature
+          state_class: measurement
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+          id: low_side_sat_temp_10_00_00
+        - name: "Outdoor Unit Power"
+          message: 0x8413
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          id: outdoor_unit_power_10_00_00
+        - name: "Accumulated Energy"
+          message: 0x8414
+          unit_of_measurement: "kWh"
+          device_class: energy
+          state_class: total_increasing
+          accuracy_decimals: 3
+          filters:
+            - multiply: 0.001
+          id: accumulated_energy_10_00_00
