@@ -29,8 +29,8 @@ ota:
 
 # Setup your WiFi password
 wifi:
-  ssid: "changeme"
-  password: "changeme"
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
 
   # Add this if not present:
   manual_ip:
