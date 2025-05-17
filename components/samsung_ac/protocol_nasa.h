@@ -239,6 +239,10 @@ namespace esphome
             // New messages from latest logs
             STRUCT_unknown_860d = 0x860d,           // TODO: Identify
             LONGVAR_unknown_8409 = 0x8409,          // TODO: Identify
+            ENUM_in_backup_heater_status = 0x406C, // Backup Heater Status
+            ENUM_in_booster_heater_status = 0x4087, // Booster Heater Status
+            ENUM_in_3way_valve_position = 0x4067, // 3-Way Diverter Valve Position
+            VAR_in_circulation_pump_speed = 0x40C4, // Circulation Pump Speed (DHW Pump)
         };
 
         struct Address

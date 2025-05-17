@@ -1144,6 +1144,25 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_power, power);
                 break;
             }
+            case MessageNumber::ENUM_in_backup_heater_status:
+                LOG_MESSAGE(ENUM_in_backup_heater_status, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_backup_heater_status, message.value);
+                break;
+            case MessageNumber::ENUM_in_booster_heater_status:
+                LOG_MESSAGE(ENUM_in_booster_heater_status, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_booster_heater_status, message.value);
+                break;
+            case MessageNumber::ENUM_in_3way_valve_position:
+                LOG_MESSAGE(ENUM_in_3way_valve_position, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_3way_valve_position, message.value);
+                break;
+            case MessageNumber::VAR_in_circulation_pump_speed:
+            {
+                double percent = (double)message.value; // Already in percent (0-100)
+                LOG_MESSAGE(VAR_in_circulation_pump_speed, percent, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_circulation_pump_speed, percent);
+                break;
+            }
             default:
             {
                 double value = 0;

@@ -103,6 +103,49 @@ samsung_ac:
 
       room_temperature_offset: -1.4
 
+      # DHW (Domestic Hot Water) custom sensors
+      custom_sensor:
+        - name: "DHW Operation Enable"
+          message: 0x4065
+          id: dhw_operation_enable
+        - name: "DHW Mode Setting"
+          message: 0x4066
+          id: dhw_mode_setting
+        - name: "DHW Setpoint Temperature"
+          message: 0x4235
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
+          id: dhw_setpoint_temp
+        - name: "DHW Tank Temperature"
+          message: 0x4236
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
+          id: dhw_tank_temp
+        - name: "Backup Heater Status (DHW)"
+          message: 0x406C
+          id: dhw_backup_heater_status
+        - name: "Booster Heater Status (DHW)"
+          message: 0x4087
+          id: dhw_booster_heater_status
+        - name: "3-Way Valve Position (DHW)"
+          message: 0x4067
+          id: dhw_three_way_valve_position
+        - name: "Circulation Pump Speed (DHW)"
+          message: 0x40C4
+          unit_of_measurement: "%"
+          id: dhw_circulation_pump_speed
+        - name: "Water Flow Rate (DHW)"
+          message: 0x42E9
+          unit_of_measurement: "L/min"
+          filters:
+            - multiply: 0.1
+          id: dhw_water_flow_rate
+        - name: "Heat Pump Operation Mode (DHW)"
+          message: 0x8001
+          id: dhw_heat_pump_operation_mode
+
     - address: "10.00.00" # Outdoor device address
       capabilities:
         horizontal_swing: false
@@ -146,113 +189,3 @@ samsung_ac:
         device_class: temperature
         unit_of_measurement: "°C"
         id: water_target_temperature_10_00_00
-
-      # Custom sensors for undocumented but known message IDs
-      custom_sensor:
-        - name: "High Pressure"
-          message: 0x8206
-          unit_of_measurement: "kg/cm²"
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: high_pressure_10_00_00
-        - name: "Low Pressure"
-          message: 0x8208
-          unit_of_measurement: "kg/cm²"
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: low_pressure_10_00_00
-        - name: "Discharge Temperature"
-          message: 0x820A
-          unit_of_measurement: "°C"
-          device_class: temperature
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: discharge_temperature_10_00_00
-        - name: "Heat Exchanger Outlet Temp"
-          message: 0x8218
-          unit_of_measurement: "°C"
-          device_class: temperature
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: heat_exchanger_outlet_temp_10_00_00
-        - name: "Suction Temperature"
-          message: 0x821A
-          unit_of_measurement: "°C"
-          device_class: temperature
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: suction_temperature_10_00_00
-        - name: "Compressor Current"
-          message: 0x8217
-          unit_of_measurement: "A"
-          device_class: current
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: compressor_current_10_00_00
-        - name: "Compressor Frequency"
-          message: 0x8238
-          unit_of_measurement: "Hz"
-          state_class: measurement
-          accuracy_decimals: 1
-          id: compressor_frequency_10_00_00
-        - name: "IPM Temperature"
-          message: 0x8254
-          unit_of_measurement: "°C"
-          device_class: temperature
-          state_class: measurement
-          accuracy_decimals: 1
-          id: ipm_temperature_10_00_00
-        - name: "Compressor Top Temperature"
-          message: 0x8280
-          unit_of_measurement: "°C"
-          device_class: temperature
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: compressor_top_temp_10_00_00
-        - name: "High Side Saturation Temperature"
-          message: 0x829F
-          unit_of_measurement: "°C"
-          device_class: temperature
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: high_side_sat_temp_10_00_00
-        - name: "Low Side Saturation Temperature"
-          message: 0x82A0
-          unit_of_measurement: "°C"
-          device_class: temperature
-          state_class: measurement
-          accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
-          id: low_side_sat_temp_10_00_00
-        - name: "Outdoor Unit Power"
-          message: 0x8413
-          unit_of_measurement: "W"
-          device_class: power
-          state_class: measurement
-          id: outdoor_unit_power_10_00_00
-        - name: "Accumulated Energy"
-          message: 0x8414
-          unit_of_measurement: "kWh"
-          device_class: energy
-          state_class: total_increasing
-          accuracy_decimals: 3
-          filters:
-            - multiply: 0.001
-          id: accumulated_energy_10_00_00
