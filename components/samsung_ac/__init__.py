@@ -101,6 +101,27 @@ CONF_PRESET_NAME = "name"
 CONF_PRESET_ENABLED = "enabled"
 CONF_PRESET_VALUE = "value"
 
+# Add these at the top with the other CONF_DEVICE_* constants
+CONF_DEVICE_COMPRESSOR_POWER = "compressor_power"
+CONF_DEVICE_FAN_POWER = "fan_power"
+CONF_DEVICE_TOTAL_POWER = "total_power"
+CONF_DEVICE_COMPRESSOR_CURRENT = "compressor_current"
+CONF_DEVICE_FAN_CURRENT = "fan_current"
+CONF_DEVICE_PHASE_CURRENT = "phase_current"
+CONF_DEVICE_PHASE_VOLTAGE = "phase_voltage"
+CONF_DEVICE_PHASE_POWER = "phase_power"
+CONF_DEVICE_POWER_FACTOR = "power_factor"
+CONF_DEVICE_SYSTEM_EFFICIENCY = "system_efficiency"
+CONF_DEVICE_SYSTEM_CAPACITY = "system_capacity"
+CONF_DEVICE_TOTAL_ENERGY_CONSUMPTION = "total_energy_consumption"
+CONF_DEVICE_OPERATION_HOURS = "operation_hours"
+CONF_DEVICE_COMPRESSOR_HOURS = "compressor_hours"
+CONF_DEVICE_FAN_HOURS = "fan_hours"
+CONF_DEVICE_CONTROL_WATTMETER_UNIT = "control_wattmeter_unit"
+CONF_DEVICE_WATTMETER_ACCUMULATED = "wattmeter_accumulated"
+CONF_DEVICE_PRODUCED_ENERGY_ACTUAL = "produced_energy_actual"
+CONF_DEVICE_PRODUCED_ENERGY_TOTAL = "produced_energy_total"
+
 
 def preset_entry(name: str, value: int, displayName: str):
     return (
@@ -355,6 +376,172 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:gauge",
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+        cv.Optional(CONF_DEVICE_COMPRESSOR_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:flash",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8237): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_FAN_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:fan",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8239): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_TOTAL_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:flash",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x823d): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_COMPRESSOR_CURRENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_CURRENT,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:current-ac",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8236): cv.hex_int,
+            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
+        }),
+        cv.Optional(CONF_DEVICE_FAN_CURRENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_CURRENT,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:current-ac",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8238): cv.hex_int,
+            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
+        }),
+        cv.Optional(CONF_DEVICE_PHASE_CURRENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_CURRENT,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:current-ac",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82db): cv.hex_int,
+            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
+        }),
+        cv.Optional(CONF_DEVICE_PHASE_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:flash",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82de): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_PHASE_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:flash",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82df): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_POWER_FACTOR): sensor.sensor_schema(
+            unit_of_measurement="",
+            accuracy_decimals=2,
+            icon="mdi:alpha-f-circle",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82e8): cv.hex_int,
+            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.01}]): sensor.validate_filters,
+        }),
+        cv.Optional(CONF_DEVICE_SYSTEM_EFFICIENCY): sensor.sensor_schema(
+            unit_of_measurement="",
+            accuracy_decimals=1,
+            icon="mdi:percent",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82ed): cv.hex_int,
+            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
+        }),
+        cv.Optional(CONF_DEVICE_SYSTEM_CAPACITY): sensor.sensor_schema(
+            unit_of_measurement="kW",
+            accuracy_decimals=1,
+            icon="mdi:gauge",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82f6): cv.hex_int,
+            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
+        }),
+        cv.Optional(CONF_DEVICE_TOTAL_ENERGY_CONSUMPTION): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8408): cv.hex_int,
+            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.001}]): sensor.validate_filters,
+        }),
+        cv.Optional(CONF_DEVICE_OPERATION_HOURS): sensor.sensor_schema(
+            unit_of_measurement="h",
+            accuracy_decimals=1,
+            icon="mdi:clock-outline",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x840b): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_COMPRESSOR_HOURS): sensor.sensor_schema(
+            unit_of_measurement="h",
+            accuracy_decimals=1,
+            icon="mdi:clock-outline",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x840c): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_FAN_HOURS): sensor.sensor_schema(
+            unit_of_measurement="h",
+            accuracy_decimals=1,
+            icon="mdi:clock-outline",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x841a): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_CONTROL_WATTMETER_UNIT): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8411): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_WATTMETER_ACCUMULATED): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8416): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_PRODUCED_ENERGY_ACTUAL): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8426): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_PRODUCED_ENERGY_TOTAL): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8427): cv.hex_int,
+        }),
     }
 )
 
@@ -536,6 +723,30 @@ async def to_code(config):
             CONF_DEVICE_WATTMETER_ACTUAL_PRODUCED: (sensor.new_sensor, var_dev.set_wattmeter_actual_produced_sensor),
             CONF_DEVICE_CAPACITY_REQUEST: (sensor.new_sensor, var_dev.set_capacity_request_sensor),
         }
+
+        # Add new protocol message sensors to device_actions
+        device_actions.update({
+            CONF_DEVICE_COMPRESSOR_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8237, s)),
+            CONF_DEVICE_FAN_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8239, s)),
+            CONF_DEVICE_TOTAL_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x823d, s)),
+            CONF_DEVICE_COMPRESSOR_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8236, s)),
+            CONF_DEVICE_FAN_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8238, s)),
+            CONF_DEVICE_PHASE_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82db, s)),
+            CONF_DEVICE_PHASE_VOLTAGE: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82de, s)),
+            CONF_DEVICE_PHASE_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82df, s)),
+            CONF_DEVICE_POWER_FACTOR: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82e8, s)),
+            CONF_DEVICE_SYSTEM_EFFICIENCY: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82ed, s)),
+            CONF_DEVICE_SYSTEM_CAPACITY: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82f6, s)),
+            CONF_DEVICE_TOTAL_ENERGY_CONSUMPTION: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8408, s)),
+            CONF_DEVICE_OPERATION_HOURS: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x840b, s)),
+            CONF_DEVICE_COMPRESSOR_HOURS: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x840c, s)),
+            CONF_DEVICE_FAN_HOURS: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x841a, s)),
+            CONF_DEVICE_CONTROL_WATTMETER_UNIT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8411, s)),
+            CONF_DEVICE_WATTMETER_TOTAL_SUM: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8415, s)),
+            CONF_DEVICE_WATTMETER_ACCUMULATED: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8416, s)),
+            CONF_DEVICE_PRODUCED_ENERGY_ACTUAL: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8426, s)),
+            CONF_DEVICE_PRODUCED_ENERGY_TOTAL: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8427, s)),
+        })
 
         # Iterate over the actions
         for key, (action, method) in device_actions.items():

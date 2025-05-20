@@ -243,6 +243,27 @@ namespace esphome
             ENUM_in_booster_heater_status = 0x4087, // Booster Heater Status
             ENUM_in_3way_valve_position = 0x4067, // 3-Way Diverter Valve Position
             VAR_in_circulation_pump_speed = 0x40C4, // Circulation Pump Speed (DHW Pump)
+            // --- Outdoor Unit Power and Energy Messages (from user table) ---
+            Compressor_Power = 0x8237,           // VAR, W, Outdoor unit
+            Fan_Power = 0x8239,                  // VAR, W, Outdoor unit
+            Total_Power = 0x823d,                // VAR, W, Outdoor unit
+            Compressor_Current = 0x8236,         // VAR, A, Outdoor unit
+            Fan_Current = 0x8238,                // VAR, A, Outdoor unit
+            Phase_Current = 0x82db,              // VAR, A, Outdoor unit
+            Phase_Voltage = 0x82de,              // VAR, V, Outdoor unit
+            Phase_Power = 0x82df,                // VAR, W, Outdoor unit
+            Power_Factor = 0x82e8,               // VAR, x0.01, e.g., 100 = PF 1.0
+            System_Efficiency = 0x82ed,          // VAR, x0.1, May represent COP
+            System_Capacity = 0x82f6,            // VAR, kW or BTU/h, Possibly x0.1
+            Total_Energy_Consumption = 0x8408,   // LVAR, kWh, Outdoor cumulative
+            Operation_Hours = 0x840b,            // LVAR, hours, Total run time
+            Compressor_Hours = 0x840c,           // LVAR, hours, Comp. runtime
+            Fan_Hours = 0x841a,                  // LVAR, hours, Outdoor fan runtime
+            Control_Wattmeter_Unit = 0x8411,     // LVAR, kWh, Outdoor unit (main)
+            Wattmeter_Total_Sum = 0x8415,        // LVAR, kWh, Cumulative from unit start
+            Wattmeter_Accumulated = 0x8416,      // LVAR, kWh, Accumulative sum over session
+            Produced_Energy_Actual = 0x8426,     // LVAR, kWh, e.g., heating output
+            Produced_Energy_Total = 0x8427,      // LVAR, kWh, Output since install
         };
 
         struct Address
