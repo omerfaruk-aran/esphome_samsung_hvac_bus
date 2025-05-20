@@ -141,6 +141,27 @@ samsung_ac:
         - name: "Heat Pump Operation Mode"
           message: 0x8001
           id: dhw_heat_pump_operation_mode
+        - name: "Water Temperature (Heating Loop)"
+          message: 0x4236
+          id: water_temperature_20_00_00
+        - name: "DHW Tank Temperature"
+          message: 0x4237
+          id: dhw_tank_temperature_20_00_00
+        - name: "Water Heater Temperature (Booster)"
+          message: 0x42E9
+          id: water_heater_temperature_20_00_00
+        - name: "Water Outlet Target Temperature"
+          message: 0x4247
+          id: water_outlet_target_temperature_20_00_00
+        - name: "DHW Target Temperature"
+          message: 0x4235
+          id: dhw_target_temperature_20_00_00
+        - name: "Evaporator Inlet Water Temperature"
+          message: 0x4205
+          id: evap_inlet_water_temperature_20_00_00
+        - name: "Evaporator Outlet Water Temperature"
+          message: 0x4206
+          id: evap_outlet_water_temperature_20_00_00
 
     - address: "10.00.00" # Outdoor device address
       capabilities:
@@ -262,3 +283,7 @@ samsung_ac:
         name: "Produced Energy Total"
         id: produced_energy_total_10_00_00
         message: 0x8427
+      custom_sensor:
+        - name: "Outdoor Air Sensor (Airout)"
+          message: 0x8204
+          id: outdoor_air_sensor_10_00_00
