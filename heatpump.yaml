@@ -147,6 +147,9 @@ samsung_ac:
         - name: "DHW Tank Temperature"
           message: 0x4237
           id: dhw_tank_temperature_20_00_00
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
         - name: "Water Heater Temperature (Booster)"
           message: 0x42E9
           id: water_heater_temperature_20_00_00
@@ -156,6 +159,9 @@ samsung_ac:
         - name: "DHW Target Temperature"
           message: 0x4235
           id: dhw_target_temperature_20_00_00
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
         - name: "Evaporator Inlet Water Temperature"
           message: 0x4205
           id: evap_inlet_water_temperature_20_00_00
