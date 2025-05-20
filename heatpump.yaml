@@ -121,6 +121,8 @@ samsung_ac:
           message: 0x4236
           unit_of_measurement: "°C"
           id: dhw_tank_temp
+          filters:
+            - multiply: 0.1
         - name: "Backup Heater Status (DHW)"
           message: 0x406C
           id: dhw_backup_heater_status
@@ -144,6 +146,9 @@ samsung_ac:
         - name: "Water Temperature (Heating Loop)"
           message: 0x4236
           id: water_temperature_20_00_00
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
         - name: "DHW Tank Temperature"
           message: 0x4237
           id: dhw_tank_temperature_20_00_00
@@ -153,9 +158,15 @@ samsung_ac:
         - name: "Water Heater Temperature (Booster)"
           message: 0x42E9
           id: water_heater_temperature_20_00_00
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
         - name: "Water Outlet Target Temperature"
           message: 0x4247
           id: water_outlet_target_temperature_20_00_00
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
         - name: "DHW Target Temperature"
           message: 0x4235
           id: dhw_target_temperature_20_00_00
@@ -165,9 +176,15 @@ samsung_ac:
         - name: "Evaporator Inlet Water Temperature"
           message: 0x4205
           id: evap_inlet_water_temperature_20_00_00
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
         - name: "Evaporator Outlet Water Temperature"
           message: 0x4206
           id: evap_outlet_water_temperature_20_00_00
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
 
     - address: "10.00.00" # Outdoor device address
       capabilities:
@@ -277,6 +294,7 @@ samsung_ac:
         name: "Control Wattmeter Unit"
         id: control_wattmeter_unit_10_00_00
         message: 0x8411
+        accuracy_decimals: 1
       wattmeter_accumulated:
         name: "Wattmeter Accumulated"
         id: wattmeter_accumulated_10_00_00
@@ -293,3 +311,6 @@ samsung_ac:
         - name: "Outdoor Air Sensor (Airout)"
           message: 0x8204
           id: outdoor_air_sensor_10_00_00
+          unit_of_measurement: "°C"
+          filters:
+            - multiply: 0.1
