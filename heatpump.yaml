@@ -199,6 +199,7 @@ samsung_ac:
         unit_of_measurement: "°C"
         accuracy_decimals: 1
         id: outdoor_temperature_10_00_00
+
       outdoor_current:
         name: "Outdoor Current"
         icon: "mdi:current-ac"
@@ -207,15 +208,18 @@ samsung_ac:
         unit_of_measurement: "A"
         accuracy_decimals: 1
         id: outdoor_current_10_00_00
+
       power:
         name: "Outdoor Power"
         icon: "mdi:flash"
         id: power_10_00_00
+
       error_code:
         name: "Error Code"
         icon: "mdi:alert-circle"
         id: error_code_10_00_00
         message: 0x8235
+        
       water_temperature:
         name: "Water Temperature"
         icon: "mdi:thermometer-water"
@@ -328,7 +332,7 @@ samsung_ac:
         name: "Produced Energy Total"
         id: produced_energy_total_10_00_00
         message: 0x8427
-        
+
       custom_sensor:
         - name: "Outdoor Air Sensor (Airout)"
           message: 0x8204
