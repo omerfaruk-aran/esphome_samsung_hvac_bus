@@ -259,10 +259,11 @@ samsung_ac:
         message: 0x8236
         unit_of_measurement: "A"
 
-      fan_current:
-        name: "Fan Current"
-        id: fan_current_10_00_00
+      compressor_current_freq:
+        name: "Compressor Current Frequency"
+        id: compressor_current_freq_10_00_00
         message: 0x8238
+        unit_of_measurement: "Hz"
 
       phase_current:
         name: "Phase Current"

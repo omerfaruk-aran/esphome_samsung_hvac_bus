@@ -820,11 +820,11 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Target_Frequency, power);
                 break;
             }
-            case MessageNumber::Fan_Current:
+            case MessageNumber::Compressor_Current_Freq:
             {
-                double current = (double)message.value / 10.0; // Convert to Amperes
-                LOG_MESSAGE(Fan_Current, current, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Fan_Current, current);
+                float freq = message.value;
+                ESP_LOGD(TAG, "Compressor current frequency: %.1f Hz", freq);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Current_Freq, freq);
                 break;
             }
             case MessageNumber::Fan_Power:

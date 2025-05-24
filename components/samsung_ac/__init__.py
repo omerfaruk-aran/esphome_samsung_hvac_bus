@@ -110,7 +110,6 @@ CONF_DEVICE_COMPRESSOR_TARGET_FREQUENCY = "compressor_target_frequency"
 CONF_DEVICE_FAN_POWER = "fan_power"
 CONF_DEVICE_TOTAL_POWER = "total_power"
 CONF_DEVICE_COMPRESSOR_CURRENT = "compressor_current"
-CONF_DEVICE_FAN_CURRENT = "fan_current"
 CONF_DEVICE_PHASE_CURRENT = "phase_current"
 CONF_DEVICE_PHASE_VOLTAGE = "phase_voltage"
 CONF_DEVICE_PHASE_POWER = "phase_power"
@@ -125,6 +124,7 @@ CONF_DEVICE_CONTROL_WATTMETER_UNIT = "control_wattmeter_unit"
 CONF_DEVICE_WATTMETER_ACCUMULATED = "wattmeter_accumulated"
 CONF_DEVICE_PRODUCED_ENERGY_ACTUAL = "produced_energy_actual"
 CONF_DEVICE_PRODUCED_ENERGY_TOTAL = "produced_energy_total"
+CONF_DEVICE_COMPRESSOR_CURRENT_FREQ = "compressor_current_freq"
 
 
 def preset_entry(name: str, value: int, displayName: str):
@@ -419,7 +419,7 @@ DEVICE_SCHEMA = cv.Schema(
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8236): cv.hex_int,
             cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
         }),
-        cv.Optional(CONF_DEVICE_FAN_CURRENT): sensor.sensor_schema(
+        cv.Optional(CONF_DEVICE_COMPRESSOR_CURRENT_FREQ): sensor.sensor_schema(
             unit_of_measurement=UNIT_AMPERE,
             accuracy_decimals=2,
             device_class=DEVICE_CLASS_CURRENT,
@@ -736,7 +736,7 @@ async def to_code(config):
             CONF_DEVICE_FAN_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8239, s)),
             CONF_DEVICE_TOTAL_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x823d, s)),
             CONF_DEVICE_COMPRESSOR_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8236, s)),
-            CONF_DEVICE_FAN_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8238, s)),
+            CONF_DEVICE_COMPRESSOR_CURRENT_FREQ: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8238, s)),
             CONF_DEVICE_PHASE_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82db, s)),
             CONF_DEVICE_PHASE_VOLTAGE: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82de, s)),
             CONF_DEVICE_PHASE_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82df, s)),
