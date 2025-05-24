@@ -19,6 +19,10 @@ from esphome.const import (
     CONF_UNIT_OF_MEASUREMENT,
     CONF_DEVICE_CLASS,
     CONF_FILTERS,
+    CONF_ICON,
+    CONF_ACCURACY_DECIMALS,
+    CONF_ENTITY_CATEGORY,
+    CONF_STATE_CLASS,
 )
 from esphome.core import CORE, Lambda
 
@@ -46,11 +50,11 @@ SELECT_WATER_HEATER_MODE_SCHEMA = select.select_schema(
     Samsung_AC_Water_Heater_Mode_Select
 )
 
-NUMBER_SCHEMA = number.NUMBER_SCHEMA.extend(
+NUMBER_SCHEMA = number.number_schema(Samsung_AC_Number).extend(
     {cv.GenerateID(): cv.declare_id(Samsung_AC_Number)}
 )
 
-CLIMATE_SCHEMA = climate.CLIMATE_SCHEMA.extend(
+CLIMATE_SCHEMA = climate.climate_schema(Samsung_AC_Climate).extend(
     {cv.GenerateID(): cv.declare_id(Samsung_AC_Climate)}
 )
 
@@ -174,30 +178,32 @@ CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema().extend(
 
 def custom_sensor_schema(
     message: int,
-    unit_of_measurement: str = sensor._UNDEF,
-    icon: str = sensor._UNDEF,
-    accuracy_decimals: int = sensor._UNDEF,
-    device_class: str = sensor._UNDEF,
-    state_class: str = sensor._UNDEF,
-    entity_category: str = sensor._UNDEF,
+    unit_of_measurement: str = None,
+    icon: str = None,
+    accuracy_decimals: int = None,
+    device_class: str = None,
+    state_class: str = None,
+    entity_category: str = None,
     raw_filters=[],
 ):
-    return sensor.sensor_schema(
-        unit_of_measurement=unit_of_measurement,
-        icon=icon,
-        accuracy_decimals=accuracy_decimals,
-        device_class=device_class,
-        state_class=state_class,
-        entity_category=entity_category,
-    ).extend(
-        {
-            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
-            cv.Optional(
-                CONF_DEVICE_CUSTOM_RAW_FILTERS, default=raw_filters
-            ): sensor.validate_filters,
-        }
-    )
+    base_schema = sensor.sensor_schema()
 
+    if unit_of_measurement is not None:
+        base_schema = base_schema.extend({cv.Optional(CONF_UNIT_OF_MEASUREMENT): cv.string})
+    if icon is not None:
+        base_schema = base_schema.extend({cv.Optional(CONF_ICON): cv.icon})
+    if accuracy_decimals is not None:
+        base_schema = base_schema.extend({cv.Optional(CONF_ACCURACY_DECIMALS): cv.positive_int})
+    if device_class is not None:
+        base_schema = base_schema.extend({cv.Optional(CONF_DEVICE_CLASS): cv.string})
+    if state_class is not None:
+        base_schema = base_schema.extend({cv.Optional(CONF_STATE_CLASS): cv.enum(sensor.STATE_CLASSES)})
+    if entity_category is not None:
+        base_schema = base_schema.extend({cv.Optional(CONF_ENTITY_CATEGORY): cv.entity_category})
+    if raw_filters:
+        base_schema = base_schema.extend({cv.Optional(CONF_DEVICE_CUSTOM_RAW_FILTERS): cv.ensure_list(cv.lambda_)})
+    base_schema = base_schema.extend({cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int})
+    return base_schema
 
 def temperature_sensor_schema(message: int):
     return custom_sensor_schema(
@@ -223,7 +229,7 @@ def humidity_sensor_schema(message: int):
 def error_code_sensor_schema(message: int):
     return custom_sensor_schema(
         message=message,
-        unit_of_measurement="",
+        unit_of_measurement=UNIT_CELSIUS,
         accuracy_decimals=0,
         icon="mdi:alert",
         entity_category="diagnostic",

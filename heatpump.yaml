@@ -215,6 +215,7 @@ samsung_ac:
         name: "Error Code"
         icon: "mdi:alert-circle"
         id: error_code_10_00_00
+        message: 0x8235
       water_temperature:
         name: "Water Temperature"
         icon: "mdi:thermometer-water"
@@ -223,6 +224,7 @@ samsung_ac:
         unit_of_measurement: "°C"
         accuracy_decimals: 1
         id: water_temperature_10_00_00
+        message: 0x4237
       water_target_temperature:
         name: "Water Target Temperature"
         icon: "mdi:thermometer-water"
@@ -311,6 +313,5 @@ samsung_ac:
         - name: "Outdoor Air Sensor (Airout)"
           message: 0x8204
           id: outdoor_air_sensor_10_00_00
-          unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
