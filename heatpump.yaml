@@ -106,7 +106,7 @@ samsung_ac:
 
       operation_mode:
         name: "Operation Mode"
-        id: operation_mode_10_00_00
+        id: operation_mode_20_00_00
         message: 0x4001
 
       # DHW (Domestic Hot Water) custom sensors
@@ -318,6 +318,7 @@ samsung_ac:
         id: total_energy_consumption_10_00_00
         message: 0x8408
         unit_of_measurement: "kWh"
+        accuracy_decimals: 6
         filters:
           - multiply: 0.001
 
