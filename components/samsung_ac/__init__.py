@@ -125,6 +125,8 @@ CONF_DEVICE_WATTMETER_ACCUMULATED = "wattmeter_accumulated"
 CONF_DEVICE_PRODUCED_ENERGY_ACTUAL = "produced_energy_actual"
 CONF_DEVICE_PRODUCED_ENERGY_TOTAL = "produced_energy_total"
 CONF_DEVICE_COMPRESSOR_CURRENT_FREQ = "compressor_current_freq"
+CONF_DEVICE_OUTDOOR_OPERATION_MODE = "outdoor_operation_mode" 
+CONF_DEVICE_OPERATION_MODE = "operation_mode" 
 
 
 def preset_entry(name: str, value: int, displayName: str):
@@ -548,6 +550,20 @@ DEVICE_SCHEMA = cv.Schema(
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8427): cv.hex_int,
         }),
+        cv.Optional(CONF_DEVICE_OPERATION_MODE): sensor.sensor_schema( 
+            unit_of_measurement="", 
+            accuracy_decimals=0, 
+            icon="mdi:state-machine", 
+        ).extend({ 
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x4001): cv.hex_int, 
+        }), 
+        cv.Optional(CONF_DEVICE_OUTDOOR_OPERATION_MODE): sensor.sensor_schema( 
+            unit_of_measurement="", 
+            accuracy_decimals=0, 
+            icon="mdi:state-machine", 
+        ).extend({ 
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8001): cv.hex_int, 
+        }),         
     }
 )
 
@@ -752,6 +768,8 @@ async def to_code(config):
             CONF_DEVICE_WATTMETER_ACCUMULATED: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8416, s)),
             CONF_DEVICE_PRODUCED_ENERGY_ACTUAL: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8426, s)),
             CONF_DEVICE_PRODUCED_ENERGY_TOTAL: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8427, s)),
+            CONF_DEVICE_OPERATION_MODE: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x4001, s)), 
+            CONF_DEVICE_OUTDOOR_OPERATION_MODE: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8001, s)),             
         })
 
         # Iterate over the actions

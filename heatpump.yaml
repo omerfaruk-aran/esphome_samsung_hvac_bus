@@ -91,17 +91,23 @@ samsung_ac:
       room_temperature:
         name: "Indoor Temperature"
         id: room_temperature_20_00_00
+
       target_temperature:
         name: "Heat Pump target temperature"
         id: target_temperature_20_00_00
+
       power:
         name: "Heat Pump power"
         id: power_20_00_00
+
       mode:
         name: "Heat Pump mode"
         id: mode_20_00_00
 
-      room_temperature_offset: -1.4
+      operation_mode:
+        name: "Operation Mode"
+        id: operation_mode_10_00_00
+        message: 0x4001
 
       # DHW (Domestic Hot Water) custom sensors
       custom_sensor:
@@ -358,3 +364,4 @@ samsung_ac:
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
+
