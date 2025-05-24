@@ -109,7 +109,7 @@ CONF_PRESET_VALUE = "value"
 CONF_DEVICE_COMPRESSOR_TARGET_FREQUENCY = "compressor_target_frequency"
 CONF_DEVICE_FAN_POWER = "fan_power"
 CONF_DEVICE_TOTAL_POWER = "total_power"
-CONF_DEVICE_COMPRESSOR_CURRENT = "compressor_current"
+CONF_DEVICE_COMPRESSOR_COMMANDED_FREQUENCY = "compressor_commanded_frequency"
 CONF_DEVICE_PHASE_CURRENT = "phase_current"
 CONF_DEVICE_PHASE_VOLTAGE = "phase_voltage"
 CONF_DEVICE_PHASE_POWER = "phase_power"
@@ -409,7 +409,7 @@ DEVICE_SCHEMA = cv.Schema(
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x823d): cv.hex_int,
         }),
-        cv.Optional(CONF_DEVICE_COMPRESSOR_CURRENT): sensor.sensor_schema(
+        cv.Optional(CONF_DEVICE_COMPRESSOR_COMMANDED_FREQUENCY): sensor.sensor_schema(
             unit_of_measurement=UNIT_AMPERE,
             accuracy_decimals=2,
             device_class=DEVICE_CLASS_CURRENT,
@@ -735,7 +735,7 @@ async def to_code(config):
             CONF_DEVICE_COMPRESSOR_TARGET_FREQUENCY: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8237, s)),
             CONF_DEVICE_FAN_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8239, s)),
             CONF_DEVICE_TOTAL_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x823d, s)),
-            CONF_DEVICE_COMPRESSOR_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8236, s)),
+            CONF_DEVICE_COMPRESSOR_COMMANDED_FREQUENCY: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8236, s)),
             CONF_DEVICE_COMPRESSOR_CURRENT_FREQ: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8238, s)),
             CONF_DEVICE_PHASE_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82db, s)),
             CONF_DEVICE_PHASE_VOLTAGE: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x82de, s)),

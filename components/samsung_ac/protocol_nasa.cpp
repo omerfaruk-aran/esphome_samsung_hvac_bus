@@ -806,11 +806,11 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_evaporator_temp, temp);
                 break;
             }
-            case MessageNumber::Compressor_Current:
+            case MessageNumber::Compressor_Commanded_Frequency:
             {
                 double current = (double)message.value / 10.0; // Convert to Amperes
-                LOG_MESSAGE(Compressor_Current, current, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Current, current);
+                LOG_MESSAGE(Compressor_Commanded_Frequency, current, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Commanded_Frequency, current);
                 break;
             }
             case MessageNumber::Compressor_Target_Frequency:

@@ -244,7 +244,7 @@ namespace esphome
             Compressor_Target_Frequency = 0x8237,           // VAR, W, Outdoor unit
             Fan_Power = 0x8239,                  // VAR, W, Outdoor unit
             Total_Power = 0x823d,                // VAR, W, Outdoor unit
-            Compressor_Current = 0x8236,         // VAR, A, Outdoor unit
+            Compressor_Commanded_Frequency = 0x8236,         // VAR, A, Outdoor unit
             Compressor_Current_Freq = 0x8238,    // Compressor current frequency = 0x8238
             Phase_Current = 0x82db,              // VAR, A, Outdoor unit
             Phase_Voltage = 0x82de,              // VAR, V, Outdoor unit

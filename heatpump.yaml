@@ -253,9 +253,9 @@ samsung_ac:
         id: total_power_10_00_00
         message: 0x823d
 
-      compressor_current:
-        name: "Compressor Current"
-        id: compressor_current_10_00_00
+      compressor_commanded_frequency:
+        name: "Compressor Commanded Frequency"
+        id: compressor_commanded_frequency_10_00_00
         message: 0x8236
         unit_of_measurement: "A"
 
