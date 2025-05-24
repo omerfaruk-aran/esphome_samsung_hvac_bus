@@ -149,7 +149,6 @@ namespace esphome
             LVAR_in_energy_total = 0x4401,           // Total energy consumption
             LVAR_in_operation_hours = 0x4426,        // Total operation hours
             LVAR_in_water_heater_hours = 0x4427,     // Water heater operation hours
-            VAR_OUT_SENSOR_CT1 = 0x8217,
             LVAR_NM_OUT_SENSOR_VOLTAGE = 0x24fc,
             LVAR_OUT_CONTROL_WATTMETER_1UNIT = 0x8411,
             LVAR_OUT_CONTROL_WATTMETER_TOTAL_SUM = 0x8415,
@@ -168,8 +167,6 @@ namespace esphome
             ENUM_IN_OPERATION_POWER_ZONE2 = 0x411E,
             ENUM_IN_OPERATION_MODE_REAL = 0x4002,
             ENUM_IN_FAN_VENT_MODE = 0x4008,
-            ENUM_OUT_OPERATION_ODU_MODE = 0x8001,
-            ENUM_OUT_OPERATION_HEATCOOL = 0x8003,
             ENUM_OUT_LOAD_4WAY = 0x801a,
             VAR_IN_CAPACITY_REQUEST = 0x4211,
             // --- Unmapped/Unknown message numbers from logs ---

@@ -68,7 +68,8 @@
     "iomanip": "cpp",
     "ranges": "cpp",
     "span": "cpp",
-    "stop_token": "cpp"
+    "stop_token": "cpp",
+    "__node_handle": "cpp"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
