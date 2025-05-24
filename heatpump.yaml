@@ -274,6 +274,9 @@ samsung_ac:
         name: "Phase Voltage"
         id: phase_voltage_10_00_00
         message: 0x82de
+        unit_of_measurement: "V"
+        filters:
+          - multiply: 0.1
 
       phase_power:
         name: "Phase Power"
@@ -284,21 +287,33 @@ samsung_ac:
         name: "Power Factor"
         id: power_factor_10_00_00
         message: 0x82e8
+        unit_of_measurement: "pf"
+        filters:
+          - multiply: 0.01
 
       system_efficiency:
         name: "System Efficiency"
         id: system_efficiency_10_00_00
         message: 0x82ed
+        unit_of_measurement: "COP"
+        filters:
+          - multiply: 0.1
 
       system_capacity:
         name: "System Capacity"
         id: system_capacity_10_00_00
         message: 0x82f6
+        unit_of_measurement: "kW"
+        filters:
+          - multiply: 0.1
 
       total_energy_consumption:
         name: "Total Energy Consumption"
         id: total_energy_consumption_10_00_00
         message: 0x8408
+        unit_of_measurement: "kWh"
+        filters:
+          - multiply: 0.001
 
       operation_hours:
         name: "Operation Hours"
@@ -340,5 +355,6 @@ samsung_ac:
         - name: "Outdoor Air Sensor (Airout)"
           message: 0x8204
           id: outdoor_air_sensor_10_00_00
+          unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
