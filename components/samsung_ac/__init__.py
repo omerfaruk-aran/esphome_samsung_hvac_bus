@@ -106,7 +106,7 @@ CONF_PRESET_ENABLED = "enabled"
 CONF_PRESET_VALUE = "value"
 
 # Add these at the top with the other CONF_DEVICE_* constants
-CONF_DEVICE_COMPRESSOR_POWER = "compressor_power"
+CONF_DEVICE_COMPRESSOR_TARGET_FREQUENCY = "compressor_target_frequency"
 CONF_DEVICE_FAN_POWER = "fan_power"
 CONF_DEVICE_TOTAL_POWER = "total_power"
 CONF_DEVICE_COMPRESSOR_CURRENT = "compressor_current"
@@ -382,7 +382,7 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:gauge",
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-        cv.Optional(CONF_DEVICE_COMPRESSOR_POWER): sensor.sensor_schema(
+        cv.Optional(CONF_DEVICE_COMPRESSOR_TARGET_FREQUENCY): sensor.sensor_schema(
             unit_of_measurement=UNIT_WATT,
             accuracy_decimals=1,
             device_class=DEVICE_CLASS_POWER,
@@ -732,7 +732,7 @@ async def to_code(config):
 
         # Add new protocol message sensors to device_actions
         device_actions.update({
-            CONF_DEVICE_COMPRESSOR_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8237, s)),
+            CONF_DEVICE_COMPRESSOR_TARGET_FREQUENCY: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8237, s)),
             CONF_DEVICE_FAN_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8239, s)),
             CONF_DEVICE_TOTAL_POWER: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x823d, s)),
             CONF_DEVICE_COMPRESSOR_CURRENT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8236, s)),

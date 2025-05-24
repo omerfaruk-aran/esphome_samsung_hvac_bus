@@ -109,7 +109,7 @@ namespace esphome
             VAR_out_condenser_temp = 0x821e,         // Condenser temperature
             VAR_out_evaporator_temp = 0x8220,        // Evaporator temperature
             VAR_out_compressor_current = 0x8217,     // Compressor electrical current (0.1A)
-            VAR_out_compressor_power = 0x8223,       // Compressor power consumption
+            //VAR_out_compressor_power = 0x8223,       // Compressor power consumption
             VAR_out_fan_current = 0x8225,            // Fan current
             VAR_out_fan_power = 0x8227,              // Fan power consumption
             VAR_out_total_power = 0x8228,            // Total power consumption
@@ -244,7 +244,7 @@ namespace esphome
             ENUM_in_3way_valve_position = 0x4067, // 3-Way Diverter Valve Position
             VAR_in_circulation_pump_speed = 0x40C4, // Circulation Pump Speed (DHW Pump)
             // --- Outdoor Unit Power and Energy Messages (from user table) ---
-            Compressor_Power = 0x8237,           // VAR, W, Outdoor unit
+            Compressor_Target_Frequency = 0x8237,           // VAR, W, Outdoor unit
             Fan_Power = 0x8239,                  // VAR, W, Outdoor unit
             Total_Power = 0x823d,                // VAR, W, Outdoor unit
             Compressor_Current = 0x8236,         // VAR, A, Outdoor unit

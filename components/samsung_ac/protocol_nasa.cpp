@@ -813,11 +813,11 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Current, current);
                 break;
             }
-            case MessageNumber::Compressor_Power:
+            case MessageNumber::Compressor_Target_Frequency:
             {
                 double power = (double)message.value; // Already in Watts
-                LOG_MESSAGE(Compressor_Power, power, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Power, power);
+                LOG_MESSAGE(Compressor_Target_Frequency, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Target_Frequency, power);
                 break;
             }
             case MessageNumber::Fan_Current:

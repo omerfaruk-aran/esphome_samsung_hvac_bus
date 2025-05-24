@@ -237,10 +237,11 @@ samsung_ac:
         unit_of_measurement: "°C"
         id: water_target_temperature_10_00_00
 
-      compressor_power:
-        name: "Compressor Power"
-        id: compressor_power_10_00_00
+      compressor_target_frequency:
+        name: "Compressor Target Frequency"
+        id: compressor_target_freq_10_00_00
         message: 0x8237
+        unit_of_measurement: "Hz"
 
       fan_power:
         name: "Fan Power"
@@ -256,6 +257,7 @@ samsung_ac:
         name: "Compressor Current"
         id: compressor_current_10_00_00
         message: 0x8236
+        unit_of_measurement: "A"
 
       fan_current:
         name: "Fan Current"
