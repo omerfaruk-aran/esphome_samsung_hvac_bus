@@ -225,6 +225,7 @@ samsung_ac:
         accuracy_decimals: 1
         id: water_temperature_10_00_00
         message: 0x4237
+
       water_target_temperature:
         name: "Water Target Temperature"
         icon: "mdi:thermometer-water"
@@ -236,79 +237,98 @@ samsung_ac:
         name: "Compressor Power"
         id: compressor_power_10_00_00
         message: 0x8237
+
       fan_power:
         name: "Fan Power"
         id: fan_power_10_00_00
         message: 0x8239
+
       total_power:
         name: "Total Power"
         id: total_power_10_00_00
         message: 0x823d
+
       compressor_current:
         name: "Compressor Current"
         id: compressor_current_10_00_00
         message: 0x8236
+
       fan_current:
         name: "Fan Current"
         id: fan_current_10_00_00
         message: 0x8238
+
       phase_current:
         name: "Phase Current"
         id: phase_current_10_00_00
         message: 0x82db
+        
       phase_voltage:
         name: "Phase Voltage"
         id: phase_voltage_10_00_00
         message: 0x82de
+
       phase_power:
         name: "Phase Power"
         id: phase_power_10_00_00
         message: 0x82df
+
       power_factor:
         name: "Power Factor"
         id: power_factor_10_00_00
         message: 0x82e8
+
       system_efficiency:
         name: "System Efficiency"
         id: system_efficiency_10_00_00
         message: 0x82ed
+
       system_capacity:
         name: "System Capacity"
         id: system_capacity_10_00_00
         message: 0x82f6
+
       total_energy_consumption:
         name: "Total Energy Consumption"
         id: total_energy_consumption_10_00_00
         message: 0x8408
+
       operation_hours:
         name: "Operation Hours"
         id: operation_hours_10_00_00
         message: 0x840b
+
       compressor_hours:
         name: "Compressor Hours"
         id: compressor_hours_10_00_00
         message: 0x840c
+
       fan_hours:
         name: "Fan Hours"
         id: fan_hours_10_00_00
         message: 0x841a
+
       control_wattmeter_unit:
         name: "Control Wattmeter Unit"
         id: control_wattmeter_unit_10_00_00
         message: 0x8411
         accuracy_decimals: 1
+
       wattmeter_accumulated:
         name: "Wattmeter Accumulated"
         id: wattmeter_accumulated_10_00_00
         message: 0x8416
+
       produced_energy_actual:
         name: "Produced Energy Actual"
         id: produced_energy_actual_10_00_00
         message: 0x8426
+
       produced_energy_total:
         name: "Produced Energy Total"
         id: produced_energy_total_10_00_00
         message: 0x8427
+        
       custom_sensor:
         - name: "Outdoor Air Sensor (Airout)"
           message: 0x8204
