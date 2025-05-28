@@ -134,7 +134,7 @@ CAPABILITIES_SCHEMA = cv.Schema(
     }
 )
 
-CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema().extend(
+CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema(
     {
         cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int,
     }
@@ -150,17 +150,21 @@ def custom_sensor_schema(
     state_class: str = None,
     entity_category: str = None,
     raw_filters=[],
+    default_message: int = None, # Adding the default_message parameter
 ):
-    return sensor.sensor_schema(
+    schema =  sensor.sensor_schema(
         unit_of_measurement=unit_of_measurement,
         icon=icon,
         accuracy_decimals=accuracy_decimals,
         device_class=device_class,
         state_class=state_class,
         entity_category=entity_category,
-    ).extend(
+    )
+    if default_message is not None: # checking if we are adding default message to the key
+       schema = schema.extend({cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,})
+    
+    return schema.extend(  # regardless, we are going to add RAW_FILTERS
         {
-            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
             cv.Optional(
                 CONF_DEVICE_CUSTOM_RAW_FILTERS, default=raw_filters
             ): sensor.validate_filters,
@@ -266,12 +270,7 @@ DEVICE_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_ENERGY,
             state_class=STATE_CLASS_TOTAL_INCREASING,
             icon="mdi:counter",
-        ).extend(
-            {
-                cv.Optional(
-                    CONF_FILTERS, default=[{"multiply": 0.001}]
-                ): sensor.validate_filters
-            }
+            filters=[{"multiply": 0.001}],  # Filters are passed directly
         ),
         cv.Optional(CONF_DEVICE_OUT_SENSOR_CT1): sensor.sensor_schema(
             unit_of_measurement=UNIT_AMPERE,
@@ -279,24 +278,15 @@ DEVICE_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_CURRENT,
             state_class=STATE_CLASS_MEASUREMENT,
             icon="mdi:current-ac",
-        ).extend(
-            {
-                cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8217): cv.hex_int,
-                cv.Optional(
-                    CONF_FILTERS, default=[{"multiply": 0.1}]
-                ): sensor.validate_filters,
-            }
+            filters=[{"multiply": 0.1}],  # Filters are passed directly
         ),
         cv.Optional(CONF_DEVICE_OUT_SENSOR_VOLTAGE): sensor.sensor_schema(
+            message=0x24FC,  # Default custom message goes here
             unit_of_measurement=UNIT_VOLT,
             accuracy_decimals=1,
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
             icon="mdi:flash",
-        ).extend(
-            {
-                cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x24FC): cv.hex_int,
-            }
         ),
     }
 )
