@@ -110,6 +110,10 @@ samsung_ac:
         id: operation_mode_20_00_00
         message: 0x4001
 
+      indoor_eva_in_temperature:
+        name: "Evaporator Inlet Water Temperature"
+        id: evap_inlet_water_temperature_20_00_00
+
       # DHW (Domestic Hot Water) custom sensors
       custom_sensor:
         - name: "DHW Operation Enable (4065)"
@@ -195,19 +199,10 @@ samsung_ac:
           filters:
             - multiply: 0.1
 
-        - name: "Evaporator Inlet Water Temperature (4205)"
-          message: 0x4205
-          id: evap_inlet_water_temperature_20_00_00
-          unit_of_measurement: "°C"
-          filters:
-            - multiply: 0.1
-
         - name: "Evaporator Outlet Water Temperature (4206)"
           message: 0x4206
           id: evap_outlet_water_temperature_20_00_00
           unit_of_measurement: "°C"
-          filters:
-            - multiply: 0.1
 
     - address: "10.00.00" # Outdoor device address
       capabilities:
@@ -370,9 +365,13 @@ samsung_ac:
         message: 0x8426
 
       produced_energy_total:
-        name: "Produced Energy Total (8427)"
+        name: "Produced Energy Total (8404)"
         id: produced_energy_total_10_00_00
-        message: 0x8427
+        message: 0x8404
+        unit_of_measurement: "kWh"
+        accuracy_decimals: 0
+        filters:
+          - multiply: 0.001
 
       custom_sensor:
         - name: "Outdoor Air Sensor (Airout) (8204)"

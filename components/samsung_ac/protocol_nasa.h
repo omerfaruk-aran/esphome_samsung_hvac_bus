@@ -260,7 +260,7 @@ namespace esphome
             Wattmeter_Total_Sum = 0x8415,        // LVAR, kWh, Cumulative from unit start
             Wattmeter_Accumulated = 0x8416,      // LVAR, kWh, Accumulative sum over session
             Produced_Energy_Actual = 0x8426,     // LVAR, kWh, e.g., heating output
-            Produced_Energy_Total = 0x8427,      // LVAR, kWh, Output since install
+            Produced_Energy_Total = 0x8404,      // LVAR, kWh, Output since install
         };
 
         struct Address
