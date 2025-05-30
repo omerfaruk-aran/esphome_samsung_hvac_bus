@@ -53,6 +53,7 @@ uart:
 
 # Import custom component from GitHub
 external_components:
+#  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
   - source: ./components  # Point to the components directory
     components: [samsung_ac]
 
@@ -111,81 +112,97 @@ samsung_ac:
 
       # DHW (Domestic Hot Water) custom sensors
       custom_sensor:
-        - name: "DHW Operation Enable"
+        - name: "DHW Operation Enable (4065)"
           message: 0x4065
           id: dhw_operation_enable
-        - name: "DHW Mode Setting"
+
+        - name: "DHW Mode Setting (4066)"
           message: 0x4066
           id: dhw_mode_setting
-        - name: "DHW Setpoint Temperature"
+
+        - name: "DHW Setpoint Temperature (4235)"
           message: 0x4235
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
           id: dhw_setpoint_temp
-        - name: "DHW Tank Temperature"
+
+        - name: "DHW Tank Temperature (4236)"
           message: 0x4236
           unit_of_measurement: "°C"
           id: dhw_tank_temp
           filters:
             - multiply: 0.1
-        - name: "Backup Heater Status (DHW)"
+
+        - name: "Backup Heater Status (406C)"
           message: 0x406C
           id: dhw_backup_heater_status
-        - name: "Booster Heater Status (DHW)"
+
+        - name: "Booster Heater Status (4087)"
           message: 0x4087
           id: dhw_booster_heater_status
-        - name: "3-Way Valve Position"
+
+        - name: "3-Way Valve Position (4067)"
           message: 0x4067
           id: dhw_three_way_valve_position
-        - name: "Circulation Pump Speed"
+
+        - name: "Circulation Pump Speed (40C4)"
           message: 0x40C4
           unit_of_measurement: "%"
           id: dhw_circulation_pump_speed
-        - name: "Water Flow Rate"
+
+        - name: "Water Flow Rate (42E9)"
           message: 0x42E9
           unit_of_measurement: "L/min"
           id: dhw_water_flow_rate
-        - name: "Heat Pump Operation Mode"
+
+        - name: "Heat Pump Operation Mode (8001)"
           message: 0x8001
           id: dhw_heat_pump_operation_mode
-        - name: "Water Temperature (Heating Loop)"
+
+        - name: "Water Temperature (Heating Loop) (4236)"
           message: 0x4236
           id: water_temperature_20_00_00
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
-        - name: "DHW Tank Temperature"
+
+        - name: "DHW Tank Temperature (4237)"
           message: 0x4237
           id: dhw_tank_temperature_20_00_00
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
-        - name: "Water Heater Temperature (Booster)"
+
+        - name: "Water Heater Temperature (Booster) (42E9)"
           message: 0x42E9
           id: water_heater_temperature_20_00_00
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
-        - name: "Water Outlet Target Temperature"
+
+        - name: "Water Outlet Target Temperature (4247)"
           message: 0x4247
           id: water_outlet_target_temperature_20_00_00
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
-        - name: "DHW Target Temperature"
+
+        - name: "DHW Target Temperature (4235)"
           message: 0x4235
           id: dhw_target_temperature_20_00_00
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
-        - name: "Evaporator Inlet Water Temperature"
+
+        - name: "Evaporator Inlet Water Temperature (4205)"
           message: 0x4205
           id: evap_inlet_water_temperature_20_00_00
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
-        - name: "Evaporator Outlet Water Temperature"
+
+        - name: "Evaporator Outlet Water Temperature (4206)"
           message: 0x4206
           id: evap_outlet_water_temperature_20_00_00
           unit_of_measurement: "°C"
@@ -221,13 +238,13 @@ samsung_ac:
         id: power_10_00_00
 
       error_code:
-        name: "Error Code"
+        name: "Error Code (8235)"
         icon: "mdi:alert-circle"
         id: error_code_10_00_00
         message: 0x8235
-        
+
       water_temperature:
-        name: "Water Temperature"
+        name: "Water Temperature (4237)"
         icon: "mdi:thermometer-water"
         device_class: temperature
         state_class: measurement
@@ -237,47 +254,47 @@ samsung_ac:
         message: 0x4237
 
       water_target_temperature:
-        name: "Water Target Temperature"
+        name: "Water Target Temperature (4247)"
         icon: "mdi:thermometer-water"
         device_class: temperature
         unit_of_measurement: "°C"
         id: water_target_temperature_10_00_00
 
       compressor_target_frequency:
-        name: "Compressor Target Frequency"
+        name: "Compressor Target Frequency (8237)"
         id: compressor_target_freq_10_00_00
         message: 0x8237
         unit_of_measurement: "Hz"
 
       fan_power:
-        name: "Fan Power"
+        name: "Fan Power (8239)"
         id: fan_power_10_00_00
         message: 0x8239
 
       total_power:
-        name: "Total Power"
+        name: "Total Power (823D)"
         id: total_power_10_00_00
         message: 0x823d
 
       compressor_commanded_frequency:
-        name: "Compressor Commanded Frequency"
+        name: "Compressor Commanded Frequency (8236)"
         id: compressor_commanded_frequency_10_00_00
         message: 0x8236
         unit_of_measurement: "A"
 
       compressor_current_freq:
-        name: "Compressor Current Frequency"
+        name: "Compressor Current Frequency (8238)"
         id: compressor_current_freq_10_00_00
         message: 0x8238
         unit_of_measurement: "Hz"
 
       phase_current:
-        name: "Phase Current"
+        name: "Phase Current (82DB)"
         id: phase_current_10_00_00
         message: 0x82db
         
       phase_voltage:
-        name: "Phase Voltage"
+        name: "Phase Voltage (82DE)"
         id: phase_voltage_10_00_00
         message: 0x82de
         unit_of_measurement: "V"
@@ -285,12 +302,12 @@ samsung_ac:
           - multiply: 0.1
 
       phase_power:
-        name: "Phase Power"
+        name: "Phase Power (82DF)"
         id: phase_power_10_00_00
         message: 0x82df
 
       power_factor:
-        name: "Power Factor"
+        name: "Power Factor (82E8)"
         id: power_factor_10_00_00
         message: 0x82e8
         unit_of_measurement: "pf"
@@ -298,15 +315,14 @@ samsung_ac:
           - multiply: 0.01
 
       system_efficiency:
-        name: "System Efficiency"
+        name: "System Efficiency (82ED)"
         id: system_efficiency_10_00_00
         message: 0x82ed
         unit_of_measurement: "COP"
-        filters:
-          - multiply: 0.1
+        accuracy_decimals: 4
 
       system_capacity:
-        name: "System Capacity"
+        name: "System Capacity (82F6)"
         id: system_capacity_10_00_00
         message: 0x82f6
         unit_of_measurement: "kW"
@@ -314,7 +330,7 @@ samsung_ac:
           - multiply: 0.1
 
       total_energy_consumption:
-        name: "Total Energy Consumption"
+        name: "Total Energy Consumption (8408)"
         id: total_energy_consumption_10_00_00
         message: 0x8408
         unit_of_measurement: "kWh"
@@ -323,46 +339,51 @@ samsung_ac:
           - multiply: 0.001
 
       operation_hours:
-        name: "Operation Hours"
+        name: "Operation Hours (840B)"
         id: operation_hours_10_00_00
         message: 0x840b
 
       compressor_hours:
-        name: "Compressor Hours"
+        name: "Compressor Hours (840C)"
         id: compressor_hours_10_00_00
         message: 0x840c
 
       fan_hours:
-        name: "Fan Hours"
+        name: "Fan Hours (841A)"
         id: fan_hours_10_00_00
         message: 0x841a
 
       control_wattmeter_unit:
-        name: "Control Wattmeter Unit"
+        name: "Control Wattmeter Unit (8411)"
         id: control_wattmeter_unit_10_00_00
         message: 0x8411
         accuracy_decimals: 1
 
       wattmeter_accumulated:
-        name: "Wattmeter Accumulated"
+        name: "Wattmeter Accumulated (8416)"
         id: wattmeter_accumulated_10_00_00
         message: 0x8416
 
       produced_energy_actual:
-        name: "Produced Energy Actual"
+        name: "Produced Energy Actual (8426)"
         id: produced_energy_actual_10_00_00
         message: 0x8426
 
       produced_energy_total:
-        name: "Produced Energy Total"
+        name: "Produced Energy Total (8427)"
         id: produced_energy_total_10_00_00
         message: 0x8427
 
       custom_sensor:
-        - name: "Outdoor Air Sensor (Airout)"
+        - name: "Outdoor Air Sensor (Airout) (8204)"
           message: 0x8204
           id: outdoor_air_sensor_10_00_00
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
-
+            
+        - name: "Defrost Mode (8031)"
+          id: defrost_mode_10_00_00
+          message: 0x8031
+          icon: "mdi:snowflake-melt"
+          unit_of_measurement: "mode"
