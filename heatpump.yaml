@@ -52,18 +52,16 @@ uart:
 ## SAMSUNG AC CONFIGURATION
 
 # Import custom component from GitHub
-external_components:
-  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
-    components: [samsung_ac]
+external_components: !include external_components.yaml
 
 # Configuration of AC component
 samsung_ac:
   id: samsung_ac_controller
   uart_id: uart_bus
-  debug_mqtt_host: ""
-  debug_mqtt_port: 1883
-  debug_mqtt_username: ""
-  debug_mqtt_password: ""
+  debug_mqtt_host: !secret mqtt_host
+  debug_mqtt_port: !secret mqtt_port
+  debug_mqtt_username: !secret mqtt_username
+  debug_mqtt_password: !secret mqtt_password
   
   # When enabled (set to true), this option will log the messages associated with undefined codes on the device. This is useful for debugging and identifying any unexpected or unknown codes that the device may receive during operation.
   debug_log_undefined_messages: true
