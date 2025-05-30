@@ -191,6 +191,10 @@ samsung_ac:
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
+        - name: "Indoor Power Consumption"
+          id: in_power_consumption_20_00_00
+          message: 0x427f
+          unit_of_measurement: "W"
 
     - address: "10.00.00" # Outdoor device address
       capabilities:

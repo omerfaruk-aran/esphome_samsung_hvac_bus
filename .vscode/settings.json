@@ -69,7 +69,9 @@
     "ranges": "cpp",
     "span": "cpp",
     "stop_token": "cpp",
-    "__node_handle": "cpp"
+    "__node_handle": "cpp",
+    "__bit_reference": "cpp",
+    "locale": "cpp"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
