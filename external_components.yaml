@@ -1,3 +1,0 @@
-# Import custom component from GitHub
-- source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
-  components: [samsung_ac] 

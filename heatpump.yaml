@@ -52,7 +52,9 @@ uart:
 ## SAMSUNG AC CONFIGURATION
 
 # Import custom component from GitHub
-external_components: !include external_components.yaml
+external_components:
+  - source: !source component_source  # Will be either local path or GitHub URL
+    components: [samsung_ac]
 
 # Configuration of AC component
 samsung_ac:
