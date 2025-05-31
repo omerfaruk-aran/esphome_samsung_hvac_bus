@@ -92,6 +92,7 @@ samsung_ac:
       room_temperature:
         name: "Indoor Temperature (4203)"
         id: room_temperature_20_00_00
+        accuracy_decimals: 1
 
       target_temperature:
         name: "Heat Pump target temperature (4201)"
@@ -113,30 +114,32 @@ samsung_ac:
       indoor_eva_in_temperature:
         name: "Evaporator Inlet Water Temperature (4205)"
         id: evap_inlet_water_temperature_20_00_00
+        accuracy_decimals: 1
         #message: 0x4205
 
       indoor_eva_out_temperature:
         name: "Evaporator Outlet Water Temperature (4206)"
         id: evap_outlet_water_temperature_20_00_00
+        accuracy_decimals: 1
         #message: 0x4206
 
       water_temperature:
         name: "Water Temperature (Heating Loop) (4236)"
         id: water_temperature_20_00_00
+        accuracy_decimals: 1
         message: 0x4236
 
-      water_outlet_target:
-        name: "Water Outlet Target Temperature (4247)"
-        id: water_outlet_target_temperature_20_00_00
-        #message: 0x4247
-
-      water_target_temperature:
-        name: "DHW Target Temperature (4235)"
-        id: dhw_target_temperature_20_00_00
-        #message: 0x4235
-
-      # Custom sensors
+      # Indoor Custom sensors
       custom_sensor:
+
+        - name: "Water Outlet Target Temperature (4247)"
+          message: 0x4247
+          id: water_outlet_target_temperature_20_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
         - name: "DHW Operation Enable (4065)"
           message: 0x4065
           id: dhw_operation_enable
@@ -145,9 +148,10 @@ samsung_ac:
           message: 0x4066
           id: dhw_mode_setting
 
-        - name: "DHW Setpoint Temperature (4235)"
+        - name: "DHW Target Temperature (4235)"
           message: 0x4235
           unit_of_measurement: "°C"
+          accuracy_decimals: 1
           filters:
             - multiply: 0.1
           id: dhw_setpoint_temp
@@ -169,10 +173,15 @@ samsung_ac:
           unit_of_measurement: "%"
           id: dhw_circulation_pump_speed
 
-        - name: "Water Flow Rate (42E9)"
-          message: 0x42E9
+        - name: "Water Flow Rate (4238)"
+          message: 0x4238
           unit_of_measurement: "L/min"
           id: dhw_water_flow_rate
+
+        - name: "Water Pressure (hPa) (4239)"
+          message: 0x4239
+          unit_of_measurement: "hPa"
+          id: dhw_water_pressure
 
         - name: "Heat Pump Operation Mode (8001)"
           message: 0x8001
@@ -182,13 +191,15 @@ samsung_ac:
           message: 0x4237
           id: dhw_tank_temperature_20_00_00
           unit_of_measurement: "°C"
+          accuracy_decimals: 1
           filters:
             - multiply: 0.1
 
         - name: "Water Heater Temperature (Booster) (42E9)"
           message: 0x42E9
           id: water_heater_temperature_20_00_00
-          unit_of_measurement: "°C"
+          unit_of_measurement: "°C" 
+          accuracy_decimals: 1
           filters:
             - multiply: 0.1
 
@@ -225,16 +236,6 @@ samsung_ac:
         icon: "mdi:alert-circle"
         id: error_code_10_00_00
         message: 0x8235
-
-      water_temperature:
-        name: "Water Temperature (4237)"
-        icon: "mdi:thermometer-water"
-        device_class: temperature
-        state_class: measurement
-        unit_of_measurement: "°C"
-        accuracy_decimals: 1
-        id: water_temperature_10_00_00
-        message: 0x4237
 
       compressor_target_frequency:
         name: "Compressor Target Frequency (8237)"
@@ -354,6 +355,7 @@ samsung_ac:
         filters:
           - multiply: 0.001
 
+      # Outdoor custom sensors
       custom_sensor:
         - name: "Outdoor Air Sensor (Airout) (8204)"
           message: 0x8204
