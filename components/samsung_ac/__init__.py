@@ -128,6 +128,23 @@ CONF_DEVICE_COMPRESSOR_CURRENT_FREQ = "compressor_current_freq"
 CONF_DEVICE_OUTDOOR_OPERATION_MODE = "outdoor_operation_mode" 
 CONF_DEVICE_OPERATION_MODE = "operation_mode" 
 
+# Add new constants for indoor custom sensors
+CONF_DEVICE_OUTDOOR_AIR_SENSOR = "outdoor_air_sensor"
+CONF_DEVICE_DEFROST_MODE = "defrost_mode"
+CONF_DEVICE_WATER_OUTLET_TARGET_TEMP = "water_outlet_target_temperature"
+CONF_DEVICE_DHW_OPERATION_ENABLE = "dhw_operation_enable"
+CONF_DEVICE_DHW_MODE_SETTING = "dhw_mode_setting"
+CONF_DEVICE_DHW_TARGET_TEMP = "dhw_target_temperature"
+CONF_DEVICE_BACKUP_HEATER_STATUS = "backup_heater_status"
+CONF_DEVICE_BOOSTER_HEATER_STATUS = "booster_heater_status"
+CONF_DEVICE_THREE_WAY_VALVE_POSITION = "three_way_valve_position"
+CONF_DEVICE_CIRCULATION_PUMP_SPEED = "circulation_pump_speed"
+CONF_DEVICE_WATER_FLOW_RATE = "water_flow_rate"
+CONF_DEVICE_WATER_PRESSURE = "water_pressure"
+CONF_DEVICE_HEAT_PUMP_OPERATION_MODE = "heat_pump_operation_mode"
+CONF_DEVICE_DHW_TANK_TEMPERATURE = "dhw_tank_temperature"
+CONF_DEVICE_WATER_HEATER_TEMPERATURE = "water_heater_temperature"
+
 
 def preset_entry(name: str, value: int, displayName: str):
     return (
@@ -527,24 +544,6 @@ DEVICE_SCHEMA = cv.Schema(
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8416): cv.hex_int,
         }),
-        cv.Optional(CONF_DEVICE_PRODUCED_ENERGY_ACTUAL): sensor.sensor_schema(
-            unit_of_measurement="kWh",
-            accuracy_decimals=3,
-            device_class=DEVICE_CLASS_ENERGY,
-            state_class=STATE_CLASS_TOTAL_INCREASING,
-            icon="mdi:counter",
-        ).extend({
-            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8426): cv.hex_int,
-        }),
-        cv.Optional(CONF_DEVICE_PRODUCED_ENERGY_TOTAL): sensor.sensor_schema(
-            unit_of_measurement="kWh",
-            accuracy_decimals=3,
-            device_class=DEVICE_CLASS_ENERGY,
-            state_class=STATE_CLASS_TOTAL_INCREASING,
-            icon="mdi:counter",
-        ).extend({
-            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8404): cv.hex_int,
-        }),
         cv.Optional(CONF_DEVICE_OPERATION_MODE): sensor.sensor_schema( 
             unit_of_measurement="", 
             accuracy_decimals=0, 
@@ -563,18 +562,26 @@ DEVICE_SCHEMA = cv.Schema(
 )
 
 CUSTOM_SENSOR_KEYS = [
-    CONF_DEVICE_WATER_TEMPERATURE,
-    CONF_DEVICE_ROOM_HUMIDITY,
-    CONF_DEVICE_PIPE_IN3_TEMPERATURE,
-    CONF_DEVICE_PIPE_IN4_TEMPERATURE,
-    CONF_DEVICE_PIPE_IN5_TEMPERATURE,
-    CONF_DEVICE_PIPE_OUT1_TEMPERATURE,
-    CONF_DEVICE_WATTMETER_1UNIT,
-    CONF_DEVICE_WATTMETER_TOTAL_SUM,
-    CONF_DEVICE_WATTMETER_TOTAL_SUM_ACCUM,
-    CONF_DEVICE_WATTMETER_TOTAL_PRODUCED,
-    CONF_DEVICE_WATTMETER_ACTUAL_PRODUCED,
-    CONF_DEVICE_CAPACITY_REQUEST,
+    # Outdoor custom sensors
+    CONF_DEVICE_OUTDOOR_AIR_SENSOR,  # 0x8204
+    CONF_DEVICE_DEFROST_MODE,        # 0x8031
+    
+    # Indoor custom sensors
+    CONF_DEVICE_WATER_OUTLET_TARGET_TEMP,  # 0x4247
+    CONF_DEVICE_DHW_OPERATION_ENABLE,      # 0x4065
+    CONF_DEVICE_DHW_MODE_SETTING,          # 0x4066
+    CONF_DEVICE_DHW_TARGET_TEMP,           # 0x4235
+    CONF_DEVICE_BACKUP_HEATER_STATUS,      # 0x406C
+    CONF_DEVICE_BOOSTER_HEATER_STATUS,     # 0x4087
+    CONF_DEVICE_THREE_WAY_VALVE_POSITION,  # 0x4067
+    CONF_DEVICE_CIRCULATION_PUMP_SPEED,    # 0x40C4
+    CONF_DEVICE_WATER_FLOW_RATE,           # 0x4238
+    CONF_DEVICE_WATER_PRESSURE,            # 0x4239
+    CONF_DEVICE_HEAT_PUMP_OPERATION_MODE,  # 0x8001
+    CONF_DEVICE_DHW_TANK_TEMPERATURE,      # 0x4237
+    CONF_DEVICE_WATER_HEATER_TEMPERATURE,  # 0x42E9
+    CONF_DEVICE_PRODUCED_ENERGY_ACTUAL,    # 0x8426
+    CONF_DEVICE_PRODUCED_ENERGY_TOTAL,     # 0x8404
 ]
 
 CONF_DEVICES = "devices"
@@ -761,8 +768,6 @@ async def to_code(config):
             CONF_DEVICE_CONTROL_WATTMETER_UNIT: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8411, s)),
             CONF_DEVICE_WATTMETER_TOTAL_SUM: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8415, s)),
             CONF_DEVICE_WATTMETER_ACCUMULATED: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8416, s)),
-            CONF_DEVICE_PRODUCED_ENERGY_ACTUAL: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8426, s)),
-            CONF_DEVICE_PRODUCED_ENERGY_TOTAL: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8404, s)),
             CONF_DEVICE_OPERATION_MODE: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x4001, s)), 
             CONF_DEVICE_OUTDOOR_OPERATION_MODE: (sensor.new_sensor, lambda s: var_dev.add_custom_sensor(0x8001, s)),             
         })

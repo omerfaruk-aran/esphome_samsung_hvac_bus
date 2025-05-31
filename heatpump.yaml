@@ -53,8 +53,8 @@ uart:
 
 # Import custom component from GitHub
 external_components:
-  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
-#  - source: ./components  # Point to the components directory
+#  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
+  - source: ./components  # Point to the components directory
     components: [samsung_ac]
 
 # Configuration of AC component
@@ -310,8 +310,6 @@ samsung_ac:
         message: 0x8408
         unit_of_measurement: "kWh"
         accuracy_decimals: 6
-        filters:
-          - multiply: 0.001
 
       operation_hours:
         name: "Operation Hours (840B)"
@@ -339,31 +337,6 @@ samsung_ac:
         id: wattmeter_accumulated_10_00_00
         message: 0x8416
 
-      produced_energy_actual:
-        name: "Produced Energy Actual (8426)"
-        id: produced_energy_actual_10_00_00
-        message: 0x8426
-        unit_of_measurement: "kWh"
-        accuracy_decimals: 3
-        device_class: energy
-        state_class: total_increasing
-        icon: "mdi:counter"
-        filters:
-          - multiply: 0.001
-
-      produced_energy_total:
-        name: "Produced Energy Total (8404)"
-        id: produced_energy_total_10_00_00
-        message: 0x8404
-        unit_of_measurement: "kWh"
-        accuracy_decimals: 3
-        device_class: energy
-        state_class: total_increasing
-        icon: "mdi:counter"
-        filters:
-          - multiply: 0.001
-
-      # Outdoor custom sensors
       custom_sensor:
         - name: "Outdoor Air Sensor (Airout) (8204)"
           message: 0x8204
@@ -377,3 +350,25 @@ samsung_ac:
           message: 0x8031
           icon: "mdi:snowflake-melt"
           unit_of_measurement: "mode"
+
+        - name: "Produced Energy Actual (8426)"
+          id: produced_energy_actual_10_00_00
+          message: 0x8426
+          unit_of_measurement: "kWh"
+          accuracy_decimals: 3
+          device_class: energy
+          state_class: total_increasing
+          icon: "mdi:counter"
+          filters:
+            - multiply: 0.001
+
+        - name: "Produced Energy Total (8404)"
+          id: produced_energy_total_10_00_00
+          message: 0x8404
+          unit_of_measurement: "kWh"
+          accuracy_decimals: 3
+          device_class: energy
+          state_class: total_increasing
+          icon: "mdi:counter"
+          filters:
+            - multiply: 0.001
