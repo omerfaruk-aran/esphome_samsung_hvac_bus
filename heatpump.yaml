@@ -303,8 +303,6 @@ samsung_ac:
         id: system_capacity_10_00_00
         message: 0x82f6
         unit_of_measurement: "kW"
-        filters:
-          - multiply: 0.1
 
       total_energy_consumption:
         name: "Total Energy Consumption (8408)"
@@ -345,13 +343,23 @@ samsung_ac:
         name: "Produced Energy Actual (8426)"
         id: produced_energy_actual_10_00_00
         message: 0x8426
+        unit_of_measurement: "kWh"
+        accuracy_decimals: 3
+        device_class: energy
+        state_class: total_increasing
+        icon: "mdi:counter"
+        filters:
+          - multiply: 0.001
 
       produced_energy_total:
         name: "Produced Energy Total (8404)"
         id: produced_energy_total_10_00_00
         message: 0x8404
         unit_of_measurement: "kWh"
-        accuracy_decimals: 0
+        accuracy_decimals: 3
+        device_class: energy
+        state_class: total_increasing
+        icon: "mdi:counter"
         filters:
           - multiply: 0.001
 

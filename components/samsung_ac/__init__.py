@@ -439,7 +439,6 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:current-ac",
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82db): cv.hex_int,
-            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
         }),
         cv.Optional(CONF_DEVICE_PHASE_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,
@@ -465,7 +464,6 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:alpha-f-circle",
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82e8): cv.hex_int,
-            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.01}]): sensor.validate_filters,
         }),
         cv.Optional(CONF_DEVICE_SYSTEM_EFFICIENCY): sensor.sensor_schema(
             unit_of_measurement="",
@@ -473,7 +471,6 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:percent",
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82ed): cv.hex_int,
-            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
         }),
         cv.Optional(CONF_DEVICE_SYSTEM_CAPACITY): sensor.sensor_schema(
             unit_of_measurement="kW",
@@ -481,7 +478,6 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:gauge",
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x82f6): cv.hex_int,
-            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.1}]): sensor.validate_filters,
         }),
         cv.Optional(CONF_DEVICE_TOTAL_ENERGY_CONSUMPTION): sensor.sensor_schema(
             unit_of_measurement="kWh",
@@ -491,7 +487,6 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:counter",
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8408): cv.hex_int,
-            cv.Optional(CONF_FILTERS, default=[{"multiply": 0.001}]): sensor.validate_filters,
         }),
         cv.Optional(CONF_DEVICE_OPERATION_HOURS): sensor.sensor_schema(
             unit_of_measurement="h",

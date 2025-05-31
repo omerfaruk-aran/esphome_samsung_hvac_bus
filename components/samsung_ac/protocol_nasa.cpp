@@ -951,9 +951,11 @@ namespace esphome
                 break;
             }
             case MessageNumber::VAR_in_water_valve:
+            {
                 LOG_MESSAGE(VAR_in_water_valve, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_valve, message.value);
                 break;
+            }
             case MessageNumber::VAR_in_power_consumption:
             {
                 double power = (double)message.value; // Already in Watts
@@ -1120,6 +1122,34 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_circulation_pump_speed, percent);
                 break;
             }
+            case MessageNumber::Produced_Energy_Actual:
+            {
+                double energy = (double)message.value / 1000.0; // Convert to kWh
+                LOG_MESSAGE(Produced_Energy_Actual, energy, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::Produced_Energy_Actual, energy);
+                break;
+            }
+            case MessageNumber::Produced_Energy_Total:
+            {
+                double energy = (double)message.value / 1000.0; // Convert to kWh
+                LOG_MESSAGE(Produced_Energy_Total, energy, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::Produced_Energy_Total, energy);
+                break;
+            }
+            case MessageNumber::LVAR_OUT_CONTROL_WATTMETER_ACTUAL_PRODUCED:
+            {
+                double energy = (double)message.value / 1000.0; // Convert to kWh
+                LOG_MESSAGE(LVAR_OUT_CONTROL_WATTMETER_ACTUAL_PRODUCED, energy, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_OUT_CONTROL_WATTMETER_ACTUAL_PRODUCED, energy);
+                break;
+            }
+            case MessageNumber::LVAR_OUT_CONTROL_WATTMETER_TOTAL_PRODUCED:
+            {
+                double energy = (double)message.value / 1000.0; // Convert to kWh
+                LOG_MESSAGE(LVAR_OUT_CONTROL_WATTMETER_TOTAL_PRODUCED, energy, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_OUT_CONTROL_WATTMETER_TOTAL_PRODUCED, energy);
+                break;
+            }
             default:
             {
                 double value = 0;
@@ -1150,10 +1180,10 @@ namespace esphome
                     LOG_MESSAGE(total_produced_energy, value, source, dest);
                     break;
 
-                case 0x8426:
-                    value = (double)message.value;
-                    LOG_MESSAGE(actual_produced_energy, value, source, dest);
-                    break;
+                case 0x8426: 
+                    value = (double)message.value; 
+                    LOG_MESSAGE(actual_produced_energy, value, source, dest); 
+                    break; 
 
                 case 0x8415:
                     value = (double)message.value;
@@ -1168,7 +1198,7 @@ namespace esphome
                 default:
                     if (debug_log_undefined_messages)
                     {
-                        ESP_LOGW(TAG, "Undefined s:%s d:%s %s", source.c_str(), dest.c_str(), message.to_string().c_str());
+                        ESP_LOGW(TAG, "CARLTON Undefined s:%s d:%s %s", source.c_str(), dest.c_str(), message.to_string().c_str());
                     }
                     break;
                 }
