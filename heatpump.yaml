@@ -53,8 +53,8 @@ uart:
 
 # Import custom component from GitHub
 external_components:
-#  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
-  - source: ./components  # Point to the components directory
+  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
+#  - source: ./components  # Point to the components directory
     components: [samsung_ac]
 
 # Configuration of AC component
@@ -86,35 +86,56 @@ samsung_ac:
         vertical_swing: false
 
       climate:
-        name: "Heat Pump climate"
+        name: "Heat Pump climate (4001)"
         id: climate_20_00_00
 
       room_temperature:
-        name: "Indoor Temperature"
+        name: "Indoor Temperature (4203)"
         id: room_temperature_20_00_00
 
       target_temperature:
-        name: "Heat Pump target temperature"
+        name: "Heat Pump target temperature (4201)"
         id: target_temperature_20_00_00
 
       power:
-        name: "Heat Pump power"
+        name: "Heat Pump power (4000)"
         id: power_20_00_00
 
       mode:
-        name: "Heat Pump mode"
+        name: "Heat Pump mode (4001)"
         id: mode_20_00_00
 
       operation_mode:
-        name: "Operation Mode"
+        name: "Operation Mode (4001)"
         id: operation_mode_20_00_00
         message: 0x4001
 
       indoor_eva_in_temperature:
-        name: "Evaporator Inlet Water Temperature"
+        name: "Evaporator Inlet Water Temperature (4205)"
         id: evap_inlet_water_temperature_20_00_00
+        #message: 0x4205
 
-      # DHW (Domestic Hot Water) custom sensors
+      indoor_eva_out_temperature:
+        name: "Evaporator Outlet Water Temperature (4206)"
+        id: evap_outlet_water_temperature_20_00_00
+        #message: 0x4206
+
+      water_temperature:
+        name: "Water Temperature (Heating Loop) (4236)"
+        id: water_temperature_20_00_00
+        message: 0x4236
+
+      water_outlet_target:
+        name: "Water Outlet Target Temperature (4247)"
+        id: water_outlet_target_temperature_20_00_00
+        #message: 0x4247
+
+      water_target_temperature:
+        name: "DHW Target Temperature (4235)"
+        id: dhw_target_temperature_20_00_00
+        #message: 0x4235
+
+      # Custom sensors
       custom_sensor:
         - name: "DHW Operation Enable (4065)"
           message: 0x4065
@@ -130,13 +151,6 @@ samsung_ac:
           filters:
             - multiply: 0.1
           id: dhw_setpoint_temp
-
-        - name: "DHW Tank Temperature (4236)"
-          message: 0x4236
-          unit_of_measurement: "°C"
-          id: dhw_tank_temp
-          filters:
-            - multiply: 0.1
 
         - name: "Backup Heater Status (406C)"
           message: 0x406C
@@ -164,13 +178,6 @@ samsung_ac:
           message: 0x8001
           id: dhw_heat_pump_operation_mode
 
-        - name: "Water Temperature (Heating Loop) (4236)"
-          message: 0x4236
-          id: water_temperature_20_00_00
-          unit_of_measurement: "°C"
-          filters:
-            - multiply: 0.1
-
         - name: "DHW Tank Temperature (4237)"
           message: 0x4237
           id: dhw_tank_temperature_20_00_00
@@ -184,25 +191,6 @@ samsung_ac:
           unit_of_measurement: "°C"
           filters:
             - multiply: 0.1
-
-        - name: "Water Outlet Target Temperature (4247)"
-          message: 0x4247
-          id: water_outlet_target_temperature_20_00_00
-          unit_of_measurement: "°C"
-          filters:
-            - multiply: 0.1
-
-        - name: "DHW Target Temperature (4235)"
-          message: 0x4235
-          id: dhw_target_temperature_20_00_00
-          unit_of_measurement: "°C"
-          filters:
-            - multiply: 0.1
-
-        - name: "Evaporator Outlet Water Temperature (4206)"
-          message: 0x4206
-          id: evap_outlet_water_temperature_20_00_00
-          unit_of_measurement: "°C"
 
     - address: "10.00.00" # Outdoor device address
       capabilities:
@@ -247,13 +235,6 @@ samsung_ac:
         accuracy_decimals: 1
         id: water_temperature_10_00_00
         message: 0x4237
-
-      water_target_temperature:
-        name: "Water Target Temperature (4247)"
-        icon: "mdi:thermometer-water"
-        device_class: temperature
-        unit_of_measurement: "°C"
-        id: water_target_temperature_10_00_00
 
       compressor_target_frequency:
         name: "Compressor Target Frequency (8237)"
