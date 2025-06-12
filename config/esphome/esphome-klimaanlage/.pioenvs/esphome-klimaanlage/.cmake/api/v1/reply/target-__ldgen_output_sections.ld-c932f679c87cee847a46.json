@@ -1,0 +1,185 @@
+{
+	"backtrace" : 5,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"__ldgen_process_template",
+			"target_linker_script",
+			"include"
+		],
+		"files" : 
+		[
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/ldgen.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/utilities.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/ld/ld.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 3,
+				"line" : 59,
+				"parent" : 0
+			},
+			{
+				"file" : 2,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 18,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 148,
+				"parent" : 3
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 81,
+				"parent" : 4
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "__idf_esp_ringbuf::@ad62994b1ce98b81017d"
+		},
+		{
+			"id" : "__idf___pio_env::@8ed72ffb2edf9d360e6d"
+		},
+		{
+			"id" : "__idf_bt::@0a9ab9982b985d43ed2a"
+		},
+		{
+			"id" : "__idf_cbor::@54bec30243cbf65f6214"
+		},
+		{
+			"id" : "__idf_unity::@fec746937506b5690992"
+		},
+		{
+			"id" : "__idf_cmock::@38f9eb59693b7394f54c"
+		},
+		{
+			"id" : "__idf_esp_hid::@15df40e16a5d8775dd9b"
+		},
+		{
+			"id" : "__idf_esp_adc_cal::@dc736dc1d836ef36c9a5"
+		},
+		{
+			"id" : "__idf_esp_lcd::@d5a84597e1633c9ab0d3"
+		},
+		{
+			"id" : "__idf_mqtt::@c1ab2c6a99226d1f4b56"
+		},
+		{
+			"id" : "__idf_freemodbus::@de63ca74a1babc26b29c"
+		},
+		{
+			"id" : "__idf_fatfs::@75ac1d9b25dacc8cc9e7"
+		},
+		{
+			"id" : "__idf_jsmn::@88dec008f06e3af609d0"
+		},
+		{
+			"id" : "__idf_json::@c78a8bdc820334f01148"
+		},
+		{
+			"id" : "__idf_libsodium::@66e4f5d448f23c9449a2"
+		},
+		{
+			"id" : "__idf_openssl::@e614527ea5fe5ca5f395"
+		},
+		{
+			"id" : "__idf_perfmon::@aac0f647c32bb8f54a67"
+		},
+		{
+			"id" : "__idf_protocomm::@d76d01c8dec06205e1fc"
+		},
+		{
+			"id" : "__idf_mdns::@2f076c6da9dadb273cdc"
+		},
+		{
+			"id" : "__idf_protobuf-c::@b14513c4bd859268ec22"
+		},
+		{
+			"id" : "__idf_esp_local_ctrl::@d6aad58d2946e56208ef"
+		},
+		{
+			"id" : "__idf_esp_websocket_client::@2aa04d350e0c9afab7cd"
+		},
+		{
+			"id" : "__idf_expat::@af4f74c6fac3f93a3341"
+		},
+		{
+			"id" : "__idf_wear_levelling::@cb21b0d7c0815cff11c6"
+		},
+		{
+			"id" : "__idf_wifi_provisioning::@9d7e7ffe1b15746c1098"
+		},
+		{
+			"id" : "__idf_spiffs::@df881b71474064c86689"
+		},
+		{
+			"id" : "__idf_src::@2478b13de56d3028f688"
+		}
+	],
+	"id" : "__ldgen_output_sections.ld::@874df54e61e20112dfd4",
+	"name" : "__ldgen_output_sections.ld",
+	"paths" : 
+	{
+		"build" : "esp-idf/esp_system",
+		"source" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 5,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/esp_system/CMakeFiles/__ldgen_output_sections.ld",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/esp_system/CMakeFiles/__ldgen_output_sections.ld.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/esp_system/ld/sections.ld.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

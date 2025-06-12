@@ -1,0 +1,4215 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "esp-idf/bt/libbt.a"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"idf_component_register",
+			"add_compile_options",
+			"target_compile_options",
+			"set_property",
+			"__component_set_dependencies",
+			"__component_set_all_dependencies",
+			"include_directories",
+			"target_include_directories",
+			"__component_add_include_dirs",
+			"add_c_compile_options"
+		],
+		"files" : 
+		[
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/component.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/CMakeLists.txt",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/utilities.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 607,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 478,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 456,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 467,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 615,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 512,
+				"parent" : 1
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 348,
+				"parent" : 6
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 333,
+				"parent" : 7
+			},
+			{
+				"command" : 7,
+				"file" : 0,
+				"line" : 455,
+				"parent" : 1
+			},
+			{
+				"command" : 9,
+				"file" : 0,
+				"line" : 480,
+				"parent" : 1
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 10
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 10
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 10
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 10
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 10
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 10
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 10
+			},
+			{
+				"command" : 9,
+				"file" : 0,
+				"line" : 481,
+				"parent" : 1
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 18
+			},
+			{
+				"command" : 10,
+				"file" : 0,
+				"line" : 457,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 287,
+				"parent" : 56
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls -Wno-frame-address   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 57,
+					"fragment" : "-std=gnu99"
+				},
+				{
+					"backtrace" : 57,
+					"fragment" : "-Wno-old-style-declaration"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-implicit-fallthrough"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-const-variable"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 8,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 11,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/include"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/include/esp32/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/api/include/api"
+				},
+				{
+					"backtrace" : 14,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/blufi/include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/include"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/hci_log/include"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/include/api"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/include"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/include"
+				},
+				{
+					"backtrace" : 21,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/include"
+				},
+				{
+					"backtrace" : 22,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/ar/include"
+				},
+				{
+					"backtrace" : 23,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/include"
+				},
+				{
+					"backtrace" : 24,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/include"
+				},
+				{
+					"backtrace" : 25,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/include"
+				},
+				{
+					"backtrace" : 26,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/include"
+				},
+				{
+					"backtrace" : 27,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/include"
+				},
+				{
+					"backtrace" : 28,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hd/include"
+				},
+				{
+					"backtrace" : 29,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/include"
+				},
+				{
+					"backtrace" : 30,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/jv/include"
+				},
+				{
+					"backtrace" : 31,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sdp/include"
+				},
+				{
+					"backtrace" : 32,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sys/include"
+				},
+				{
+					"backtrace" : 33,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/device/include"
+				},
+				{
+					"backtrace" : 34,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/include"
+				},
+				{
+					"backtrace" : 35,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/include"
+				},
+				{
+					"backtrace" : 36,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/include"
+				},
+				{
+					"backtrace" : 37,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/plc/include"
+				},
+				{
+					"backtrace" : 38,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/esp/include"
+				},
+				{
+					"backtrace" : 39,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/include"
+				},
+				{
+					"backtrace" : 40,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/include"
+				},
+				{
+					"backtrace" : 41,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/include"
+				},
+				{
+					"backtrace" : 42,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/include"
+				},
+				{
+					"backtrace" : 43,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gap/include"
+				},
+				{
+					"backtrace" : 44,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/include"
+				},
+				{
+					"backtrace" : 45,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hid/include"
+				},
+				{
+					"backtrace" : 46,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/include"
+				},
+				{
+					"backtrace" : 47,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/include"
+				},
+				{
+					"backtrace" : 48,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/include"
+				},
+				{
+					"backtrace" : 49,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avct/include"
+				},
+				{
+					"backtrace" : 50,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/include"
+				},
+				{
+					"backtrace" : 51,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/include"
+				},
+				{
+					"backtrace" : 52,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/a2dp/include"
+				},
+				{
+					"backtrace" : 53,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/include"
+				},
+				{
+					"backtrace" : 54,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/include"
+				},
+				{
+					"backtrace" : 55,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/nvs_flash/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/spi_flash/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40,
+				41,
+				42,
+				43,
+				44,
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60,
+				61,
+				62,
+				63,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81,
+				82,
+				83,
+				84,
+				85,
+				86,
+				88,
+				89,
+				90,
+				91,
+				92,
+				93,
+				94,
+				95,
+				96,
+				97,
+				98,
+				99,
+				100,
+				101,
+				102,
+				103,
+				104,
+				105,
+				106,
+				107,
+				108,
+				109,
+				110,
+				111,
+				112,
+				113,
+				114,
+				115,
+				116,
+				117,
+				118,
+				119,
+				120,
+				121,
+				122,
+				123,
+				124,
+				125,
+				126,
+				127,
+				128,
+				129,
+				130,
+				131,
+				133,
+				134,
+				135,
+				136,
+				137,
+				138,
+				139,
+				140,
+				141,
+				142,
+				143,
+				144,
+				145,
+				146,
+				147,
+				148,
+				149,
+				150,
+				151,
+				152,
+				153,
+				154,
+				155,
+				156,
+				157,
+				158,
+				159,
+				160,
+				161,
+				162,
+				163,
+				164,
+				165,
+				166,
+				167,
+				168,
+				169,
+				170,
+				171,
+				172,
+				173,
+				174,
+				175,
+				176,
+				177,
+				178,
+				179,
+				180,
+				181,
+				182,
+				183,
+				184,
+				185,
+				186,
+				187,
+				188,
+				189,
+				190,
+				191,
+				192,
+				193,
+				194,
+				195,
+				196,
+				197,
+				198,
+				199,
+				200,
+				201,
+				202,
+				203,
+				204,
+				205,
+				206,
+				207,
+				208,
+				209,
+				210,
+				211,
+				212,
+				213,
+				214,
+				215,
+				216,
+				217,
+				218,
+				219,
+				220,
+				221,
+				222,
+				223,
+				224,
+				225,
+				226,
+				227,
+				228,
+				229,
+				230,
+				231,
+				232,
+				233,
+				234,
+				235,
+				236,
+				237,
+				238,
+				239,
+				240,
+				241,
+				242,
+				243,
+				244,
+				245,
+				246,
+				247,
+				248,
+				249,
+				250,
+				251,
+				252,
+				253,
+				254,
+				255,
+				256,
+				257,
+				258,
+				259,
+				260,
+				261,
+				262,
+				263,
+				264,
+				265,
+				266,
+				267,
+				268,
+				269,
+				270,
+				271,
+				272,
+				273,
+				274
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-implicit-fallthrough"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-const-variable"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 8,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 11,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/include"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/include/esp32/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/api/include/api"
+				},
+				{
+					"backtrace" : 14,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/blufi/include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/include"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/hci_log/include"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/include/api"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/include"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/include"
+				},
+				{
+					"backtrace" : 21,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/include"
+				},
+				{
+					"backtrace" : 22,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/ar/include"
+				},
+				{
+					"backtrace" : 23,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/include"
+				},
+				{
+					"backtrace" : 24,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/include"
+				},
+				{
+					"backtrace" : 25,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/include"
+				},
+				{
+					"backtrace" : 26,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/include"
+				},
+				{
+					"backtrace" : 27,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/include"
+				},
+				{
+					"backtrace" : 28,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hd/include"
+				},
+				{
+					"backtrace" : 29,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/include"
+				},
+				{
+					"backtrace" : 30,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/jv/include"
+				},
+				{
+					"backtrace" : 31,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sdp/include"
+				},
+				{
+					"backtrace" : 32,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sys/include"
+				},
+				{
+					"backtrace" : 33,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/device/include"
+				},
+				{
+					"backtrace" : 34,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/include"
+				},
+				{
+					"backtrace" : 35,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/include"
+				},
+				{
+					"backtrace" : 36,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/include"
+				},
+				{
+					"backtrace" : 37,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/plc/include"
+				},
+				{
+					"backtrace" : 38,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/esp/include"
+				},
+				{
+					"backtrace" : 39,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/include"
+				},
+				{
+					"backtrace" : 40,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/include"
+				},
+				{
+					"backtrace" : 41,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/include"
+				},
+				{
+					"backtrace" : 42,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/include"
+				},
+				{
+					"backtrace" : 43,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gap/include"
+				},
+				{
+					"backtrace" : 44,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/include"
+				},
+				{
+					"backtrace" : 45,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hid/include"
+				},
+				{
+					"backtrace" : 46,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/include"
+				},
+				{
+					"backtrace" : 47,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/include"
+				},
+				{
+					"backtrace" : 48,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/include"
+				},
+				{
+					"backtrace" : 49,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avct/include"
+				},
+				{
+					"backtrace" : 50,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/include"
+				},
+				{
+					"backtrace" : 51,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/include"
+				},
+				{
+					"backtrace" : 52,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/a2dp/include"
+				},
+				{
+					"backtrace" : 53,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/include"
+				},
+				{
+					"backtrace" : 54,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/include"
+				},
+				{
+					"backtrace" : 55,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/nvs_flash/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/spi_flash/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "ASM",
+			"sourceIndexes" : 
+			[
+				2
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls -Wno-frame-address   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 57,
+					"fragment" : "-std=gnu99"
+				},
+				{
+					"backtrace" : 57,
+					"fragment" : "-Wno-old-style-declaration"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-implicit-fallthrough"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-const-variable"
+				},
+				{
+					"fragment" : "-fjump-tables -ftree-switch-conversion"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 8,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 11,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/include"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/include/esp32/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/api/include/api"
+				},
+				{
+					"backtrace" : 14,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/blufi/include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/include"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/hci_log/include"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/include/api"
+				},
+				{
+					"backtrace" : 19,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/include"
+				},
+				{
+					"backtrace" : 20,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/include"
+				},
+				{
+					"backtrace" : 21,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/include"
+				},
+				{
+					"backtrace" : 22,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/ar/include"
+				},
+				{
+					"backtrace" : 23,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/include"
+				},
+				{
+					"backtrace" : 24,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/include"
+				},
+				{
+					"backtrace" : 25,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/include"
+				},
+				{
+					"backtrace" : 26,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/include"
+				},
+				{
+					"backtrace" : 27,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/include"
+				},
+				{
+					"backtrace" : 28,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hd/include"
+				},
+				{
+					"backtrace" : 29,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/include"
+				},
+				{
+					"backtrace" : 30,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/jv/include"
+				},
+				{
+					"backtrace" : 31,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sdp/include"
+				},
+				{
+					"backtrace" : 32,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sys/include"
+				},
+				{
+					"backtrace" : 33,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/device/include"
+				},
+				{
+					"backtrace" : 34,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/include"
+				},
+				{
+					"backtrace" : 35,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/include"
+				},
+				{
+					"backtrace" : 36,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/include"
+				},
+				{
+					"backtrace" : 37,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/plc/include"
+				},
+				{
+					"backtrace" : 38,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/esp/include"
+				},
+				{
+					"backtrace" : 39,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/include"
+				},
+				{
+					"backtrace" : 40,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/include"
+				},
+				{
+					"backtrace" : 41,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/include"
+				},
+				{
+					"backtrace" : 42,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/include"
+				},
+				{
+					"backtrace" : 43,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gap/include"
+				},
+				{
+					"backtrace" : 44,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/include"
+				},
+				{
+					"backtrace" : 45,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hid/include"
+				},
+				{
+					"backtrace" : 46,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/include"
+				},
+				{
+					"backtrace" : 47,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/include"
+				},
+				{
+					"backtrace" : 48,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/include"
+				},
+				{
+					"backtrace" : 49,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avct/include"
+				},
+				{
+					"backtrace" : 50,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/include"
+				},
+				{
+					"backtrace" : 51,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/include"
+				},
+				{
+					"backtrace" : 52,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/a2dp/include"
+				},
+				{
+					"backtrace" : 53,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/include"
+				},
+				{
+					"backtrace" : 54,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/include"
+				},
+				{
+					"backtrace" : 55,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/nvs_flash/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/spi_flash/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				87,
+				132
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "__idf_esp_ringbuf::@ad62994b1ce98b81017d"
+		}
+	],
+	"id" : "__idf_bt::@0a9ab9982b985d43ed2a",
+	"name" : "__idf_bt",
+	"nameOnDisk" : "libbt.a",
+	"paths" : 
+	{
+		"build" : "esp-idf/bt",
+		"source" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40,
+				41,
+				42,
+				43,
+				44,
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60,
+				61,
+				62,
+				63,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81,
+				82,
+				83,
+				84,
+				85,
+				86,
+				87,
+				88,
+				89,
+				90,
+				91,
+				92,
+				93,
+				94,
+				95,
+				96,
+				97,
+				98,
+				99,
+				100,
+				101,
+				102,
+				103,
+				104,
+				105,
+				106,
+				107,
+				108,
+				109,
+				110,
+				111,
+				112,
+				113,
+				114,
+				115,
+				116,
+				117,
+				118,
+				119,
+				120,
+				121,
+				122,
+				123,
+				124,
+				125,
+				126,
+				127,
+				128,
+				129,
+				130,
+				131,
+				132,
+				133,
+				134,
+				135,
+				136,
+				137,
+				138,
+				139,
+				140,
+				141,
+				142,
+				143,
+				144,
+				145,
+				146,
+				147,
+				148,
+				149,
+				150,
+				151,
+				152,
+				153,
+				154,
+				155,
+				156,
+				157,
+				158,
+				159,
+				160,
+				161,
+				162,
+				163,
+				164,
+				165,
+				166,
+				167,
+				168,
+				169,
+				170,
+				171,
+				172,
+				173,
+				174,
+				175,
+				176,
+				177,
+				178,
+				179,
+				180,
+				181,
+				182,
+				183,
+				184,
+				185,
+				186,
+				187,
+				188,
+				189,
+				190,
+				191,
+				192,
+				193,
+				194,
+				195,
+				196,
+				197,
+				198,
+				199,
+				200,
+				201,
+				202,
+				203,
+				204,
+				205,
+				206,
+				207,
+				208,
+				209,
+				210,
+				211,
+				212,
+				213,
+				214,
+				215,
+				216,
+				217,
+				218,
+				219,
+				220,
+				221,
+				222,
+				223,
+				224,
+				225,
+				226,
+				227,
+				228,
+				229,
+				230,
+				231,
+				232,
+				233,
+				234,
+				235,
+				236,
+				237,
+				238,
+				239,
+				240,
+				241,
+				242,
+				243,
+				244,
+				245,
+				246,
+				247,
+				248,
+				249,
+				250,
+				251,
+				252,
+				253,
+				254,
+				255,
+				256,
+				257,
+				258,
+				259,
+				260,
+				261,
+				262,
+				263,
+				264,
+				265,
+				266,
+				267,
+				268,
+				269,
+				270,
+				271,
+				272,
+				273,
+				274
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/controller/esp32/bt.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/controller/esp32/hli_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 1,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/controller/esp32/hli_vectors.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/core/btc_alarm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/api/esp_blufi_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/hci_log/bt_hci_log.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/core/btc_manage.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/core/btc_task.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/blufi/blufi_prf.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/blufi/blufi_protocol.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/alarm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/allocator.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/buffer.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/config.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/fixed_queue.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/pkt_queue.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/fixed_pkt_queue.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/future.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/hash_functions.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/hash_map.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/list.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/mutex.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/thread.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/osi.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/osi/semaphore.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_a2dp_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_avrc_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_bt_device.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_bt_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_gap_ble_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_gap_bt_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_gatt_common_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_gattc_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_gatts_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_hidd_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_hidh_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_hf_ag_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_hf_client_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/api/esp_spp_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/ar/bta_ar.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/bta_av_aact.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/bta_av_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/bta_av_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/bta_av_cfg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/bta_av_ci.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/bta_av_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/bta_av_sbc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/av/bta_av_ssm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_cfg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_ci.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_pm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_sco.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/dm/bta_dm_qos.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gatt_common.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gattc_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gattc_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gattc_cache.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gattc_ci.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gattc_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gattc_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gattc_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gatts_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gatts_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gatts_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gatts_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/gatt/bta_gatts_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hd/bta_hd_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hd/bta_hd_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hd/bta_hd_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/bta_hh_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/bta_hh_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/bta_hh_cfg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/bta_hh_le.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/bta_hh_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hh/bta_hh_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/jv/bta_jv_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/jv/bta_jv_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/jv/bta_jv_cfg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/jv/bta_jv_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_at.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_cfg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 2,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_cmd.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_rfc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_sco.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_ag/bta_ag_sdp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/bta_hf_client_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/bta_hf_client_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/bta_hf_client_at.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/bta_hf_client_cmd.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/bta_hf_client_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/bta_hf_client_rfc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/bta_hf_client_sco.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/hf_client/bta_hf_client_sdp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sdp/bta_sdp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sdp/bta_sdp_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sdp/bta_sdp_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sdp/bta_sdp_cfg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sys/bta_sys_conn.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sys/bta_sys_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/bta/sys/utl.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_ble_storage.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_config.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_dev.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_dm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_profile_queue.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_sec.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_sm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_storage.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/core/btc_util.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/bta_av_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/btc_a2dp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/btc_a2dp_control.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/btc_a2dp_sink.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/btc_a2dp_source.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/a2dp/btc_av.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/avrc/btc_avrc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/avrc/bta_avrc_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/hf_ag/bta_ag_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/hf_ag/btc_hf_ag.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/hf_client/btc_hf_client.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/hf_client/bta_hf_client_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/hid/btc_hd.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/hid/btc_hh.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/hid/bta_hh_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 2,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/gap/btc_gap_ble.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/gap/btc_gap_bt.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/gap/bta_gap_bt_co.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/gatt/btc_gatt_common.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/gatt/btc_gatt_util.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/gatt/btc_gattc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/gatt/btc_gatts.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/btc/profile/std/spp/btc_spp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/device/bdaddr.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/device/controller.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/device/interop.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/alloc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/bitalloc-sbc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/bitalloc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/bitstream-decode.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/decoder-oina.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/decoder-private.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/decoder-sbc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/dequant.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/framing-sbc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/framing.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/oi_codec_version.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/synthesis-8-generated.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/synthesis-dct8.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/decoder/srce/synthesis-sbc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/srce/sbc_analysis.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/srce/sbc_dct.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/srce/sbc_dct_coeffs.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/srce/sbc_enc_bit_alloc_mono.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/srce/sbc_enc_bit_alloc_ste.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/srce/sbc_enc_coeffs.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/srce/sbc_encoder.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/encoder/srce/sbc_packing.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/external/sbc/plc/sbc_plc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/hci_audio.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/hci_hal_h4.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/hci_layer.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/hci_packet_factory.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/hci_packet_parser.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/hci/packet_fragmenter.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/main/bte_init.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/main/bte_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/a2dp/a2d_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/a2dp/a2d_sbc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avct/avct_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avct/avct_ccb.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avct/avct_l2c.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avct/avct_lcb.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avct/avct_lcb_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/avdt_ad.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/avdt_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/avdt_ccb.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/avdt_ccb_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/avdt_l2c.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/avdt_msg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/avdt_scb.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avdt/avdt_scb_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/avrc_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/avrc_bld_ct.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/avrc_bld_tg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/avrc_opt.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/avrc_pars_ct.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/avrc_pars_tg.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/avrc_sdp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/avrc/avrc_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hid/hidd_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hid/hidd_conn.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hid/hidh_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hid/hidh_conn.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_acl.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_addr.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_adv_filter.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_batchscan.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_bgconn.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_cont_energy.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_gap.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_5_gap.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_multi_adv.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_ble_privacy.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_dev.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_devctl.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_inq.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_pm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_sco.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btm/btm_sec.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btu/btu_hcif.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btu/btu_init.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/btu/btu_task.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gap/gap_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gap/gap_ble.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gap/gap_conn.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gap/gap_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/att_protocol.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_attr.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_auth.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_cl.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_db.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_sr.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_sr_hash.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/gatt/gatt_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hcic/hciblecmds.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/hcic/hcicmds.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2c_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2c_ble.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2c_csm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2c_fcr.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2c_link.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2c_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2c_ucd.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2c_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/l2cap/l2cap_client.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/port_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/port_rfc.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/port_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/rfc_l2cap_if.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/rfc_mx_fsm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/rfc_port_fsm.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/rfc_port_if.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/rfc_ts_frames.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/rfcomm/rfc_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/sdp_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/sdp_db.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/sdp_discovery.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/sdp_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/sdp_server.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/sdp/sdp_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/aes.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/p_256_curvepara.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/p_256_ecc_pp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/p_256_multprecision.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/smp_act.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/smp_api.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/smp_br_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/smp_cmac.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/smp_keys.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/smp_l2c.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/smp_main.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/host/bluedroid/stack/smp/smp_utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/bt/common/btc/profile/esp/blufi/bluedroid_host/esp_blufi.c",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

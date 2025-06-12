@@ -26,19 +26,19 @@ jobs:
     runs-on: ubuntu-latest     
     steps:
     - uses: actions/checkout@v3
-    - uses: esphome/build-action@v3.1.0
+    - uses: esphome/build-action@v7.0.0
       id: esphome-build
       with:
-        yaml_file: .github/conf_arduino.yml
+        yaml-file: .github/conf_arduino.yml
   
   framework-espidf:
     runs-on: ubuntu-latest     
     steps:
     - uses: actions/checkout@v3
-    - uses: esphome/build-action@v3.1.0
+    - uses: esphome/build-action@v7.0.0
       id: esphome-build
       with:
-        yaml_file: .github/conf_esp_idf.yml
+        yaml-file: .github/conf_esp_idf.yml
 
   #tests:
   #  runs-on: ubuntu-latest     

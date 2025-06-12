@@ -1,0 +1,88 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_deprecated_target_alias",
+			"add_dependencies"
+		],
+		"files" : 
+		[
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/utilities.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_update/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 80,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 365,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 370,
+				"parent" : 1
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "erase-otadata::@cc3b426666063acc9674"
+		}
+	],
+	"id" : "erase_otadata::@cc3b426666063acc9674",
+	"name" : "erase_otadata",
+	"paths" : 
+	{
+		"build" : "esp-idf/app_update",
+		"source" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_update"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/app_update/CMakeFiles/erase_otadata",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/app_update/CMakeFiles/erase_otadata.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

@@ -1,0 +1,26 @@
+{
+    "name": "noise-c",
+    "version": "0.1.6",
+    "description": "noise-c",
+    "keywords": "noise-c",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/esphome/noise-c.git"
+    },
+    "license": "MIT",
+    "include": [
+        "include/*",
+        "src/*"
+    ],
+    "build": {
+        "includeDir": "include",
+        "srcDir": "src"
+    },
+    "dependencies": [
+        {
+            "owner": "esphome",
+            "name": "libsodium",
+            "version": "1.10018.4"
+        }
+    ]
+}

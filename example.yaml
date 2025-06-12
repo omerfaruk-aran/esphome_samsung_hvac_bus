@@ -62,6 +62,10 @@ samsung_ac:
   # When enabled (set to true), this option logs messages associated with defined codes on the device. This helps in monitoring the behavior of the device by recording the activity related to known, expected codes.
   debug_log_messages: false
 
+  # For half duplex RS485 board with DI, DE, RE, and RO pins, you have to control read/write with control pin
+  # see https://microcontrollerslab.com/rs485-serial-communication-esp32-esp8266-tutorial/ for wiring
+  #flow_control_pin: GPIO4
+
   # Capabilities configure the features that all devices of your AC system have (all parts of this section are optional). 
   # All capabilities are off by default, you need to enable only those your devices have.
   # You can override or configure them also on a per-device basis (look below for that).

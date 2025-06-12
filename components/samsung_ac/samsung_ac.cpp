@@ -14,6 +14,10 @@ namespace esphome
       {
         ESP_LOGW(TAG, "setup");
       }
+      if (this->flow_control_pin_ != nullptr)
+      {
+        this->flow_control_pin_->setup();
+      }
     }
 
     void Samsung_AC::update()
@@ -84,13 +88,26 @@ namespace esphome
 
     void Samsung_AC::dump_config()
     {
+      ESP_LOGCONFIG(TAG, "Samsung_AC:");
+      LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
     }
 
     void Samsung_AC::publish_data(std::vector<uint8_t> &data)
     {
       ESP_LOGW(TAG, "write %s", bytes_to_hex(data).c_str());
+
+      if (this->flow_control_pin_ != nullptr) {
+        ESP_LOGD(TAG, "switching flow_control_pin to write");
+        this->flow_control_pin_->digital_write(true);
+        }
+
       this->write_array(data);
       this->flush();
+
+      if (this->flow_control_pin_ != nullptr) {
+        ESP_LOGD(TAG, "switching flow_control_pin to read");
+        this->flow_control_pin_->digital_write(false);
+        }
     }
 
     void Samsung_AC::loop()

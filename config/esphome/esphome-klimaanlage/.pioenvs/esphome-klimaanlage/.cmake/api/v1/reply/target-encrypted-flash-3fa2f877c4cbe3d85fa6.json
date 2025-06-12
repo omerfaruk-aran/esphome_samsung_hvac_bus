@@ -1,0 +1,141 @@
+{
+	"backtrace" : 9,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"fail_target",
+			"esptool_py_flash_target",
+			"esptool_py_custom_target",
+			"include",
+			"__build_process_project_includes",
+			"idf_build_process",
+			"project",
+			"add_dependencies"
+		],
+		"files" : 
+		[
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/utilities.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esptool_py/project_include.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/build.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/project.cmake",
+			"CMakeLists.txt",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_update/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 4
+			},
+			{
+				"command" : 7,
+				"file" : 4,
+				"line" : 3,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 3,
+				"line" : 476,
+				"parent" : 1
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 543,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 334,
+				"parent" : 3
+			},
+			{
+				"file" : 1,
+				"parent" : 4
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 511,
+				"parent" : 5
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 484,
+				"parent" : 6
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 471,
+				"parent" : 7
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 245,
+				"parent" : 8
+			},
+			{
+				"file" : 5
+			},
+			{
+				"command" : 8,
+				"file" : 5,
+				"line" : 49,
+				"parent" : 10
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 11,
+			"id" : "blank_ota_data::@cc3b426666063acc9674"
+		}
+	],
+	"id" : "encrypted-flash::@6890427a1f51a3e7e1df",
+	"name" : "encrypted-flash",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 9,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/CMakeFiles/encrypted-flash",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/CMakeFiles/encrypted-flash.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

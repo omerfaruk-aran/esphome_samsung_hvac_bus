@@ -1,0 +1,3764 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "esp-idf/libsodium/liblibsodium.a"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"idf_component_register",
+			"add_compile_options",
+			"target_compile_options",
+			"target_compile_definitions",
+			"set_property",
+			"__component_set_dependencies",
+			"__component_set_all_dependencies",
+			"include_directories",
+			"target_include_directories",
+			"__component_add_include_dirs",
+			"add_c_compile_options"
+		],
+		"files" : 
+		[
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/component.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/CMakeLists.txt",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/utilities.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 126,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 478,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 456,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 467,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 173,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 131,
+				"parent" : 0
+			},
+			{
+				"command" : 7,
+				"file" : 0,
+				"line" : 512,
+				"parent" : 1
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 348,
+				"parent" : 7
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 333,
+				"parent" : 8
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 455,
+				"parent" : 1
+			},
+			{
+				"command" : 10,
+				"file" : 0,
+				"line" : 480,
+				"parent" : 1
+			},
+			{
+				"command" : 9,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 11
+			},
+			{
+				"command" : 9,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 11
+			},
+			{
+				"command" : 10,
+				"file" : 0,
+				"line" : 481,
+				"parent" : 1
+			},
+			{
+				"command" : 9,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 14
+			},
+			{
+				"command" : 9,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 14
+			},
+			{
+				"command" : 9,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 14
+			},
+			{
+				"command" : 11,
+				"file" : 0,
+				"line" : 457,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 287,
+				"parent" : 18
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls -Wno-frame-address   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-std=gnu99"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-Wno-old-style-declaration"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-function"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "CONFIGURED"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "HAVE_WEAK_SYMBOLS"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				},
+				{
+					"backtrace" : 6,
+					"define" : "NATIVE_LITTLE_ENDIAN"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_CONSTANT_MACROS"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_LIMIT_MACROS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include/sodium"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include/sodium"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				38,
+				39,
+				40,
+				42,
+				43,
+				44,
+				47,
+				48,
+				49,
+				50,
+				52,
+				53,
+				54,
+				56,
+				57,
+				61,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81,
+				82,
+				83,
+				84,
+				85,
+				86,
+				87,
+				88,
+				89,
+				91,
+				92,
+				93,
+				94,
+				95,
+				96,
+				97,
+				98,
+				99,
+				100,
+				102,
+				103,
+				104,
+				106,
+				107
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls -Wno-frame-address   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-std=gnu99"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-Wno-old-style-declaration"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-function"
+				},
+				{
+					"fragment" : "-Wno-type-limits"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "CONFIGURED"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "HAVE_WEAK_SYMBOLS"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				},
+				{
+					"backtrace" : 6,
+					"define" : "NATIVE_LITTLE_ENDIAN"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_CONSTANT_MACROS"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_LIMIT_MACROS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include/sodium"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include/sodium"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				37,
+				45,
+				46,
+				51
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls -Wno-frame-address   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-std=gnu99"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-Wno-old-style-declaration"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-function"
+				},
+				{
+					"fragment" : "-Wno-unknown-pragmas"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "CONFIGURED"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "HAVE_WEAK_SYMBOLS"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				},
+				{
+					"backtrace" : 6,
+					"define" : "NATIVE_LITTLE_ENDIAN"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_CONSTANT_MACROS"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_LIMIT_MACROS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include/sodium"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include/sodium"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				41
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-function"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "CONFIGURED"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "HAVE_WEAK_SYMBOLS"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				},
+				{
+					"backtrace" : 6,
+					"define" : "NATIVE_LITTLE_ENDIAN"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_CONSTANT_MACROS"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_LIMIT_MACROS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include/sodium"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include/sodium"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "ASM",
+			"sourceIndexes" : 
+			[
+				55,
+				58,
+				59,
+				60,
+				62,
+				63,
+				90
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls -Wno-frame-address   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-std=gnu99"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-Wno-old-style-declaration"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-function"
+				},
+				{
+					"fragment" : "-Wno-implicit-fallthrough"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "CONFIGURED"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "HAVE_WEAK_SYMBOLS"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				},
+				{
+					"backtrace" : 6,
+					"define" : "NATIVE_LITTLE_ENDIAN"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_CONSTANT_MACROS"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_LIMIT_MACROS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include/sodium"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include/sodium"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				73,
+				74
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls -Wno-frame-address   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-std=gnu99"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-Wno-old-style-declaration"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-function"
+				},
+				{
+					"fragment" : "-DRANDOMBYTES_DEFAULT_IMPLEMENTATION"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "CONFIGURED"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "HAVE_WEAK_SYMBOLS"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				},
+				{
+					"backtrace" : 6,
+					"define" : "NATIVE_LITTLE_ENDIAN"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_CONSTANT_MACROS"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_LIMIT_MACROS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include/sodium"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include/sodium"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				101
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-mlongcalls -Wno-frame-address   "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ffunction-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fdata-sections"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Werror=all"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-function"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=deprecated-declarations"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-unused-parameter"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-sign-compare"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-ggdb"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Os"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-freorder-blocks"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage=."
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fmacro-prefix-map=C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0=IDF"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fstrict-volatile-bitfields"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-Wno-error=unused-but-set-variable"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-jump-tables"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fno-tree-switch-conversion"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-std=gnu99"
+				},
+				{
+					"backtrace" : 19,
+					"fragment" : "-Wno-old-style-declaration"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_GNU_SOURCE"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DIDF_VER=\\\"4.4.8\\\""
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DESP_PLATFORM"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-D_POSIX_READER_WRITER_LOCKS"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-unused-function"
+				},
+				{
+					"fragment" : "-Wno-unused-variable"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "CONFIGURED"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "HAVE_WEAK_SYMBOLS"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\""
+				},
+				{
+					"backtrace" : 6,
+					"define" : "NATIVE_LITTLE_ENDIAN"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_CONSTANT_MACROS"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "__STDC_LIMIT_MACROS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 10,
+					"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/config"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include"
+				},
+				{
+					"backtrace" : 15,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/include/sodium"
+				},
+				{
+					"backtrace" : 16,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port_include/sodium"
+				},
+				{
+					"backtrace" : 17,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/newlib/platform_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions/freertos"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/port/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/freertos/include/esp_additions"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/include/soc/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_hw_support/port/esp32/private_include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/heap/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/log/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/include/apps/sntp"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/lwip/src/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/lwip/port/esp32/include/arch"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/soc/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/hal/platform_port/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/include/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_rom/esp32"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_common/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/soc"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_system/port/public_compat"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/xtensa/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/driver/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_pm/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ringbuf/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/efuse/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/vfs/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_wifi/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_event/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_netif/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_eth/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/tcpip_adapter/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_phy/esp32/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_ipc/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/app_trace/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esp_timer/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/port/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/esp_crt_bundle/include"
+				},
+				{
+					"backtrace" : 9,
+					"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/mbedtls/mbedtls/3rdparty/everest/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				105
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "__idf_esp_ringbuf::@ad62994b1ce98b81017d"
+		}
+	],
+	"id" : "__idf_libsodium::@66e4f5d448f23c9449a2",
+	"name" : "__idf_libsodium",
+	"nameOnDisk" : "liblibsodium.a",
+	"paths" : 
+	{
+		"build" : "esp-idf/libsodium",
+		"source" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40,
+				41,
+				42,
+				43,
+				44,
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				56,
+				57,
+				61,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81,
+				82,
+				83,
+				84,
+				85,
+				86,
+				87,
+				88,
+				89,
+				91,
+				92,
+				93,
+				94,
+				95,
+				96,
+				97,
+				98,
+				99,
+				100,
+				101,
+				102,
+				103,
+				104,
+				105,
+				106,
+				107
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				55,
+				58,
+				59,
+				60,
+				62,
+				63,
+				90
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_aead/chacha20poly1305/sodium/aead_chacha20poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_aead/xchacha20poly1305/sodium/aead_xchacha20poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_auth/crypto_auth.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_auth/hmacsha256/auth_hmacsha256.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_auth/hmacsha512/auth_hmacsha512.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_auth/hmacsha512256/auth_hmacsha512256.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_box/crypto_box.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_box/crypto_box_easy.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_box/crypto_box_seal.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_box/curve25519xchacha20poly1305/box_curve25519xchacha20poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_box/curve25519xchacha20poly1305/box_seal_curve25519xchacha20poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_box/curve25519xsalsa20poly1305/box_curve25519xsalsa20poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_core/ed25519/core_ed25519.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_core/ed25519/core_ristretto255.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_core/ed25519/ref10/ed25519_ref10.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_core/hchacha20/core_hchacha20.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_core/hsalsa20/core_hsalsa20.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_core/hsalsa20/ref2/core_hsalsa20_ref2.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_core/salsa/ref/core_salsa_ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_generichash/blake2b/generichash_blake2.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_generichash/blake2b/ref/blake2b-compress-avx2.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_generichash/blake2b/ref/blake2b-compress-ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_generichash/blake2b/ref/blake2b-compress-ssse3.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_generichash/blake2b/ref/generichash_blake2b.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_generichash/crypto_generichash.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_hash/crypto_hash.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_hash/sha256/cp/hash_sha256_cp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_hash/sha256/hash_sha256.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_hash/sha512/cp/hash_sha512_cp.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_hash/sha512/hash_sha512.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_kdf/blake2b/kdf_blake2b.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_kdf/crypto_kdf.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_kx/crypto_kx.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_onetimeauth/crypto_onetimeauth.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_onetimeauth/poly1305/donna/poly1305_donna.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_onetimeauth/poly1305/onetimeauth_poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 1,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-core.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-encoding.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-fill-block-avx2.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-fill-block-avx512f.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 2,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-fill-block-ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-fill-block-ssse3.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/argon2.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/blake2b-long.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 1,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/pwhash_argon2i.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 1,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/argon2/pwhash_argon2id.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/crypto_pwhash.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/scryptsalsa208sha256/crypto_scrypt-common.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/scryptsalsa208sha256/nosse/pwhash_scryptsalsa208sha256_nosse.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/scryptsalsa208sha256/pbkdf2-sha256.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 1,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/scryptsalsa208sha256/pwhash_scryptsalsa208sha256.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_pwhash/scryptsalsa208sha256/scrypt_platform.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/crypto_scalarmult.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/ref10/x25519_ref10.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 3,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/consts.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/curve25519_sandy2x.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/fe51_invert.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 3,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/fe51_mul.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 3,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/fe51_nsquare.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 3,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/fe51_pack.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/fe_frombytes_sandy2x.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 3,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/ladder.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 3,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/sandy2x/sandy2x.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/curve25519/scalarmult_curve25519.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/ed25519/ref10/scalarmult_ed25519_ref10.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_scalarmult/ristretto255/ref10/scalarmult_ristretto255_ref10.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_secretbox/crypto_secretbox.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_secretbox/crypto_secretbox_easy.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_secretbox/xchacha20poly1305/secretbox_xchacha20poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_secretbox/xsalsa20poly1305/secretbox_xsalsa20poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_secretstream/xchacha20poly1305/secretstream_xchacha20poly1305.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_shorthash/crypto_shorthash.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 4,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_shorthash/siphash24/ref/shorthash_siphash24_ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 4,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_shorthash/siphash24/ref/shorthash_siphashx24_ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_shorthash/siphash24/shorthash_siphash24.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_shorthash/siphash24/shorthash_siphashx24.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_sign/crypto_sign.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_sign/ed25519/ref10/keypair.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_sign/ed25519/ref10/obsolete.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_sign/ed25519/ref10/open.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_sign/ed25519/ref10/sign.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_sign/ed25519/sign_ed25519.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/chacha20/dolbeau/chacha20_dolbeau-avx2.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/chacha20/dolbeau/chacha20_dolbeau-ssse3.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/chacha20/ref/chacha20_ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/chacha20/stream_chacha20.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/crypto_stream.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa20/ref/salsa20_ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa20/stream_salsa20.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 3,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa20/xmm6/salsa20_xmm6-asm.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa20/xmm6/salsa20_xmm6.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa20/xmm6int/salsa20_xmm6int-avx2.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa20/xmm6int/salsa20_xmm6int-sse2.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa2012/ref/stream_salsa2012_ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa2012/stream_salsa2012.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa208/ref/stream_salsa208_ref.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/salsa208/stream_salsa208.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/xchacha20/stream_xchacha20.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_stream/xsalsa20/stream_xsalsa20.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/crypto_verify/sodium/verify.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 5,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/randombytes/randombytes.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/sodium/codecs.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/sodium/core.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/sodium/runtime.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 6,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/sodium/utils.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/libsodium/src/libsodium/sodium/version.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/libsodium/port/randombytes_esp32.c",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

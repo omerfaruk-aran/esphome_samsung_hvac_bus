@@ -5,7 +5,6 @@ esp32:
   board: m5stack-atom
   framework:
     type: esp-idf
-    version: recommended
 
 external_components:
   - source:
@@ -19,6 +18,11 @@ uart:
   parity: EVEN
 
 samsung_ac:
+  debug_mqtt_host: 192.168.1.100
+  debug_mqtt_port: 1883
+  debug_mqtt_username: mqtt_user
+  debug_mqtt_password: mqtt_pass
+
   debug_log_messages: false
   debug_log_messages_raw: false
 

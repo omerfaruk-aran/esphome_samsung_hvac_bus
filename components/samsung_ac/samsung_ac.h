@@ -50,6 +50,11 @@ namespace esphome
         }
       }
 
+      void set_flow_control_pin(GPIOPin *flow_control_pin)
+      {
+        this->flow_control_pin_ = flow_control_pin;
+      }
+
       void set_debug_mqtt(std::string host, int port, std::string username, std::string password)
       {
         debug_mqtt_host = host;
@@ -240,6 +245,7 @@ namespace esphome
       bool data_processing_init = true;
 
       // settings from yaml
+      GPIOPin *flow_control_pin_{nullptr};
       std::string debug_mqtt_host = "";
       uint16_t debug_mqtt_port = 1883;
       std::string debug_mqtt_username = "";

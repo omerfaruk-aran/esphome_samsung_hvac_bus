@@ -1,0 +1,88 @@
+{
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"__add_uf2_targets",
+			"project"
+		],
+		"files" : 
+		[
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/uf2.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/tools/cmake/project.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 59,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 582,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 25,
+				"parent" : 2
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "gen_project_binary::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "uf2-app::@6890427a1f51a3e7e1df",
+	"name" : "uf2-app",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"isGenerated" : true,
+			"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/bootloader/CMakeFiles/uf2-app",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "C:/Users/H1/ESPHOME/esphome_samsung_hvac_bus/config/esphome/esphome-klimaanlage/.pioenvs/esphome-klimaanlage/bootloader/CMakeFiles/uf2-app.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

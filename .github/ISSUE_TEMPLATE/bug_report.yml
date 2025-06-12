@@ -1,16 +1,35 @@
 ---
 name: Bug Report
-description: Report any issues with the ESPHome Samsung AC integration.
-title: "`Bug` [Samsung_AC]: "
+description: Report any issues with the ESPHome Samsung HVAC component.
+title: "`Bug` [Samsung_HVAC]: "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        # Bug Report: Samsung AC Integration
-        Thank you for reporting an issue with the Samsung AC integration. Please provide the details below to help us resolve the issue efficiently.
+        # Bug Report: ESPHome Samsung HVAC component
+        Thank you for reporting an issue with the Samsung HVAC component. Please provide the details below to help us resolve the issue efficiently.
 
         > ⚠️ **Note:** Avoid including sensitive information as this report will be publicly visible.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Description
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: The problem
+      description: >-
+        Describe the issue you are experiencing here, to communicate to the
+        maintainers. Tell us what you were trying to do and what happened.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Environment
 
   - type: input
     id: esphome_version
@@ -24,8 +43,8 @@ body:
   - type: input
     id: samsung_ac_version
     attributes:
-      label: "Samsung AC Integration Version"
-      description: "Enter the version of the Samsung AC integration."
+      label: "Samsung HVAC Component Version"
+      description: "Enter the version of the Samsung HVAC component."
       placeholder: "e.g., 20240213.1"
     validations:
       required: true
@@ -142,4 +161,11 @@ body:
     attributes:
       value: |
         ## Additional Information (Optional)
-        Provide any additional details that might help with diagnosing the issue.
+
+  - type: textarea
+    id: additional_details
+    attributes:
+      label: "Additional Details"
+      description: "Provide any additional details that might help with diagnosing the issue."
+
+

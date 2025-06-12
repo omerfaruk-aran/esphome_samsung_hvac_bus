@@ -1,0 +1,72 @@
+{
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target"
+		],
+		"files" : 
+		[
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/partition_table/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 61,
+				"parent" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "partition_table_bin::@8e7a60ee4fe55e1aaabf"
+		}
+	],
+	"id" : "partition-table::@8e7a60ee4fe55e1aaabf",
+	"name" : "partition-table",
+	"paths" : 
+	{
+		"build" : "esp-idf/partition_table",
+		"source" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/partition_table"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/partition_table/CMakeFiles/partition-table",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/partition_table/CMakeFiles/partition-table.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

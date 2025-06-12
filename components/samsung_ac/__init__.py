@@ -19,8 +19,11 @@ from esphome.const import (
     CONF_UNIT_OF_MEASUREMENT,
     CONF_DEVICE_CLASS,
     CONF_FILTERS,
+    CONF_FLOW_CONTROL_PIN,
 )
 from esphome.core import CORE, Lambda
+from esphome.cpp_helpers import gpio_pin_expression
+from esphome import pins
 
 CODEOWNERS = ["matthias882", "lanwin", "omerfaruk-aran"]
 DEPENDENCIES = ["uart"]
@@ -46,13 +49,11 @@ SELECT_WATER_HEATER_MODE_SCHEMA = select.select_schema(
     Samsung_AC_Water_Heater_Mode_Select
 )
 
-NUMBER_SCHEMA = number.NUMBER_SCHEMA.extend(
+NUMBER_SCHEMA = number.number_schema(Samsung_AC_Number).extend(
     {cv.GenerateID(): cv.declare_id(Samsung_AC_Number)}
 )
 
-CLIMATE_SCHEMA = climate.CLIMATE_SCHEMA.extend(
-    {cv.GenerateID(): cv.declare_id(Samsung_AC_Climate)}
-)
+CLIMATE_SCHEMA = climate.climate_schema(Samsung_AC_Climate)
 
 CONF_DEVICE_ID = "samsung_ac_device_id"
 CONF_DEVICE_ADDRESS = "address"
@@ -143,29 +144,34 @@ CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema().extend(
 
 def custom_sensor_schema(
     message: int,
-    unit_of_measurement: str = sensor._UNDEF,
-    icon: str = sensor._UNDEF,
-    accuracy_decimals: int = sensor._UNDEF,
-    device_class: str = sensor._UNDEF,
-    state_class: str = sensor._UNDEF,
-    entity_category: str = sensor._UNDEF,
+    unit_of_measurement=None,
+    icon=None,
+    accuracy_decimals=None,
+    device_class=None,
+    state_class=None,
+    entity_category=None,
     raw_filters=[],
 ):
-    return sensor.sensor_schema(
-        unit_of_measurement=unit_of_measurement,
-        icon=icon,
-        accuracy_decimals=accuracy_decimals,
-        device_class=device_class,
-        state_class=state_class,
-        entity_category=entity_category,
-    ).extend(
-        {
-            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
-            cv.Optional(
-                CONF_DEVICE_CUSTOM_RAW_FILTERS, default=raw_filters
-            ): sensor.validate_filters,
-        }
-    )
+    schema = sensor.sensor_schema()
+    if unit_of_measurement is not None:
+        schema = schema.extend({cv.Optional(CONF_UNIT_OF_MEASUREMENT): cv.string})
+    if icon is not None:
+        schema = schema.extend({cv.Optional("icon"): cv.icon})
+    if accuracy_decimals is not None:
+        schema = schema.extend({cv.Optional("accuracy_decimals"): cv.positive_int})
+    if device_class is not None:
+        schema = schema.extend({cv.Optional(CONF_DEVICE_CLASS): cv.string})
+    if state_class is not None:
+        schema = schema.extend({cv.Optional("state_class"): cv.string})
+    if entity_category is not None:
+        schema = schema.extend({cv.Optional("entity_category"): cv.string})
+
+    schema = schema.extend({
+        cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
+        cv.Optional(CONF_DEVICE_CUSTOM_RAW_FILTERS, default=raw_filters): sensor.validate_filters,
+    })
+
+    return schema
 
 
 def temperature_sensor_schema(message: int):
@@ -195,6 +201,7 @@ def error_code_sensor_schema(message: int):
         unit_of_measurement="",
         accuracy_decimals=0,
         icon="mdi:alert",
+        entity_category="diagnostic",
     )
 
 
@@ -325,6 +332,7 @@ CONFIG_SCHEMA = (
         {
             cv.GenerateID(): cv.declare_id(Samsung_AC),
             # cv.Optional(CONF_PAUSE, default=False): cv.boolean,
+            cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
             cv.Optional(CONF_DEBUG_MQTT_HOST, default=""): cv.string,
             cv.Optional(CONF_DEBUG_MQTT_PORT, default=1883): cv.int_,
             cv.Optional(CONF_DEBUG_MQTT_USERNAME, default=""): cv.string,
@@ -348,6 +356,10 @@ async def to_code(config):
         cg.add_library("heman/AsyncMqttClient-esphome", "2.0.0")
 
     var = cg.new_Pvariable(config[CONF_ID])
+    if CONF_FLOW_CONTROL_PIN in config:
+        pin = await gpio_pin_expression(config[CONF_FLOW_CONTROL_PIN])
+        cg.add(var.set_flow_control_pin(pin))
+
     for device_index, device in enumerate(config[CONF_DEVICES]):
         var_dev = cg.new_Pvariable(
             device[CONF_DEVICE_ID], device[CONF_DEVICE_ADDRESS], var

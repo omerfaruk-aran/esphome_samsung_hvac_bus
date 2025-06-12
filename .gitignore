@@ -3,6 +3,7 @@ __pycache__
 .esphome
 test.exe
 .pio/
+.venv/
 .vscode/
 src/
 platformio.ini
@@ -11,3 +12,4 @@ CMakeLists.txt
 .gitignore
 esp.yaml
 secrets.yaml
+dev-esp.yaml

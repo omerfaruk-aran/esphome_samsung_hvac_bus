@@ -1,0 +1,74 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"esptool_py_flash_target"
+		],
+		"files" : 
+		[
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/esptool_py/project_include.cmake",
+			"C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/partition_table/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 106,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 372,
+				"parent" : 1
+			}
+		]
+	},
+	"id" : "partition-table-flash::@8e7a60ee4fe55e1aaabf",
+	"name" : "partition-table-flash",
+	"paths" : 
+	{
+		"build" : "esp-idf/partition_table",
+		"source" : "C:/Users/H1/.platformio/packages/framework-espidf@3.40408.0/components/partition_table"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/partition_table/CMakeFiles/partition-table-flash",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : ".pioenvs/esphome-klimaanlage/esp-idf/partition_table/CMakeFiles/partition-table-flash.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}
