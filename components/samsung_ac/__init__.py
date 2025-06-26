@@ -232,32 +232,27 @@ CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema().extend(
 
 def custom_sensor_schema(
     message: int,
-    unit_of_measurement: str = None,
-    icon: str = None,
-    accuracy_decimals: int = None,
-    device_class: str = None,
-    state_class: str = None,
-    entity_category: str = None,
+    unit_of_measurement=cv.UNDEFINED,
+    icon=cv.UNDEFINED,
+    accuracy_decimals=cv.UNDEFINED,
+    device_class=cv.UNDEFINED,
+    state_class=cv.UNDEFINED,
+    entity_category=cv.UNDEFINED,
     raw_filters=[],
 ):
-    base_schema = sensor.sensor_schema()
+    schema = sensor.sensor_schema(
+        unit_of_measurement=unit_of_measurement,
+        icon=icon,
+        accuracy_decimals=accuracy_decimals,
+        device_class=device_class,
+        state_class=state_class,
+        entity_category=entity_category
+    ).extend({
+        cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
+        cv.Optional(CONF_DEVICE_CUSTOM_RAW_FILTERS, default=raw_filters): sensor.validate_filters,
+    })
 
-    if unit_of_measurement is not None:
-        base_schema = base_schema.extend({cv.Optional(CONF_UNIT_OF_MEASUREMENT): cv.string})
-    if icon is not None:
-        base_schema = base_schema.extend({cv.Optional(CONF_ICON): cv.icon})
-    if accuracy_decimals is not None:
-        base_schema = base_schema.extend({cv.Optional(CONF_ACCURACY_DECIMALS): cv.positive_int})
-    if device_class is not None:
-        base_schema = base_schema.extend({cv.Optional(CONF_DEVICE_CLASS): cv.string})
-    if state_class is not None:
-        base_schema = base_schema.extend({cv.Optional(CONF_STATE_CLASS): cv.enum(sensor.STATE_CLASSES)})
-    if entity_category is not None:
-        base_schema = base_schema.extend({cv.Optional(CONF_ENTITY_CATEGORY): cv.entity_category})
-    if raw_filters:
-        base_schema = base_schema.extend({cv.Optional(CONF_DEVICE_CUSTOM_RAW_FILTERS): cv.ensure_list(cv.lambda_)})
-    base_schema = base_schema.extend({cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int})
-    return base_schema
+    return schema
 
 def temperature_sensor_schema(message: int):
     return custom_sensor_schema(
