@@ -144,29 +144,22 @@ CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema().extend(
 
 def custom_sensor_schema(
     message: int,
-    unit_of_measurement=None,
-    icon=None,
-    accuracy_decimals=None,
-    device_class=None,
-    state_class=None,
-    entity_category=None,
+    unit_of_measurement=cv.UNDEFINED,
+    icon=cv.UNDEFINED,
+    accuracy_decimals=cv.UNDEFINED,
+    device_class=cv.UNDEFINED,
+    state_class=cv.UNDEFINED,
+    entity_category=cv.UNDEFINED,
     raw_filters=[],
 ):
-    schema = sensor.sensor_schema()
-    if unit_of_measurement is not None:
-        schema = schema.extend({cv.Optional(CONF_UNIT_OF_MEASUREMENT): cv.string})
-    if icon is not None:
-        schema = schema.extend({cv.Optional("icon"): cv.icon})
-    if accuracy_decimals is not None:
-        schema = schema.extend({cv.Optional("accuracy_decimals"): cv.positive_int})
-    if device_class is not None:
-        schema = schema.extend({cv.Optional(CONF_DEVICE_CLASS): cv.string})
-    if state_class is not None:
-        schema = schema.extend({cv.Optional("state_class"): cv.string})
-    if entity_category is not None:
-        schema = schema.extend({cv.Optional("entity_category"): cv.string})
-
-    schema = schema.extend({
+    schema = sensor.sensor_schema(
+        unit_of_measurement=unit_of_measurement,
+        icon=icon,
+        accuracy_decimals=accuracy_decimals,
+        device_class=device_class,
+        state_class=state_class,
+        entity_category=entity_category
+    ).extend({
         cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
         cv.Optional(CONF_DEVICE_CUSTOM_RAW_FILTERS, default=raw_filters): sensor.validate_filters,
     })
