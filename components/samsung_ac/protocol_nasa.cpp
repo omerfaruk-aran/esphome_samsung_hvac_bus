@@ -1,8 +1,8 @@
 #include <set>
-#include "esphome/core/log.h"
 #include "esphome/core/util.h"
 #include "esphome/core/hal.h"
 #include "util.h"
+#include "log.h"
 #include "protocol_nasa.h"
 #include "debug_mqtt.h"
 
@@ -26,10 +26,10 @@ namespace esphome
             return value - (int)65535 /*uint16 max*/ - 1.0;
         }
 
-#define LOG_MESSAGE(message_name, temp, source, dest)                                                             \
-    if (debug_log_messages)                                                                                       \
-    {                                                                                                             \
-        ESP_LOGW(TAG, "s:%s d:%s " #message_name " %g", source.c_str(), dest.c_str(), static_cast<double>(temp)); \
+#define LOG_MESSAGE(message_name, temp, source, dest)                                                         \
+    if (debug_log_messages)                                                                                   \
+    {                                                                                                         \
+        LOG_STATE("s:%s d:%s " #message_name " %g", source.c_str(), dest.c_str(), static_cast<double>(temp)); \
     }
 
         uint16_t crc16(std::vector<uint8_t> &data, int startIndex, int length)
@@ -143,7 +143,7 @@ namespace esphome
             case Structure:
                 if (capacity != 1)
                 {
-                    ESP_LOGE(TAG, "structure messages can only have one message but is %d", capacity);
+                    LOGE("structure messages can only have one message but is %d", capacity);
                     return set;
                 }
                 Buffer buffer;
@@ -156,7 +156,7 @@ namespace esphome
                 set.structure = buffer;
                 break;
             default:
-                ESP_LOGE(TAG, "Unkown type");
+                LOGE("Unkown type");
             }
 
             return set;
@@ -191,7 +191,7 @@ namespace esphome
                 }
                 break;
             default:
-                ESP_LOGE(TAG, "Unkown type");
+                LOGE("Unkown type");
             }
         }
 
@@ -213,8 +213,6 @@ namespace esphome
         }
 
         static int _packetCounter = 0;
-
-        std::vector<PacketInfo> sent_packets;
 
         /*
                 class OutgoingPacket
@@ -256,31 +254,42 @@ namespace esphome
             packet.command.packetInformation = true;
             packet.command.packetType = PacketType::Normal;
             packet.command.dataType = dataType;
+            if (_packetCounter == 0)
+                _packetCounter++; // skip 0
             packet.command.packetNumber = _packetCounter++;
             return packet;
         }
 
         DecodeResult Packet::decode(std::vector<uint8_t> &data)
         {
-            if (data[0] != 0x32)
-                return DecodeResult::InvalidStartByte;
+            const uint16_t size = (uint16_t)data[1] << 8 | (uint16_t)data[2];
 
-            if (data.size() < 16 || data.size() > 1500)
-                return DecodeResult::UnexpectedSize;
+            if (data.size() < 4)
+            {
+                return {DecodeResultType::Fill};
+            }
+            if (size > 1500)
+            {
+                LOGW("Packet exceeds size limits: %s", bytes_to_hex(data).c_str());
+                return {DecodeResultType::Discard};
+            }
 
-            int size = (int)data[1] << 8 | (int)data[2];
-            if (size + 2 != data.size())
-                return DecodeResult::SizeDidNotMatch;
+            if (size + 2 > data.size()) // need more data
+                return {DecodeResultType::Fill};
 
-            if (data[data.size() - 1] != 0x34)
-                return DecodeResult::InvalidEndByte;
+
+            if (data[size + 1] != 0x34)
+            {
+                LOGW("invalid end byte: %s", bytes_to_hex(data).c_str());
+                return {DecodeResultType::Discard};
+            }
 
             uint16_t crc_actual = crc16(data, 3, size - 4);
-            uint16_t crc_expected = (int)data[data.size() - 3] << 8 | (int)data[data.size() - 2];
+            uint16_t crc_expected = (int)data[size - 1] << 8 | (int)data[size];
             if (crc_expected != crc_actual)
             {
-                ESP_LOGW(TAG, "NASA: invalid crc - got %d but should be %d: %s", crc_actual, crc_expected, bytes_to_hex(data).c_str());
-                return DecodeResult::CrcError;
+                LOGW("NASA: invalid crc - got %d but should be %d: %s", crc_actual, crc_expected, bytes_to_hex(data).c_str());
+                return {DecodeResultType::Discard};
             }
 
             unsigned int cursor = 3;
@@ -305,7 +314,7 @@ namespace esphome
                 cursor += set.size;
             }
 
-            return DecodeResult::Ok;
+            return {DecodeResultType::Processed, (uint16_t)(size + 2)};
         };
 
         std::vector<uint8_t> Packet::encode()
@@ -469,12 +478,9 @@ namespace esphome
             if (packet.messages.size() == 0)
                 return;
 
-            ESP_LOGW(TAG, "publish packet %s", packet.to_string().c_str());
+            LOG_PACKET_SEND("Publish packet", packet);
 
-            auto data = packet.encode();
-            target->publish_data(data);
-
-            sent_packets.push_back({packet, 0, millis()});
+            target->publish_data(packet.command.packetNumber, packet.encode());
         }
 
         Mode operation_mode_to_mode(int value)
@@ -549,7 +555,7 @@ namespace esphome
         {
             if (debug_mqtt_connected())
             {
-                static const std::string topic_prefix = "samsung_ac/nasa/";
+                static const std::string topic_prefix = "samsung_ac/nasa/" + source;
                 std::string topic_suffix;
                 std::string payload;
 
@@ -799,7 +805,7 @@ namespace esphome
                 default:
                     if (debug_log_undefined_messages)
                     {
-                        ESP_LOGW(TAG, "Undefined s:%s d:%s %s", source.c_str(), dest.c_str(), message.to_string().c_str());
+                        LOGW("Undefined s:%s d:%s %s", source.c_str(), dest.c_str(), message.to_string().c_str());
                     }
                     break;
                 }
@@ -808,7 +814,7 @@ namespace esphome
             }
         }
 
-        DecodeResult try_decode_nasa_packet(std::vector<uint8_t> data)
+        DecodeResult try_decode_nasa_packet(std::vector<uint8_t> &data)
         {
             return packet_.decode(data);
         }
@@ -817,62 +823,51 @@ namespace esphome
         {
             const auto source = packet_.sa.to_string();
             const auto dest = packet_.da.to_string();
+            const auto me = Address::get_my_address().to_string();
 
             target->register_address(source);
 
             if (debug_log_undefined_messages)
             {
-                ESP_LOGW(TAG, "MSG: %s", packet_.to_string().c_str());
+                LOG_PACKET_RECV("MSG: %s", packet_);
             }
 
             if (packet_.command.dataType == DataType::Ack)
             {
-                bool ack_found = false;
-                for (auto it = sent_packets.begin(); it != sent_packets.end(); ++it)
+                if (dest == me)
                 {
-                    if (it->packet.command.packetNumber == packet_.command.packetNumber)
-                    {
-                        ESP_LOGW(TAG, "found Ack for packet number %d", it->packet.command.packetNumber);
-                        sent_packets.erase(it);
-                        ack_found = true;
-                        break;
-                    }
+                    LOG_PACKET_SEND("Ack", packet_);
+                    target->ack_data(packet_.command.packetNumber);
                 }
-
-                if (!ack_found)
-                {
-                    ESP_LOGW(TAG, "Ack not found for packet number %d", packet_.command.packetNumber);
-                }
-
-                ESP_LOGW(TAG, "Ack %s sent_packets size: %d", packet_.to_string().c_str(), sent_packets.size());
                 return;
             }
 
             if (packet_.command.dataType == DataType::Request)
             {
-                ESP_LOGW(TAG, "Request %s", packet_.to_string().c_str());
+                LOG_PACKET_RECV("Request %s", packet_);
                 return;
             }
             if (packet_.command.dataType == DataType::Response)
             {
-                ESP_LOGW(TAG, "Response %s", packet_.to_string().c_str());
+                LOG_PACKET_RECV("Response %s", packet_);
                 return;
             }
             if (packet_.command.dataType == DataType::Write)
             {
-                ESP_LOGW(TAG, "Write %s", packet_.to_string().c_str());
+                LOG_PACKET_RECV("Write %s", packet_);
                 return;
             }
             if (packet_.command.dataType == DataType::Nack)
             {
-                ESP_LOGW(TAG, "Nack %s", packet_.to_string().c_str());
+                LOG_PACKET_RECV("Nack %s", packet_);
                 return;
             }
             if (packet_.command.dataType == DataType::Read)
             {
-                ESP_LOGW(TAG, "Read %s", packet_.to_string().c_str());
+                LOG_PACKET_RECV("Read %s", packet_);
                 return;
             }
+            LOG_PACKET_RECV("RECV", packet_);
 
             if (packet_.command.dataType != DataType::Notification)
                 return;
@@ -880,23 +875,6 @@ namespace esphome
             for (auto &message : packet_.messages)
             {
                 process_messageset(source, dest, message, target);
-            }
-
-            uint32_t now = millis();
-            for (auto &info : sent_packets)
-            {
-                if (now - info.last_sent_time > 1000 && info.retry_count < 3)
-                {
-                    info.retry_count++;
-                    info.last_sent_time = now;
-                    auto data = info.packet.encode();
-                    target->publish_data(data);
-                    ESP_LOGW(TAG, "Resending packet %d number of attempts: %d", info.packet.command.packetNumber, info.retry_count);
-                }
-                else if (info.retry_count >= 3)
-                {
-                    ESP_LOGW(TAG, "Packet %d failed after 3 attempts.", info.packet.command.packetNumber);
-                }
             }
         }
 
@@ -1173,19 +1151,19 @@ namespace esphome
             case 0x42d1: // VAR_IN_DUST_SENSOR_PM10_0_VALUE
                 if (debug_log_messages)
                 {
-                    ESP_LOGW(TAG, "s:%s d:%s VAR_IN_DUST_SENSOR_PM10_0_VALUE %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);
+                    LOGW("s:%s d:%s VAR_IN_DUST_SENSOR_PM10_0_VALUE %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);
                 }
                 break;   // Ingore cause not important
             case 0x42d2: // VAR_IN_DUST_SENSOR_PM2_5_VALUE
                 if (debug_log_messages)
                 {
-                    ESP_LOGW(TAG, "s:%s d:%s VAR_IN_DUST_SENSOR_PM2_5_VALUE %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);
+                    LOGW("s:%s d:%s VAR_IN_DUST_SENSOR_PM2_5_VALUE %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);
                 }
                 break;   // Ingore cause not important
             case 0x42d3: // VAR_IN_DUST_SENSOR_PM1_0_VALUE
                 if (debug_log_messages)
                 {
-                    ESP_LOGW(TAG, "s:%s d:%s VAR_IN_DUST_SENSOR_PM1_0_VALUE %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);
+                    LOGW("s:%s d:%s VAR_IN_DUST_SENSOR_PM1_0_VALUE %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);
                 }
                 break; // Ingore cause not important
 
@@ -1233,14 +1211,14 @@ namespace esphome
             case 0x4204:
             case 0x4006:
             {
-                // ESP_LOGW(TAG, "s:%s d:%s NoMap %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);
+                // LOGW("s:%s d:%s NoMap %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);
                 break; // message types which have no mapping in xml
             }
 
             default:
                 if (debug_log_undefined_messages)
                 {
-                    ESP_LOGW(TAG, "s:%s d:%s !! unknown %s", source.c_str(), dest.c_str(), message.to_string().c_str());
+                    LOGW("s:%s d:%s !! unknown %s", source.c_str(), dest.c_str(), message.to_string().c_str());
                 }
                 break;
             }

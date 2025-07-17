@@ -172,7 +172,7 @@ namespace esphome
             std::string to_string();
         };
 
-        DecodeResult try_decode_nasa_packet(std::vector<uint8_t> data);
+        DecodeResult try_decode_nasa_packet(std::vector<uint8_t> &data);
         void process_nasa_packet(MessageTarget *target);
 
         class NasaProtocol : public Protocol
