@@ -18,12 +18,18 @@ namespace esphome
 
         std::string bytes_to_hex(const std::vector<uint8_t> &data)
         {
+            return bytes_to_hex(data, 0, data.size());
+        }
+
+        std::string bytes_to_hex(const std::vector<uint8_t> &data, uint16_t start, uint16_t end)
+        {
+
             std::string str;
-            str.reserve(data.size() * 2); // Memory reservations are made to increase efficiency.
-            for (uint8_t byte : data)
+            str.reserve((end - start) * 2); // Memory reservations are made to increase efficiency.
+            for (int i = start; i < end; i++)
             {
                 char buf[3];
-                snprintf(buf, sizeof(buf), "%02x", byte);
+                snprintf(buf, sizeof(buf), "%02x", data[i]);
                 str += buf;
             }
             return str;
