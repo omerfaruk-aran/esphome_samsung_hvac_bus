@@ -386,101 +386,146 @@ namespace esphome
             }
         }
 
+        void NasaProtocol::protocol_update(MessageTarget *target)
+        {
+            for (const auto& pair : outgoing_queue_) {
+                const std::string &address = pair.first;
+                const ProtocolRequest &request = pair.second;
+                Packet packet = Packet::createa_partial(Address::parse(address), DataType::Request);
+
+                if (request.mode)
+                {
+                    MessageSet mode(MessageNumber::ENUM_in_operation_mode);
+                    mode.value = (int)request.mode.value();
+                    packet.messages.push_back(mode);
+                }
+
+                if (request.waterheatermode)
+                {
+                    MessageSet waterheatermode(MessageNumber::ENUM_in_water_heater_mode);
+                    waterheatermode.value = (int)request.waterheatermode.value();
+                    packet.messages.push_back(waterheatermode);
+                }
+
+                if (request.power)
+                {
+                    MessageSet power(MessageNumber::ENUM_in_operation_power);
+                    power.value = request.power.value() ? 1 : 0;
+                    packet.messages.push_back(power);
+                }
+
+                if (request.automatic_cleaning)
+                {
+                    MessageSet automatic_cleaning(MessageNumber::ENUM_in_operation_automatic_cleaning);
+                    automatic_cleaning.value = request.automatic_cleaning.value() ? 1 : 0;
+                    packet.messages.push_back(automatic_cleaning);
+                }
+
+                if (request.water_heater_power)
+                {
+                    MessageSet waterheaterpower(MessageNumber::ENUM_in_water_heater_power);
+                    waterheaterpower.value = request.water_heater_power.value() ? 1 : 0;
+                    packet.messages.push_back(waterheaterpower);
+                }
+
+                if (request.target_temp)
+                {
+                    MessageSet targettemp(MessageNumber::VAR_in_temp_target_f);
+                    targettemp.value = request.target_temp.value() * 10.0;
+                    packet.messages.push_back(targettemp);
+                }
+
+                if (request.water_outlet_target)
+                {
+                    MessageSet wateroutlettarget(MessageNumber::VAR_in_temp_water_outlet_target_f);
+                    wateroutlettarget.value = request.water_outlet_target.value() * 10.0;
+                    packet.messages.push_back(wateroutlettarget);
+                }
+
+                if (request.target_water_temp)
+                {
+                    MessageSet targetwatertemp(MessageNumber::VAR_in_temp_water_heater_target_f);
+                    targetwatertemp.value = request.target_water_temp.value() * 10.0;
+                    packet.messages.push_back(targetwatertemp);
+                }
+
+                if (request.fan_mode)
+                {
+                    MessageSet fanmode(MessageNumber::ENUM_in_fan_mode);
+                    fanmode.value = fanmode_to_nasa_fanmode(request.fan_mode.value());
+                    packet.messages.push_back(fanmode);
+                }
+
+                if (request.alt_mode)
+                {
+                    MessageSet altmode(MessageNumber::ENUM_in_alt_mode);
+                    altmode.value = request.alt_mode.value();
+                    packet.messages.push_back(altmode);
+                }
+
+                if (request.swing_mode)
+                {
+                    MessageSet hl_swing(MessageNumber::ENUM_in_louver_hl_swing);
+                    hl_swing.value = static_cast<uint8_t>(request.swing_mode.value()) & 1;
+                    packet.messages.push_back(hl_swing);
+
+                    MessageSet lr_swing(MessageNumber::ENUM_in_louver_lr_swing);
+                    lr_swing.value = (static_cast<uint8_t>(request.swing_mode.value()) >> 1) & 1;
+                    packet.messages.push_back(lr_swing);
+                }
+
+                if (packet.messages.size() == 0)
+                    return;
+
+                LOG_PACKET_SEND("Publish packet", packet);
+
+                target->publish_data(packet.command.packetNumber, packet.encode());
+            }
+            outgoing_queue_.clear();
+        }
+
         void NasaProtocol::publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request)
         {
-            Packet packet = Packet::createa_partial(Address::parse(address), DataType::Request);
+            ProtocolRequest &queued = outgoing_queue_[address];
 
             if (request.mode)
             {
                 request.power = true; // ensure system turns on when mode is set
-
-                MessageSet mode(MessageNumber::ENUM_in_operation_mode);
-                mode.value = (int)request.mode.value();
-                packet.messages.push_back(mode);
+                queued.mode = request.mode;
             }
 
             if (request.waterheatermode)
             {
                 request.water_heater_power = true; // ensure system turns on when mode is set
-
-                MessageSet waterheatermode(MessageNumber::ENUM_in_water_heater_mode);
-                waterheatermode.value = (int)request.waterheatermode.value();
-                packet.messages.push_back(waterheatermode);
+                queued.waterheatermode = request.waterheatermode;
             }
 
             if (request.power)
-            {
-                MessageSet power(MessageNumber::ENUM_in_operation_power);
-                power.value = request.power.value() ? 1 : 0;
-                packet.messages.push_back(power);
-            }
+                queued.power = request.power;
 
             if (request.automatic_cleaning)
-            {
-                MessageSet automatic_cleaning(MessageNumber::ENUM_in_operation_automatic_cleaning);
-                automatic_cleaning.value = request.automatic_cleaning.value() ? 1 : 0;
-                packet.messages.push_back(automatic_cleaning);
-            }
+                queued.automatic_cleaning = request.automatic_cleaning;
 
             if (request.water_heater_power)
-            {
-                MessageSet waterheaterpower(MessageNumber::ENUM_in_water_heater_power);
-                waterheaterpower.value = request.water_heater_power.value() ? 1 : 0;
-                packet.messages.push_back(waterheaterpower);
-            }
+                queued.water_heater_power = request.water_heater_power;
 
             if (request.target_temp)
-            {
-                MessageSet targettemp(MessageNumber::VAR_in_temp_target_f);
-                targettemp.value = request.target_temp.value() * 10.0;
-                packet.messages.push_back(targettemp);
-            }
+                queued.target_temp = request.target_temp;
 
             if (request.water_outlet_target)
-            {
-                MessageSet wateroutlettarget(MessageNumber::VAR_in_temp_water_outlet_target_f);
-                wateroutlettarget.value = request.water_outlet_target.value() * 10.0;
-                packet.messages.push_back(wateroutlettarget);
-            }
+                queued.water_outlet_target = request.water_outlet_target;
 
             if (request.target_water_temp)
-            {
-                MessageSet targetwatertemp(MessageNumber::VAR_in_temp_water_heater_target_f);
-                targetwatertemp.value = request.target_water_temp.value() * 10.0;
-                packet.messages.push_back(targetwatertemp);
-            }
+                queued.target_water_temp = request.target_water_temp;
 
             if (request.fan_mode)
-            {
-                MessageSet fanmode(MessageNumber::ENUM_in_fan_mode);
-                fanmode.value = fanmode_to_nasa_fanmode(request.fan_mode.value());
-                packet.messages.push_back(fanmode);
-            }
+                queued.fan_mode = request.fan_mode;
 
             if (request.alt_mode)
-            {
-                MessageSet altmode(MessageNumber::ENUM_in_alt_mode);
-                altmode.value = request.alt_mode.value();
-                packet.messages.push_back(altmode);
-            }
+                queued.alt_mode = request.alt_mode;
 
             if (request.swing_mode)
-            {
-                MessageSet hl_swing(MessageNumber::ENUM_in_louver_hl_swing);
-                hl_swing.value = static_cast<uint8_t>(request.swing_mode.value()) & 1;
-                packet.messages.push_back(hl_swing);
-
-                MessageSet lr_swing(MessageNumber::ENUM_in_louver_lr_swing);
-                lr_swing.value = (static_cast<uint8_t>(request.swing_mode.value()) >> 1) & 1;
-                packet.messages.push_back(lr_swing);
-            }
-
-            if (packet.messages.size() == 0)
-                return;
-
-            LOG_PACKET_SEND("Publish packet", packet);
-
-            target->publish_data(packet.command.packetNumber, packet.encode());
+                queued.swing_mode = request.swing_mode;
         }
 
         Mode operation_mode_to_mode(int value)
@@ -1222,11 +1267,6 @@ namespace esphome
                 }
                 break;
             }
-        }
-
-        void NasaProtocol::protocol_update(MessageTarget *target)
-        {
-            // Unused for NASA protocol
         }
 
     } // namespace samsung_ac
