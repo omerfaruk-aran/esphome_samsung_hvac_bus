@@ -34,7 +34,10 @@ NUMBER_SCHEMA = number.number_schema(Samsung_AC_Number).extend(
     {cv.GenerateID(): cv.declare_id(Samsung_AC_Number)}
 )
 
-CLIMATE_SCHEMA = climate.climate_schema(Samsung_AC_Climate)
+CLIMATE_SCHEMA = (
+    climate.climate_schema(...).extend(
+        {cv.GenerateID(): cv.declare_id(Samsung_AC_Climate)})
+)
 
 CONF_DEVICE_ID = "samsung_ac_device_id"
 CONF_DEVICE_ADDRESS = "address"
@@ -78,7 +81,7 @@ CONF_PRESET_ENABLED = "enabled"
 CONF_PRESET_VALUE = "value"
 
 
-CUSTOM_CLIMATE_SCHEMA = climate.climate_schema(Samsung_AC_Climate).extend({
+CUSTOM_CLIMATE_SCHEMA = climate.climate_schema(...).extend({
         cv.GenerateID(): cv.declare_id(Samsung_AC_CustClim),
         cv.Required(CONF_DEVICE_CUSTOMCLIMATE_status_addr): cv.hex_int,
         cv.Required(CONF_DEVICE_CUSTOMCLIMATE_set_addr): cv.hex_int,
