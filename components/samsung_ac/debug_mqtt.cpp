@@ -56,7 +56,7 @@ namespace esphome
                 if (username.length() > 0)
                 {
                     mqtt_cfg.credentials.username = username.c_str();
-                    mqtt_cfg.credentials.password = password.c_str();
+                    mqtt_cfg.authentication.password = password.c_str();
                 }
                 mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
                 esp_mqtt_client_start(mqtt_client);
