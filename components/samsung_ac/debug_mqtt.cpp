@@ -51,12 +51,12 @@ namespace esphome
             if (mqtt_client == nullptr)
             {
                 esp_mqtt_client_config_t mqtt_cfg = {};
-                mqtt_cfg.host = host.c_str();
-                mqtt_cfg.port = port;
+                mqtt_cfg.broker.address.hostname = host.c_str();
+                mqtt_cfg.broker.address.port = port;
                 if (username.length() > 0)
                 {
-                    mqtt_cfg.username = username.c_str();
-                    mqtt_cfg.password = password.c_str();
+                    mqtt_cfg.credentials.username = username.c_str();
+                    mqtt_cfg.credentials.password = password.c_str();
                 }
                 mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
                 esp_mqtt_client_start(mqtt_client);
