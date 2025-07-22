@@ -30,9 +30,8 @@ Samsung_AC_NumberDebug = samsung_ac.class_("Samsung_AC_NumberDebug", number.Numb
 # not sure why select.select_schema did not work yet
 SELECT_MODE_SCHEMA = select.select_schema(Samsung_AC_Mode_Select)
 
-NUMBER_SCHEMA = (
-    number.NUMBER_SCHEMA.extend(
-        {cv.GenerateID(): cv.declare_id(Samsung_AC_Number)})
+NUMBER_SCHEMA = number.number_schema(Samsung_AC_Number).extend(
+    {cv.GenerateID(): cv.declare_id(Samsung_AC_Number)}
 )
 
 CLIMATE_SCHEMA = (
