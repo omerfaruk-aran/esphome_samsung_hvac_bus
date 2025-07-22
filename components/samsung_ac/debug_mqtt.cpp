@@ -50,14 +50,27 @@ namespace esphome
 #elif USE_ESP32
             if (mqtt_client == nullptr)
             {
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+                // For ESP-IDF v5.0 and above
+                std::string uri = "mqtt://" + host + ":" + std::to_string(port);
                 esp_mqtt_client_config_t mqtt_cfg = {};
-                mqtt_cfg.broker.address.hostname = host.c_str();
-                mqtt_cfg.broker.address.port = port;
-                if (username.length() > 0)
+                mqtt_cfg.broker.address.uri = uri.c_str();
+                if (!username.empty())
+                {
+                    mqtt_cfg.credentials.username = username.c_str();
+                    mqtt_cfg.credentials.authentication.password = password.c_str();
+                }
+#else
+                // For ESP-IDF versions below v5.0
+                esp_mqtt_client_config_t mqtt_cfg = {};
+                mqtt_cfg.host = host.c_str();
+                mqtt_cfg.port = port;
+                if (!username.empty())
                 {
                     mqtt_cfg.username = username.c_str();
                     mqtt_cfg.password = password.c_str();
                 }
+#endif
                 mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
                 esp_mqtt_client_start(mqtt_client);
             }
