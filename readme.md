@@ -4,7 +4,7 @@ Welcome to the **ESPHome Samsung HVAC Integration** project! This project provid
 
 ## 🌟 Overview
 This project focuses on Samsung HVAC units that communicate via a dedicated hardware bus (commonly F1/F2, sometimes called R1/R2). Samsung uses two main protocols for communication between indoor and outdoor units:
-- **NASA Protocol**: Newer models utilize this more advanced protocol.
+- **NASA Protocol**: Newer models utilize this more advanced protocol. [NASA protocol documentation](docs/samsung_nasa_protocol.md).
 - **NonNASA Protocol**: Older units often rely on this simpler protocol.
 
 The integration is designed to support both protocols, ensuring compatibility across a wide range of Samsung AC units.
