@@ -65,6 +65,7 @@ samsung_ac:
   # For half duplex RS485 board with DI, DE, RE, and RO pins, you have to control read/write with control pin
   # see https://microcontrollerslab.com/rs485-serial-communication-esp32-esp8266-tutorial/ for wiring
   #flow_control_pin: GPIO4
+  #flow_control_pin_2: GPIO4
 
   # Capabilities configure the features that all devices of your AC system have (all parts of this section are optional). 
   # All capabilities are off by default, you need to enable only those your devices have.
