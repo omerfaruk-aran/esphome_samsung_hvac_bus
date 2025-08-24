@@ -195,8 +195,8 @@ Below tables show the available information from these files in a concise layout
 | 0x24FB | LVAR\_NM\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
 | 0x24FC | LVAR\_NM\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
 | 0x4000 | ENUM\_IN\_OPERATION\_POWER <br/> NASA\_POWER | Indoor unit power on/off <br/> 0 Off, 1 On, 2 On |
-| 0x4001 | ENUM\_IN\_OPERATION\_MODE <br/> NASA\_INDOOR\_OPMODE | Indoor unit control mode <br/> 0 Auto, 1 Cool, 2 Dry, 3 Fan, 4 Heat, 21 Cool Storage, 24 Hot water |
-| 0x4002 | ENUM\_IN\_OPERATION\_MODE\_REAL <br/> NASA\_INDOOR\_REAL\_OPMODE | Indoor unit current operation mode <br/> 0 Auto, 1 Cool, 2 Dry, 3 Fan, 4 Heat, 11 Auto Cool, 12 Auto Dry, 13 Auto Fan, 14 Auto Heat, 21 Cool Storage, 24 Hot water, 255 NULL mode |
+| 0x4001 | ENUM\_IN\_OPERATION\_MODE <br/> NASA\_INDOOR\_OPMODE | Indoor unit control mode <br/> 0 Auto, 1 Cool, 2 Dry, 3 Fan, 4 Heat,<br/> 21 Cool Storage, 24 Hot water |
+| 0x4002 | ENUM\_IN\_OPERATION\_MODE\_REAL <br/> NASA\_INDOOR\_REAL\_OPMODE | Indoor unit current operation mode <br/> 0 Auto, 1 Cool, 2 Dry, 3 Fan, 4 Heat, <br/>11 Auto Cool, 12 Auto Dry, 13 Auto Fan,<br/>14 Auto Heat, 21 Cool Storage, 24 Hot water,<br/>255 NULL mode |
 | 0x4003 | ENUM\_IN\_OPERATION\_VENT\_POWER <br/> NASA\_ERV\_POWER | Ventilation operation mode |
 | 0x4004 | ENUM\_IN\_OPERATION\_VENT\_MODE <br/> NASA\_ERV\_OPMODE |     |
 | 0x4006 | ENUM\_IN\_?? <br/> NASA\_FANSPEED <br/>-|     |
@@ -208,7 +208,7 @@ Below tables show the available information from these files in a concise layout
 | 0x4012 | ENUM\_IN\_LOUVER\_HL\_PART\_SWING <br/>-| Up and down wind direction setting/status |
 | 0x4015 | ENUM\_IN\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
 | 0x4018 | ENUM\_IN\_?? <br/> NASA\_USE\_WIREDREMOTE |     |
-| 0x4019 | ENUM\_IN\_?? <br/> NASA\_USE\_DISCHARGE\_TEMP | This value is a value that cannot be controlled by the upper controller. |
+| 0x4019 | ENUM\_IN\_?? <br/> NASA\_USE\_DISCHARGE\_TEMP | This value is a value that cannot be controlled<br/>by the upper controller. |
 | 0x401B | ENUM\_IN\_?? <br/> NASA\_USE\_CENTUAL\_CONTROL | Income from InstallOption information. |
 | 0x4023 | ENUM\_IN\_?? <br/> NASA\_USE\_SPI |     |
 | 0x4024 | ENUM\_IN\_?? <br/> NASA\_USE\_FILTER\_WARNING\_TIME |     |
@@ -349,7 +349,7 @@ Below tables show the available information from these files in a concise layout
 | 0x412D | ENUM\_IN\_FSV\_LOAD\_SAVE <br/>-| Min = 0 Max = 1, similar name as 0x4125 in NASA.ptc |
 | 0x4147 | ENUM\_IN\_GAS\_LEVEL <br/>-|     |
 | 0x4149 | ENUM\_IN\_DIFFUSER\_OPERATION\_POWER <br/>-|     |
-| 0x4201 | VAR\_IN\_TEMP\_TARGET\_F <br/> NASA\_SET\_TEMP | Indoor unit set temperature <br/> if isEhsSetTempWaterOut (406F) ==1 , use value of variable waterOutSetTemp = 4247 |
+| 0x4201 | VAR\_IN\_TEMP\_TARGET\_F <br/> NASA\_SET\_TEMP | Indoor unit set temperature <br/> if isEhsSetTempWaterOut (406F) ==1 , use value of<br/>variable waterOutSetTemp = 4247 |
 | 0x4202 | VAR\_IN\_?? <br/>-|     |
 | 0x4203 | VAR\_IN\_TEMP\_ROOM\_F <br/> NASA\_CURRENT\_TEMP | Room Temperature |
 | 0x4204 | VAR\_IN\_?? <br/> NASA\_MODIFIED\_CURRENT\_TEMP | Temperature |
@@ -530,7 +530,7 @@ Below tables show the available information from these files in a concise layout
 | 0x461D |-<br/>NASA\_AHUPANEL\_PANEL\_OPTION |     |
 | 0x461E | STR\_IN\_ERROR\_HISTORY\_FOR\_HASS <br/>-| Structure Type |
 | 0x8000 | ENUM\_OUT\_OPERATION\_SERVICE\_OP <br/>-| Indoor unit defrost operation steps <br/> 2 Heating test run, 3 Pump out, 13 Cooling test run, 14 Pump down |
-| 0x8001 | ENUM\_OUT\_OPERATION\_ODU\_MODE <br/> NASA\_OUTDOOR\_OPERATION\_STATUS | Outdoor Driving Mode <br/> 0 OP\_STOP, 1 OP\_SAFETY, 2 OP\_NORMAL, 3 OP\_BALANCE, 4 OP\_RECOVERY, 5 OP\_DEICE, 6 OP\_COMPDOWN, 7 OP\_PROHIBIT, 8 OP\_LINEJIG, 9 OP\_PCBJIG, 10 OP\_TEST, 11 OP\_CHARGE, 12 OP\_PUMPDOWN, 13 OP\_PUMPOUT, 14 OP\_VACCUM, 15 OP\_CALORYJIG, 16 OP\_PUMPDOWNSTOP, 17 OP\_SUBSTOP, 18 OP\_CHECKPIPE, 19 OP\_CHECKREF, 20 OP\_FPTJIG, 21 OP\_NONSTOP\_HEAT\_COOL\_CHANGE, 22 OP\_AUTO\_INSPECT, 23 OP\_ELECTRIC\_DISCHARGE, 24 OP\_SPLIT\_DEICE, 25 OP\_INVETER\_CHECK, 26 OP\_NONSTOP\_DEICE, 27 OP\_REM\_TEST, 28 OP\_RATING, 29 OP\_PC\_TEST, 30 OP\_PUMPDOWN\_THERMOOFF, 31 OP\_3PHASE\_TEST, 32 OP\_SMARTINSTALL\_TEST, 33 OP\_DEICE\_PERFORMANCE\_TEST, 34 OP\_INVERTER\_FAN\_PBA\_CHECK, 35 OP\_AUTO\_PIPE\_PAIRING, 36 OP\_AUTO\_CHARGE |
+| 0x8001 | ENUM\_OUT\_OPERATION\_ODU\_MODE <br/> NASA\_OUTDOOR\_OPERATION\_STATUS | Outdoor Driving Mode <br/> 0 OP\_STOP,<br/>  1 OP\_SAFETY,<br/>  2 OP\_NORMAL,<br/>  3 OP\_BALANCE,<br/>  4 OP\_RECOVERY,<br/>  5 OP\_DEICE,<br/>  6 OP\_COMPDOWN,<br/>  7 OP\_PROHIBIT,<br/>  8 OP\_LINEJIG,<br/>  9 OP\_PCBJIG,<br/>  10 OP\_TEST,<br/>  11 OP\_CHARGE,<br/>  12 OP\_PUMPDOWN,<br/>  13 OP\_PUMPOUT,<br/>  14 OP\_VACCUM,<br/>  15 OP\_CALORYJIG,<br/>  16 OP\_PUMPDOWNSTOP,<br/>  17 OP\_SUBSTOP,<br/>  18 OP\_CHECKPIPE,<br/>  19 OP\_CHECKREF,<br/>  20 OP\_FPTJIG,<br/>  21 OP\_NONSTOP\_HEAT\_COOL\_CHANGE,<br/>  22 OP\_AUTO\_INSPECT,<br/>  23 OP\_ELECTRIC\_DISCHARGE,<br/>  24 OP\_SPLIT\_DEICE,<br/>  25 OP\_INVETER\_CHECK,<br/>  26 OP\_NONSTOP\_DEICE,<br/>  27 OP\_REM\_TEST,<br/>  28 OP\_RATING,<br/>  29 OP\_PC\_TEST,<br/>  30 OP\_PUMPDOWN\_THERMOOFF,<br/>  31 OP\_3PHASE\_TEST,<br/>  32 OP\_SMARTINSTALL\_TEST,<br/>  33 OP\_DEICE\_PERFORMANCE\_TEST,<br/>  34 OP\_INVERTER\_FAN\_PBA\_CHECK,<br/>  35 OP\_AUTO\_PIPE\_PAIRING,<br/>  36 OP\_AUTO\_CHARGE |
 | 0x8002 | ENUM\_OUT\_?? <br/>-|     |
 | 0x8003 | ENUM\_OUT\_OPERATION\_HEATCOOL <br/> NASA\_OUTDOOR\_OPERATION\_MODE | Outdoor unit cooling/heating mode <br/> 1 Cool, 2 Heat, 3 CoolMain, 4 HeatMain |
 | 0x8005 | ENUM\_OUT\_?? <br/>-|     |
@@ -589,7 +589,7 @@ Below tables show the available information from these files in a concise layout
 | 0x805C | ENUM\_OUT\_MCU\_PORT4\_INDOOR\_ADDR <br/>-|     |
 | 0x805D | ENUM\_OUT\_MCU\_PORT5\_INDOOR\_ADDR <br/>-|     |
 | 0x805E | ENUM\_OUT\_?? <br/>-|     |
-| 0x8061 | ENUM\_OUT\_DEICE\_STEP\_INDOOR <br/> NASA\_OUTDOOR\_INDOOR\_DEFROST\_STEP | Indoor unit defrost operation steps <br/> 1 Defrost stage 1, 2 Defrost stage 2, 3 Defrost stage 3, 7 Defrost operation end stage, 255 No defrost operation |
+| 0x8061 | ENUM\_OUT\_DEICE\_STEP\_INDOOR <br/> NASA\_OUTDOOR\_INDOOR\_DEFROST\_STEP | Indoor unit defrost operation steps <br/> 1 Defrost stage 1,<br/>  2 Defrost stage 2,<br/>  3 Defrost stage 3,<br/>  7 Defrost operation end stage,<br/>  255 No defrost operation |
 | 0x8062 |-<br/>NASA\_OUTDOOR\_LOGICAL\_DEFROST\_STEP |     |
 | 0x8063 | ENUM\_OUT\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
 | 0x8065 |-<br/>NASA\_OUTDOOR\_SYSTEM\_RESET |     |
@@ -607,7 +607,7 @@ Below tables show the available information from these files in a concise layout
 | 0x8083 | ENUM\_OUT\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
 | 0x808C | ENUM\_OUT\_?? <br/>-|     |
 | 0x808D | ENUM\_OUT\_?? <br/>-|     |
-| 0x808E | ENUM\_OUT\_OP\_CHECK\_REF\_STEP <br/>-| Refrigerant amount level <br/> This is Enum in definition. But we need operation, so just consider this as variable. Min = 0, Max = 8 |
+| 0x808E | ENUM\_OUT\_OP\_CHECK\_REF\_STEP <br/>-| Refrigerant amount level <br/> This is Enum in definition. But we need operation,<br/>so just consider this as variable. Min = 0, Max = 8 |
 | 0x808F | ENUM\_OUT\_?? <br/>-|     |
 | 0x8092 | ENUM\_OUT\_INSTALL\_ODU\_COUNT <br/>-|     |
 | 0x8099 | ENUM\_OUT\_CONTROL\_FAN\_NUM <br/>-| Number of outdoor fans |
@@ -659,7 +659,7 @@ Below tables show the available information from these files in a concise layout
 | 0x8226 | VAR\_OUT\_LOAD\_FANSTEP1 <br/> NASA\_OUTDOOR\_FAN\_STEP1 | Outdoor Fan Step <br/> Min 0, Max 10000 |
 | 0x8227 | VAR\_OUT\_?? <br/> NASA\_OUTDOOR\_FAN\_STEP2 |     |
 | 0x8228 |-<br/>NASA\_OUTDOOR\_LOADINGTIME |     |
-| 0x8229 | VAR\_OUT\_LOAD\_OUTEEV1 <br/> NASA\_OUTDOOR\_MAINEEV1 | Main EEV1 <br/> An Electronic Expansion Valve, or EEV for short, is installed before the evaporator in an air handler/coil and after the condenser in a heat pump. It regulates the refrigerant flow rate to control superheat at the evaporator outlet by opening and closing. |
+| 0x8229 | VAR\_OUT\_LOAD\_OUTEEV1 <br/> NASA\_OUTDOOR\_MAINEEV1 | Main EEV1 <br/> An Electronic Expansion Valve, or EEV for short, <br/>is installed before the evaporator in an air handler/coil <br/>and after the condenser in a heat pump. <br/>It regulates the refrigerant flow rate to control <br/>superheat at the evaporator outlet by opening and closing. |
 | 0x822A | VAR\_OUT\_LOAD\_OUTEEV2 <br/> NASA\_OUTDOOR\_MAINEEV2 | Main EEV2 |
 | 0x822B | VAR\_OUT\_LOAD\_OUTEEV3 <br/> NASA\_OUTDOOR\_MAINEEV3 | Main EEV3 |
 | 0x822C | VAR\_OUT\_LOAD\_OUTEEV4 <br/> NASA\_OUTDOOR\_MAINEEV4 | Main EEV4 |
@@ -691,7 +691,7 @@ Below tables show the available information from these files in a concise layout
 | 0x824B | VAR\_OUT\_?? <br/>-|     |
 | 0x824C | VAR\_OUT\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
 | 0x824F | VAR\_OUT\_CONTROL\_REFRIGERANTS\_VOLUME <br/>-| Refrigerant amount |
-| 0x8254 | VAR\_OUT\_SENSOR\_IPM1 <br/> NASA\_OUTDOOR\_IPM\_TEMP1 | IPM1 Temperature <br/> Min -41, Max 150. The IPM is a component within the inverter system. It is responsible for converting the incoming direct current (DC) power from the power supply into alternating current (AC) power that drives the compressor motor. The term "intelligent" is often used because the IPM includes sophisticated electronics and control algorithms that optimize the motor's performance. |
+| 0x8254 | VAR\_OUT\_SENSOR\_IPM1 <br/> NASA\_OUTDOOR\_IPM\_TEMP1 | IPM1 Temperature <br/> Min -41, Max 150. The IPM is a component within <br/>the inverter system. It is responsible for converting <br/>the incoming direct current (DC) power from the <br/>power supply into alternating <br/>current (AC) power that drives the <br/>compressor motor. The term "intelligent" is <br/>often used because the IPM includes <br/>sophisticated electronics and control algorithms <br/>that optimize the motor's performance. |
 | 0x8255 | VAR\_OUT\_SENSOR\_IPM2 <br/> NASA\_OUTDOOR\_IPM\_TEMP2 | IPM2 Temperature |
 | 0x825A | VAR\_OUT\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
 | 0x825B | VAR\_OUT\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
@@ -785,7 +785,7 @@ Below tables show the available information from these files in a concise layout
 | 0x82DF | VAR\_OUT\_SENSOR\_TW1 <br/> NASA\_OUTDOOR\_TW1\_TEMP | Water In 1 for EHS |
 | 0x82E0 | VAR\_OUT\_SENSOR\_TW2 <br/> NASA\_OUTDOOR\_TW2\_TEMP | Water In 2 for EHS |
 | 0x82E1 | VAR\_OUT\_?? <br/>-|     |
-| 0x82E3 | VAR\_OUT\_PRODUCT\_OPTION\_CAPA <br/>-| Outdoor unit product option capacity (based on 0.1Kw) for EHS |
+| 0x82E3 | VAR\_OUT\_PRODUCT\_OPTION\_CAPA <br/>-| Outdoor unit product option capacity <br/>(based on 0.1Kw) for EHS |
 | 0x82E7 | VAR\_OUT\_SENSOR\_TOTAL\_SUCTION <br/>-| Total Suction Sensor <br/> Min -41, Max 150 |
 | 0x82E8 | VAR\_OUT\_LOAD\_MCU\_HR\_BYPASS\_EEV <br/>-| MCU HR Bypass EEV opening diagram |
 | 0x82E9 | VAR\_OUT\_SENSOR\_PFCM1 <br/>-| PFCM#1 element temperature <br/> Min -54, Max 3000 |
@@ -806,12 +806,12 @@ Below tables show the available information from these files in a concise layout
 | 0x840E |-<br/>NASA\_OUTDOOR\_COMP3\_RUNNING\_TIME |     |
 | 0x840F | LVAR\_OUT\_?? <br/>-|     |
 | 0x8410 | LVAR\_OUT\_?? <br/>-|     |
-| 0x8411 | LVAR\_OUT\_?? <br/> NASA\_OUTDOOR\_CONTROL\_WATTMETER\_1UNIT | Instantaneous power consumption of outdoor unit. One outdoor unit. Not used by the controller. <br/> appears about every 135 seconds, so less often than 0x8413 |
-| 0x8412 |-<br/>NASA\_OUTDOOR\_CONTROL\_WATTMETER\_1UNIT\_ACCUM | Cumulative power consumption of outdoor unit. One outdoor unit. Not used by the controller. |
-| 0x8413 | LVAR\_OUT\_CONTROL\_WATTMETER\_1W\_1MIN\_SUM <br/> NASA\_OUTDOOR\_CONTROL\_WATTMETER\_ALL\_UNIT | Outdoor unit instantaneous power consumption. Sum of modules <br/> appears about every 30 seconds, not once in a minute |
-| 0x8414 | LVAR\_OUT\_?? | NASA\_OUTDOOR\_CONTROL\_WATTMETER\_ALL\_UNIT\_ACCUM <br/> Outdoor unit cumulative power consumption. Sum of modules | value is Wh, so do div 1000 |
-| 0x8415 | LVAR\_OUT\_?? | NASA\_OUTDOOR\_CONTROL\_WATTMETER\_TOTAL\_SUM <br/> Total (indoor + outdoor) instantaneous power consumption | never seen in NASA data from EHS Mono HT Quiet |
-| 0x8416 | LVAR\_OUT\_?? | NASA\_OUTDOOR\_CONTROL\_WATTMETER\_TOTAL\_SUM\_ACCUM <br/> Total (indoor + outdoor) cumulative power consumption | never seen in NASA data from EHS Mono HT Quiet |
+| 0x8411 | LVAR\_OUT\_?? <br/> NASA\_OUTDOOR\_CONTROL\_WATTMETER\_1UNIT | Instantaneous power consumption of outdoor unit. <br/>One outdoor unit. Not used by the controller. It appears about every 135 seconds,<br/>so less often than 0x8413 |
+| 0x8412 |-<br/>NASA\_OUTDOOR\_CONTROL\_WATTMETER\_1UNIT\_ACCUM | Cumulative power consumption of outdoor unit. <br/>One outdoor unit. Not used by the controller. |
+| 0x8413 | LVAR\_OUT\_CONTROL\_WATTMETER\_1W\_1MIN\_SUM <br/> NASA\_OUTDOOR\_CONTROL\_WATTMETER\_ALL\_UNIT | Outdoor unit instantaneous power consumption. <br/>Sum of modules appears about every 30 seconds,<br/>not once in a minute |
+| 0x8414 | LVAR\_OUT\_?? <br/> NASA\_OUTDOOR\_CONTROL\_WATTMETER\_ALL\_UNIT\_ACCUM | Outdoor unit cumulative power consumption. Sum of modules | value is Wh, so do div 1000 |
+| 0x8415 | LVAR\_OUT\_?? <br/> NASA\_OUTDOOR\_CONTROL\_WATTMETER\_TOTAL\_SUM | Total (indoor + outdoor) instantaneous power consumption | never seen in NASA data from EHS Mono HT Quiet |
+| 0x8416 | LVAR\_OUT\_?? <br/> NASA\_OUTDOOR\_CONTROL\_WATTMETER\_TOTAL\_SUM\_ACCUM | Total (indoor + outdoor) cumulative power consumption | never seen in NASA data from EHS Mono HT Quiet |
 | 0x8417 | LVAR\_OUT\_?? <br/> NASA\_OUTDOOR\_VARIABLE\_SETUP\_INFO |     |
 | 0x841F | LVAR\_OUT\_?? <br/>-| seen in NASA data from EHS Mono HT Quiet |
 | 0x8601 | STR\_OUT\_INSTALL\_INVERTER\_AND\_BOOTLOADER\_INFO | NASA\_OUTDOOR\_SUBMICOM <br/> Structure Type |     |
