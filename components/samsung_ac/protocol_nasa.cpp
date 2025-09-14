@@ -806,25 +806,25 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_evaporator_temp, temp);
                 break;
             }
-            case MessageNumber::Compressor_Commanded_Frequency:
+            case MessageNumber::Compressor_Current:
             {
                 double current = (double)message.value / 10.0; // Convert to Amperes
-                LOG_MESSAGE(Compressor_Commanded_Frequency, current, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Commanded_Frequency, current);
+                LOG_MESSAGE(Compressor_Current, current, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Current, current);
                 break;
             }
-            case MessageNumber::Compressor_Target_Frequency:
+            case MessageNumber::Compressor_Power:
             {
                 double power = (double)message.value; // Already in Watts
-                LOG_MESSAGE(Compressor_Target_Frequency, power, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Target_Frequency, power);
+                LOG_MESSAGE(Compressor_Power, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Power, power);
                 break;
             }
-            case MessageNumber::Compressor_Current_Freq:
+            case MessageNumber::Fan_Compressor_Frequency:
             {
                 float freq = message.value;
-                ESP_LOGD(TAG, "Compressor current frequency: %.1f Hz", freq);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Current_Freq, freq);
+                ESP_LOGD(TAG, "Fan/Compressor frequency: %.1f Hz", freq);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::Fan_Compressor_Frequency, freq);
                 break;
             }
             case MessageNumber::Fan_Power:
@@ -1137,6 +1137,77 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_circulation_pump_speed, percent);
                 break;
             }
+
+            // --- New Outdoor Unit Messages from Reference Tables ---
+            case MessageNumber::ENUM_out_compressor_running_status:
+                LOG_MESSAGE(ENUM_out_compressor_running_status, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_compressor_running_status, message.value);
+                break;
+            case MessageNumber::ENUM_out_hot_gas_valve_status:
+                LOG_MESSAGE(ENUM_out_hot_gas_valve_status, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_hot_gas_valve_status, message.value);
+                break;
+            case MessageNumber::ENUM_out_liquid_line_valve_status:
+                LOG_MESSAGE(ENUM_out_liquid_line_valve_status, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_liquid_line_valve_status, message.value);
+                break;
+            case MessageNumber::ENUM_out_4way_reversing_valve_status:
+                LOG_MESSAGE(ENUM_out_4way_reversing_valve_status, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_4way_reversing_valve_status, message.value);
+                break;
+            case MessageNumber::ENUM_out_evi_bypass_valve_status:
+                LOG_MESSAGE(ENUM_out_evi_bypass_valve_status, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_evi_bypass_valve_status, message.value);
+                break;
+            case MessageNumber::ENUM_out_base_pan_heater:
+                LOG_MESSAGE(ENUM_out_base_pan_heater, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_base_pan_heater, message.value);
+                break;
+            case MessageNumber::ENUM_out_phe_heater:
+                LOG_MESSAGE(ENUM_out_phe_heater, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_phe_heater, message.value);
+                break;
+            case MessageNumber::VAR_out_fan_step:
+                LOG_MESSAGE(VAR_out_fan_step, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_step, message.value);
+                break;
+            case MessageNumber::VAR_out_eev_steps:
+                LOG_MESSAGE(VAR_out_eev_steps, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_eev_steps, message.value);
+                break;
+            case MessageNumber::VAR_out_dc_link_voltage:
+            {
+                double voltage = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_out_dc_link_voltage, voltage, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_dc_link_voltage, voltage);
+                break;
+            }
+
+            // --- New Indoor Unit Messages from Reference Tables ---
+            case MessageNumber::VAR_in_zone2_room_setpoint:
+            {
+                double temp = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_in_zone2_room_setpoint, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_room_setpoint, temp);
+                break;
+            }
+            case MessageNumber::VAR_in_zone2_water_setpoint:
+            {
+                double temp = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_in_zone2_water_setpoint, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_water_setpoint, temp);
+                break;
+            }
+            case MessageNumber::VAR_in_flow_rate_control:
+                LOG_MESSAGE(VAR_in_flow_rate_control, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_flow_rate_control, message.value);
+                break;
+
+            // --- New Energy Messages from Reference Tables ---
+            case MessageNumber::LVAR_out_wattmeter_total_sum:
+                LOG_MESSAGE(LVAR_out_wattmeter_total_sum, message.value, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_out_wattmeter_total_sum, message.value);
+                break;
 
             default:
             {

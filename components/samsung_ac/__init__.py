@@ -145,6 +145,41 @@ CONF_DEVICE_HEAT_PUMP_OPERATION_MODE = "heat_pump_operation_mode"
 CONF_DEVICE_DHW_TANK_TEMPERATURE = "dhw_tank_temperature"
 CONF_DEVICE_WATER_HEATER_TEMPERATURE = "water_heater_temperature"
 
+# Add new constants for missing outdoor unit sensors
+CONF_DEVICE_OPERATION_MODE_OUTDOOR = "operation_mode_outdoor"
+CONF_DEVICE_COMPRESSOR_RUNNING_STATUS = "compressor_running_status"
+CONF_DEVICE_HOT_GAS_VALVE_STATUS = "hot_gas_valve_status"
+CONF_DEVICE_LIQUID_LINE_VALVE_STATUS = "liquid_line_valve_status"
+CONF_DEVICE_FOUR_WAY_REVERSING_VALVE_STATUS = "four_way_reversing_valve_status"
+CONF_DEVICE_EVI_BYPASS_VALVE_STATUS = "evi_bypass_valve_status"
+CONF_DEVICE_BASE_PAN_HEATER = "base_pan_heater"
+CONF_DEVICE_PHE_HEATER = "phe_heater"
+CONF_DEVICE_HIGH_PRESSURE = "high_pressure"
+CONF_DEVICE_LOW_PRESSURE = "low_pressure"
+CONF_DEVICE_DISCHARGE_TEMPERATURE = "discharge_temperature"
+CONF_DEVICE_CONDENSER_OUTLET_TEMP = "condenser_outlet_temp"
+CONF_DEVICE_SUCTION_TEMPERATURE = "suction_temperature"
+CONF_DEVICE_EVI_INLET_TEMP = "evi_inlet_temp"
+CONF_DEVICE_EVI_OUTLET_TEMP = "evi_outlet_temp"
+CONF_DEVICE_OUTDOOR_FAN_STEP = "outdoor_fan_step"
+CONF_DEVICE_MAIN_EEV_STEPS = "main_eev_steps"
+CONF_DEVICE_DC_LINK_VOLTAGE = "dc_link_voltage"
+CONF_DEVICE_HIGH_PRESSURE_SAT_TEMP = "high_pressure_sat_temp"
+CONF_DEVICE_LOW_PRESSURE_SAT_TEMP = "low_pressure_sat_temp"
+CONF_DEVICE_WATTMETER_TOTAL_SUM = "wattmeter_total_sum"
+CONF_DEVICE_PRODUCED_ENERGY_TOTAL_NEW = "produced_energy_total_new"
+
+# Add new constants for missing indoor unit sensors
+CONF_DEVICE_ZONE2_ROOM_SETPOINT = "zone2_room_setpoint"
+CONF_DEVICE_ZONE2_WATER_SETPOINT = "zone2_water_setpoint"
+CONF_DEVICE_WATER_OUTLET_ZONE1 = "water_outlet_zone1"
+CONF_DEVICE_WATER_OUTLET_ZONE2 = "water_outlet_zone2"
+CONF_DEVICE_FLOW_RATE_CONTROL = "flow_rate_control"
+
+# Add corrected constants
+CONF_DEVICE_COMPRESSOR_POWER = "compressor_power"
+CONF_DEVICE_FAN_COMPRESSOR_FREQUENCY = "fan_compressor_frequency"
+
 
 def preset_entry(name: str, value: int, displayName: str):
     return (
@@ -582,6 +617,41 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_WATER_HEATER_TEMPERATURE,  # 0x42E9
     CONF_DEVICE_PRODUCED_ENERGY_ACTUAL,    # 0x8426
     CONF_DEVICE_PRODUCED_ENERGY_TOTAL,     # 0x8404
+    
+    # New outdoor unit sensors from reference tables
+    CONF_DEVICE_OPERATION_MODE_OUTDOOR,    # 0x8001
+    CONF_DEVICE_COMPRESSOR_RUNNING_STATUS, # 0x8010
+    CONF_DEVICE_HOT_GAS_VALVE_STATUS,      # 0x8017
+    CONF_DEVICE_LIQUID_LINE_VALVE_STATUS,  # 0x8019
+    CONF_DEVICE_FOUR_WAY_REVERSING_VALVE_STATUS, # 0x801A
+    CONF_DEVICE_EVI_BYPASS_VALVE_STATUS,   # 0x8021
+    CONF_DEVICE_BASE_PAN_HEATER,           # 0x80AF
+    CONF_DEVICE_PHE_HEATER,                # 0x80D7
+    CONF_DEVICE_HIGH_PRESSURE,             # 0x8206
+    CONF_DEVICE_LOW_PRESSURE,              # 0x8208
+    CONF_DEVICE_DISCHARGE_TEMPERATURE,     # 0x820A
+    CONF_DEVICE_CONDENSER_OUTLET_TEMP,     # 0x8218
+    CONF_DEVICE_SUCTION_TEMPERATURE,       # 0x821A
+    CONF_DEVICE_EVI_INLET_TEMP,            # 0x821E
+    CONF_DEVICE_EVI_OUTLET_TEMP,           # 0x8220
+    CONF_DEVICE_OUTDOOR_FAN_STEP,          # 0x8226
+    CONF_DEVICE_MAIN_EEV_STEPS,            # 0x8229
+    CONF_DEVICE_DC_LINK_VOLTAGE,           # 0x823B
+    CONF_DEVICE_HIGH_PRESSURE_SAT_TEMP,    # 0x829F
+    CONF_DEVICE_LOW_PRESSURE_SAT_TEMP,     # 0x82A0
+    CONF_DEVICE_WATTMETER_TOTAL_SUM,       # 0x8415
+    CONF_DEVICE_PRODUCED_ENERGY_TOTAL_NEW, # 0x8427
+    
+    # New indoor unit sensors from reference tables
+    CONF_DEVICE_ZONE2_ROOM_SETPOINT,       # 0x42D6
+    CONF_DEVICE_ZONE2_WATER_SETPOINT,      # 0x42D7
+    CONF_DEVICE_WATER_OUTLET_ZONE1,        # 0x42D8
+    CONF_DEVICE_WATER_OUTLET_ZONE2,        # 0x42D9
+    CONF_DEVICE_FLOW_RATE_CONTROL,         # 0x42F1
+    
+    # Corrected constants
+    CONF_DEVICE_COMPRESSOR_POWER,          # 0x8237
+    CONF_DEVICE_FAN_COMPRESSOR_FREQUENCY,  # 0x8238
 ]
 
 CONF_DEVICES = "devices"

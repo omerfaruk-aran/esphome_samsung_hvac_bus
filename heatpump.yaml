@@ -53,8 +53,8 @@ uart:
 
 # Import custom component from GitHub
 external_components:
-#  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
-  - source: ./components  # Point to the components directory
+  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
+#  - source: ./components  # Point to the components directory
     components: [samsung_ac]
 
 # Configuration of AC component
@@ -195,13 +195,51 @@ samsung_ac:
           filters:
             - multiply: 0.1
 
-        - name: "Water Heater Temperature (Booster) (42E9)"
+        - name: "Water Flow Rate (42E9)"
           message: 0x42E9
-          id: water_heater_temperature_20_00_00
-          unit_of_measurement: "°C" 
+          id: water_flow_rate_20_00_00
+          unit_of_measurement: "L/min" 
           accuracy_decimals: 1
           filters:
             - multiply: 0.1
+
+        # --- New Indoor Unit Sensors from Reference Tables ---
+        - name: "Zone 2 Room Setpoint (42D6)"
+          message: 0x42D6
+          id: zone2_room_setpoint_20_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Zone 2 Water Setpoint (42D7)"
+          message: 0x42D7
+          id: zone2_water_setpoint_20_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Water Outlet Zone 1 (42D8)"
+          message: 0x42D8
+          id: water_outlet_zone1_20_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Water Outlet Zone 2 (42D9)"
+          message: 0x42D9
+          id: water_outlet_zone2_20_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Flow Rate Control % (42F1)"
+          message: 0x42F1
+          id: flow_rate_control_20_00_00
+          unit_of_measurement: "%"
 
     - address: "10.00.00" # Outdoor device address
       capabilities:
@@ -237,12 +275,6 @@ samsung_ac:
         id: error_code_10_00_00
         message: 0x8235
 
-      compressor_target_frequency:
-        name: "Compressor Target Frequency (8237)"
-        id: compressor_target_freq_10_00_00
-        message: 0x8237
-        unit_of_measurement: "Hz"
-
       fan_power:
         name: "Fan Power (8239)"
         id: fan_power_10_00_00
@@ -252,18 +284,6 @@ samsung_ac:
         name: "Total Power (823D)"
         id: total_power_10_00_00
         message: 0x823d
-
-      compressor_commanded_frequency:
-        name: "Compressor Commanded Frequency (8236)"
-        id: compressor_commanded_frequency_10_00_00
-        message: 0x8236
-        unit_of_measurement: "A"
-
-      compressor_current_freq:
-        name: "Compressor Current Frequency (8238)"
-        id: compressor_current_freq_10_00_00
-        message: 0x8238
-        unit_of_measurement: "Hz"
 
       phase_current:
         name: "Phase Current (82DB)"
@@ -338,6 +358,23 @@ samsung_ac:
         message: 0x8416
 
       custom_sensor:
+        - name: "Compressor Power (8237)"
+          message: 0x8237
+          id: compressor_power_10_00_00
+          unit_of_measurement: "W"
+
+        - name: "Compressor Current (8236)"
+          message: 0x8236
+          id: compressor_current_10_00_00
+          unit_of_measurement: "A"
+          filters:
+            - multiply: 0.1
+
+        - name: "Fan/Compressor Frequency (8238)"
+          message: 0x8238
+          id: fan_compressor_frequency_10_00_00
+          unit_of_measurement: "Hz"
+
         - name: "Outdoor Air Sensor (Airout) (8204)"
           message: 0x8204
           id: outdoor_air_sensor_10_00_00
@@ -372,3 +409,160 @@ samsung_ac:
           icon: "mdi:counter"
           filters:
             - multiply: 0.001
+
+        # --- New Outdoor Unit Sensors from Reference Tables ---
+        - name: "Operation Mode (8001)"
+          message: 0x8001
+          id: operation_mode_10_00_00
+          unit_of_measurement: "enum"
+
+        - name: "Compressor Running Status (8010)"
+          message: 0x8010
+          id: compressor_running_status_10_00_00
+          unit_of_measurement: "bool"
+
+        - name: "Hot Gas Valve Status (8017)"
+          message: 0x8017
+          id: hot_gas_valve_status_10_00_00
+          unit_of_measurement: "bool"
+
+        - name: "Liquid Line Valve Status (8019)"
+          message: 0x8019
+          id: liquid_line_valve_status_10_00_00
+          unit_of_measurement: "bool"
+
+        - name: "4-Way Reversing Valve Status (801A)"
+          message: 0x801A
+          id: four_way_reversing_valve_status_10_00_00
+          unit_of_measurement: "bool"
+
+        - name: "EVI Bypass Valve Status (8021)"
+          message: 0x8021
+          id: evi_bypass_valve_status_10_00_00
+          unit_of_measurement: "bool"
+
+        - name: "Base Pan Heater (80AF)"
+          message: 0x80AF
+          id: base_pan_heater_10_00_00
+          unit_of_measurement: "bool"
+
+        - name: "PHE Heater (80D7)"
+          message: 0x80D7
+          id: phe_heater_10_00_00
+          unit_of_measurement: "bool"
+
+        - name: "High Pressure (8206)"
+          message: 0x8206
+          id: high_pressure_10_00_00
+          unit_of_measurement: "bar"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Low Pressure (8208)"
+          message: 0x8208
+          id: low_pressure_10_00_00
+          unit_of_measurement: "bar"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Discharge Temperature (820A)"
+          message: 0x820A
+          id: discharge_temperature_10_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Compressor Current (8217)"
+          message: 0x8217
+          id: compressor_current_8217_10_00_00
+          unit_of_measurement: "A"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Condenser Outlet Temperature (8218)"
+          message: 0x8218
+          id: condenser_outlet_temp_10_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Suction Temperature (821A)"
+          message: 0x821A
+          id: suction_temperature_10_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "EVI Inlet Temperature (821E)"
+          message: 0x821E
+          id: evi_inlet_temp_10_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "EVI Outlet Temperature (8220)"
+          message: 0x8220
+          id: evi_outlet_temp_10_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Outdoor Fan Step (8226)"
+          message: 0x8226
+          id: outdoor_fan_step_10_00_00
+          unit_of_measurement: "step"
+
+        - name: "Main EEV Steps (8229)"
+          message: 0x8229
+          id: main_eev_steps_10_00_00
+          unit_of_measurement: "steps"
+
+        - name: "DC Link Voltage (823B)"
+          message: 0x823B
+          id: dc_link_voltage_10_00_00
+          unit_of_measurement: "V"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "High-Pressure Sat. Temperature (829F)"
+          message: 0x829F
+          id: high_pressure_sat_temp_10_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Low-Pressure Sat. Temperature (82A0)"
+          message: 0x82A0
+          id: low_pressure_sat_temp_10_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          filters:
+            - multiply: 0.1
+
+        - name: "Wattmeter Total Sum (8415)"
+          message: 0x8415
+          id: wattmeter_total_sum_10_00_00
+          unit_of_measurement: "kWh"
+          accuracy_decimals: 3
+          device_class: energy
+          state_class: total_increasing
+          icon: "mdi:counter"
+
+        - name: "Produced Energy Total (8427)"
+          message: 0x8427
+          id: produced_energy_total_8427_10_00_00
+          unit_of_measurement: "kWh"
+          accuracy_decimals: 3
+          device_class: energy
+          state_class: total_increasing
+          icon: "mdi:counter"

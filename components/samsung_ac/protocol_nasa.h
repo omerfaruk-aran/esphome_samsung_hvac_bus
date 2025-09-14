@@ -239,12 +239,12 @@ namespace esphome
             ENUM_in_booster_heater_status = 0x4087, // Booster Heater Status
             ENUM_in_3way_valve_position = 0x4067, // 3-Way Diverter Valve Position
             VAR_in_circulation_pump_speed = 0x40C4, // Circulation Pump Speed (DHW Pump)
-            // --- Outdoor Unit Power and Energy Messages (from user table) ---
-            Compressor_Target_Frequency = 0x8237,           // VAR, W, Outdoor unit
-            Fan_Power = 0x8239,                  // VAR, W, Outdoor unit
-            Total_Power = 0x823d,                // VAR, W, Outdoor unit
-            Compressor_Commanded_Frequency = 0x8236,         // VAR, A, Outdoor unit
-            Compressor_Current_Freq = 0x8238,    // Compressor current frequency = 0x8238
+            // --- Outdoor Unit Power and Energy Messages (corrected mappings) ---
+            Compressor_Power = 0x8237,                      // VAR, W, Outdoor unit (was incorrectly mapped as target frequency)
+            Fan_Power = 0x8239,                            // VAR, W, Outdoor unit
+            Total_Power = 0x823d,                          // VAR, W, Outdoor unit
+            Compressor_Current = 0x8236,                   // VAR, A, Outdoor unit (was incorrectly mapped as commanded frequency)
+            Fan_Compressor_Frequency = 0x8238,             // VAR, Hz or step, Outdoor unit (was incorrectly mapped as current frequency)
             Phase_Current = 0x82db,              // VAR, A, Outdoor unit
             Phase_Voltage = 0x82de,              // VAR, V, Outdoor unit
             Phase_Power = 0x82df,                // VAR, W, Outdoor unit
@@ -260,6 +260,37 @@ namespace esphome
             Wattmeter_Accumulated = 0x8416,      // LVAR, kWh, Accumulative sum over session
             Produced_Energy_Actual = 0x8426,     // LVAR, kWh, e.g., heating output
             Produced_Energy_Total = 0x8404,      // LVAR, kWh, Output since install
+            
+            // --- Missing Outdoor Unit Messages from Reference Tables ---
+            ENUM_out_compressor_running_status = 0x8010,         // Compressor Running Status (bool)
+            ENUM_out_hot_gas_valve_status = 0x8017,              // Hot Gas Valve Status (bool)
+            ENUM_out_liquid_line_valve_status = 0x8019,          // Liquid Line Valve Status (bool)
+            ENUM_out_4way_reversing_valve_status = 0x801A,       // 4-Way Reversing Valve Status (bool)
+            ENUM_out_evi_bypass_valve_status = 0x8021,           // EVI Bypass Valve Status (bool)
+            ENUM_out_base_pan_heater = 0x80AF,                   // Base Pan Heater (bool)
+            ENUM_out_phe_heater = 0x80D7,                        // PHE (plate HEX) Heater (bool)
+            VAR_out_ambient_temperature = 0x8204,                // Outdoor (ambient) Temperature (°C)
+            VAR_out_condenser_outlet_temp = 0x8218,              // Condenser Outlet (HEX out) Temp (°C)
+            VAR_out_suction_temperature = 0x821A,                // Suction Temperature (°C)
+            VAR_out_evi_inlet_temp = 0x821E,                     // EVI Inlet Temp (°C)
+            VAR_out_evi_outlet_temp = 0x8220,                    // EVI Outlet Temp (°C)
+            VAR_out_fan_step = 0x8226,                           // Outdoor Fan Step (step)
+            VAR_out_eev_steps = 0x8229,                          // Main EEV Steps (steps)
+            VAR_out_dc_link_voltage = 0x823B,                    // DC Link Voltage (V)
+            VAR_out_high_pressure_sat_temp = 0x829F,             // High-Pressure Sat. Temp (°C)
+            VAR_out_low_pressure_sat_temp = 0x82A0,              // Low-Pressure Sat. Temp (°C)
+            
+            // --- Missing Indoor Unit Messages from Reference Tables ---
+            VAR_in_zone2_room_setpoint = 0x42D6,                 // Zone 2 Room Setpoint (°C)
+            VAR_in_zone2_water_setpoint = 0x42D7,                // Zone 2 Water Setpoint (°C)
+            VAR_in_water_outlet_zone1 = 0x42D8,                  // Water Outlet (Zone 1) (°C)
+            VAR_in_water_outlet_zone2 = 0x42D9,                  // Water Outlet (Zone 2) (°C)
+            VAR_in_water_flow_rate = 0x42E9,                     // Water Flow Rate (L/min x0.1)
+            VAR_in_flow_rate_control = 0x42F1,                   // Flow Rate Control % (%)
+            
+            // --- Missing Energy Messages from Reference Tables ---
+            LVAR_out_wattmeter_total_sum = 0x8415,               // Wattmeter Total Sum (kWh)
+            LVAR_out_produced_energy_total = 0x8427,             // Produced Energy (Total) (kWh)
         };
 
         struct Address
