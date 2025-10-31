@@ -1,4 +1,6 @@
 #include <set>
+#include <cmath>
+#include <limits>
 #include "esphome/core/log.h"
 #include "esphome/core/util.h"
 #include "esphome/core/hal.h"
@@ -24,6 +26,51 @@ namespace esphome
             if (value < 65535 /*uint16 max*/)
                 return value;
             return value - (int)65535 /*uint16 max*/ - 1.0;
+        }
+
+        // Check if a raw integer value represents an error/sentinel value
+        bool is_error_value(int raw_value)
+        {
+            // Common error/sentinel values
+            if (raw_value == 65535 || raw_value == 0xFFFF)  // Typical "not available" value
+                return true;
+            if (raw_value == 65036)  // Another common error value seen in logs
+                return true;
+            if (raw_value == -32768 || raw_value == 0x8000)  // Signed error value
+                return true;
+            return false;
+        }
+
+        // Check if a converted float value is valid (not NaN, not infinite, within reasonable bounds)
+        bool is_valid_value(double value, double min = -1000.0, double max = 10000.0)
+        {
+            if (std::isnan(value) || std::isinf(value))
+                return false;
+            if (value < min || value > max)
+                return false;
+            return true;
+        }
+
+        // Check if a percentage value is valid (0-100%)
+        bool is_valid_percentage(double value)
+        {
+            if (std::isnan(value) || std::isinf(value))
+                return false;
+            return value >= 0.0 && value <= 100.0;
+        }
+
+        // Check if a temperature value is reasonable (-50°C to 150°C)
+        bool is_valid_temperature(double value)
+        {
+            if (std::isnan(value) || std::isinf(value))
+                return false;
+            return value >= -50.0 && value <= 150.0;
+        }
+
+        // Get NaN for "not available" state
+        float get_not_available()
+        {
+            return std::numeric_limits<float>::quiet_NaN();
         }
 
 #define LOG_MESSAGE(message_name, temp, source, dest)                                                             \
@@ -463,7 +510,7 @@ namespace esphome
                 hl_swing.value = static_cast<uint8_t>(request.swing_mode.value()) & 1;
                 packet.messages.push_back(hl_swing);
 
-                MessageSet lr_swing(MessageNumber::ENUM_in_louver_lr_swing);
+                MessageSet lr_swing(MessageNumber::ENUM_in_louver_hl_swing);
                 lr_swing.value = (static_cast<uint8_t>(request.swing_mode.value()) >> 1) & 1;
                 packet.messages.push_back(lr_swing);
             }
@@ -584,7 +631,16 @@ namespace esphome
                 }
             }
 
-            target->set_custom_sensor(source, (uint16_t)message.messageNumber, (float)message.value);
+            // Generic handler - set custom sensor, but check for error values first
+            // For undefined messages, check if value is a known error value
+            // Note: Some messages (enums) may legitimately use 255 or 65535, so we're conservative here
+            float sensor_value = (float)message.value;
+            // Only filter obvious error values that we know are problematic (65036 seen in logs)
+            if (message.value == 65036)
+            {
+                sensor_value = get_not_available();
+            }
+            target->set_custom_sensor(source, (uint16_t)message.messageNumber, sensor_value);
 
             switch (message.messageNumber)
             {
@@ -685,12 +741,6 @@ namespace esphome
                 target->set_swing_vertical(source, message.value == 1);
                 break;
             }
-            case MessageNumber::ENUM_in_louver_lr_swing:
-            {
-                LOG_MESSAGE(ENUM_in_louver_lr_swing, (double)message.value, source, dest);
-                target->set_swing_horizontal(source, message.value == 1);
-                break;
-            }
             case MessageNumber::VAR_in_temp_water_tank_f:
             {
                 LOG_MESSAGE(VAR_in_temp_water_tank_f, (double)message.value, source, dest);
@@ -712,7 +762,21 @@ namespace esphome
             }
             case MessageNumber::VAR_in_temp_eva_out_f:
             {
-                double temp = ((int16_t)message.value) / 10.0;
+                // Check for error values before converting
+                int16_t signed_value = (int16_t)message.value;
+                // -50°C might be a sentinel value for "sensor not available"
+                if (signed_value == -500 || is_error_value(message.value))
+                {
+                    target->set_indoor_eva_out_temperature(source, get_not_available());
+                    break;
+                }
+                double temp = signed_value / 10.0;
+                // Validate temperature
+                if (!is_valid_temperature(temp))
+                {
+                    target->set_indoor_eva_out_temperature(source, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(VAR_in_temp_eva_out_f, temp, source, dest);
                 target->set_indoor_eva_out_temperature(source, temp);
                 break;
@@ -727,10 +791,6 @@ namespace esphome
                 target->set_error_code(source, code);
                 break;
             }
-            case MessageNumber::VAR_out_power_status:
-                LOG_MESSAGE(VAR_out_power_status, message.value, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_power_status, message.value);
-                break;
             case MessageNumber::VAR_out_operation_mode:
                 LOG_MESSAGE(VAR_out_operation_mode, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_operation_mode, message.value);
@@ -834,11 +894,11 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Fan_Power, power);
                 break;
             }
-            case MessageNumber::Total_Power:
+            case MessageNumber::VAR_out_total_power:
             {
                 double power = (double)message.value; // Already in Watts
-                LOG_MESSAGE(Total_Power, power, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Total_Power, power);
+                LOG_MESSAGE(VAR_out_total_power, power, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_total_power, power);
                 break;
             }
             case MessageNumber::Phase_Current:
@@ -929,13 +989,6 @@ namespace esphome
                 LOG_MESSAGE(VAR_in_operation_state, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_operation_state, message.value);
                 break;
-            case MessageNumber::VAR_in_water_temp:
-            {
-                double temp = (double)message.value / 10.0; // Convert to Celsius
-                LOG_MESSAGE(VAR_in_water_temp, temp, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_temp, temp);
-                break;
-            }
             case MessageNumber::VAR_in_water_flow:
             {
                 double flow = (double)message.value / 10.0; // Convert to L/min
@@ -945,13 +998,29 @@ namespace esphome
             }
             case MessageNumber::VAR_in_water_pressure:
             {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pressure, get_not_available());
+                    break;
+                }
                 double pressure = (double)message.value / 10.0; // Convert to bar
+                // Validate pressure (0-50 bar reasonable for HVAC systems)
+                if (!is_valid_value(pressure, 0.0, 50.0))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pressure, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(VAR_in_water_pressure, pressure, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pressure, pressure);
                 break;
             }
             case MessageNumber::VAR_in_water_valve:
             {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_valve, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(VAR_in_water_valve, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_valve, message.value);
                 break;
@@ -959,32 +1028,52 @@ namespace esphome
             case MessageNumber::VAR_in_power_consumption:
             {
                 double power = (double)message.value; // Already in Watts
+                // Validate power (0-50000W reasonable for indoor units)
+                if (!is_valid_value(power, 0.0, 50000.0))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_power_consumption, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(VAR_in_power_consumption, power, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_power_consumption, power);
                 break;
             }
             case MessageNumber::VAR_in_water_level:
             {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_level, get_not_available());
+                    break;
+                }
                 double level = (double)message.value / 10.0; // Convert to percentage
+                // Validate percentage (0-100%)
+                if (!is_valid_percentage(level))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_level, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(VAR_in_water_level, level, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_level, level);
                 break;
             }
             case MessageNumber::VAR_in_water_quality:
             {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_quality, get_not_available());
+                    break;
+                }
                 double quality = (double)message.value / 10.0; // Convert to percentage
+                // Validate quality (0-100% reasonable)
+                if (!is_valid_percentage(quality))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_quality, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(VAR_in_water_quality, quality, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_quality, quality);
                 break;
             }
-            case MessageNumber::VAR_in_water_filter:
-                LOG_MESSAGE(VAR_in_water_filter, message.value, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_filter, message.value);
-                break;
-            case MessageNumber::VAR_in_water_pump:
-                LOG_MESSAGE(VAR_in_water_pump, message.value, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pump, message.value);
-                break;
             case MessageNumber::VAR_in_water_heater:
                 LOG_MESSAGE(VAR_in_water_heater, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_heater, message.value);
@@ -1013,29 +1102,35 @@ namespace esphome
             case MessageNumber::LVAR_in_water_heater_hours:
             {
                 double hours = (double)message.value; // Already in hours
+                // Validate hours (0-100000 hours reasonable - about 11 years max)
+                if (!is_valid_value(hours, 0.0, 100000.0))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_water_heater_hours, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(LVAR_in_water_heater_hours, hours, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_water_heater_hours, hours);
                 break;
             }
-            case MessageNumber::VAR_unknown_82b2:
-            case MessageNumber::VAR_unknown_82b5:
-            case MessageNumber::VAR_unknown_82b8:
-            case MessageNumber::VAR_unknown_82bc:
-            case MessageNumber::VAR_unknown_82d1:
-            case MessageNumber::VAR_unknown_8298:
-            case MessageNumber::VAR_unknown_82a8:
-            case MessageNumber::VAR_unknown_82a9:
-            case MessageNumber::VAR_unknown_82aa:
-            case MessageNumber::VAR_unknown_8243:
-            case MessageNumber::VAR_unknown_8233:
+            case MessageNumber::VAR_out_unknown_82B2:
+            case MessageNumber::VAR_out_unknown_82B5:
+            case MessageNumber::VAR_out_unknown_82B8:
+            case MessageNumber::VAR_out_unknown_82BC:
+            case MessageNumber::VAR_out_unknown_82D1:
+            case MessageNumber::VAR_out_unknown_8298:
+            case MessageNumber::VAR_out_unknown_82A8:
+            case MessageNumber::VAR_out_unknown_82A9:
+            case MessageNumber::VAR_out_unknown_82AA:
+            case MessageNumber::VAR_out_unknown_8243:
+            case MessageNumber::VAR_out_unknown_8233:
             {
                 LOG_MESSAGE(Unknown_VAR, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
                 break;
             }
-            case MessageNumber::ENUM_unknown_808d:
-            case MessageNumber::ENUM_unknown_803f:
-            case MessageNumber::ENUM_unknown_80bf:
+            case MessageNumber::ENUM_unknown_808D:
+            case MessageNumber::ENUM_unknown_8031:
+            case MessageNumber::ENUM_unknown_80BF:
             {
                 LOG_MESSAGE(Unknown_ENUM, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
@@ -1186,16 +1281,74 @@ namespace esphome
             // --- New Indoor Unit Messages from Reference Tables ---
             case MessageNumber::VAR_in_zone2_room_setpoint:
             {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_room_setpoint, get_not_available());
+                    break;
+                }
                 double temp = (double)message.value / 10.0;
+                // Validate temperature
+                if (!is_valid_temperature(temp))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_room_setpoint, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(VAR_in_zone2_room_setpoint, temp, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_room_setpoint, temp);
                 break;
             }
             case MessageNumber::VAR_in_zone2_water_setpoint:
             {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_water_setpoint, get_not_available());
+                    break;
+                }
                 double temp = (double)message.value / 10.0;
+                // Validate temperature
+                if (!is_valid_temperature(temp))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_water_setpoint, get_not_available());
+                    break;
+                }
                 LOG_MESSAGE(VAR_in_zone2_water_setpoint, temp, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_water_setpoint, temp);
+                break;
+            }
+            case MessageNumber::VAR_in_water_outlet_zone1:
+            {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone1, get_not_available());
+                    break;
+                }
+                double temp = (double)message.value / 10.0;
+                // Validate temperature
+                if (!is_valid_temperature(temp))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone1, get_not_available());
+                    break;
+                }
+                LOG_MESSAGE(VAR_in_water_outlet_zone1, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone1, temp);
+                break;
+            }
+            case MessageNumber::VAR_in_water_outlet_zone2:
+            {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone2, get_not_available());
+                    break;
+                }
+                double temp = (double)message.value / 10.0;
+                // Validate temperature
+                if (!is_valid_temperature(temp))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone2, get_not_available());
+                    break;
+                }
+                LOG_MESSAGE(VAR_in_water_outlet_zone2, temp, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone2, temp);
                 break;
             }
             case MessageNumber::VAR_in_flow_rate_control:

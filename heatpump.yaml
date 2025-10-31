@@ -329,7 +329,9 @@ samsung_ac:
         id: total_energy_consumption_10_00_00
         message: 0x8408
         unit_of_measurement: "kWh"
-        accuracy_decimals: 6
+        accuracy_decimals: 3
+        filters:
+          - multiply: 100
 
       operation_hours:
         name: "Operation Hours (840B)"
