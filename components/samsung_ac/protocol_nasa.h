@@ -116,7 +116,6 @@ namespace esphome
             VAR_in_water_outlet_zone1 = 0x42D8,                 // Water Outlet (Zone 1) (°C)
             VAR_in_water_outlet_zone2 = 0x42D9,                 // Water Outlet (Zone 2) (°C)
             VAR_in_water_heater = 0x42E8,                       // Indoor water heater status
-            VAR_in_water_heater_temp = 0x42E9,                  // Indoor water heater temperature
             VAR_in_water_flow_rate = 0x42E9,                    // Water Flow Rate (L/min x0.1)
             VAR_in_flow_rate_control = 0x42F1,                  // Flow Rate Control % (%)
             LVAR_in_energy_total = 0x4401,                      // Total energy consumption
@@ -167,10 +166,10 @@ namespace esphome
             VAR_out_discharge_temp = 0x820A,                    // Discharge line temperature (0.1°C)
             VAR_out_compressor_current = 0x8217,                // Compressor electrical current (0.1A)
             VAR_out_heat_exchanger_outlet = 0x8218,             // Heat exchanger outlet temperature (0.1°C)
-            VAR_out_condenser_outlet_temp = 0x8218,             // Condenser Outlet (HEX out) Temp (°C)
             VAR_out_suction_temp = 0x821A,                      // Suction line refrigerant temperature (0.1°C)
             VAR_out_suction_temperature = 0x821A,               // Suction Temperature (°C)
             VAR_out_ambient_temp = 0x821C,                      // Ambient temperature
+            VAR_out_condenser_outlet_temp = 0x821E,             // Condenser Outlet Temp (°C ×0.1)
             VAR_out_condenser_temp = 0x821E,                    // Condenser temperature
             VAR_out_evi_inlet_temp = 0x821E,                    // EVI Inlet Temp (°C)
             VAR_out_evaporator_temp = 0x8220,                   // Evaporator temperature

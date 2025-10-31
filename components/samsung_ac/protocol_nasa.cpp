@@ -631,11 +631,7 @@ namespace esphome
                 }
             }
 
-            // Generic handler - set custom sensor, but check for error values first
-            // For undefined messages, check if value is a known error value
-            // Note: Some messages (enums) may legitimately use 255 or 65535, so we're conservative here
             float sensor_value = (float)message.value;
-            // Only filter obvious error values that we know are problematic (65036 seen in logs)
             if (message.value == 65036)
             {
                 sensor_value = get_not_available();
@@ -857,6 +853,7 @@ namespace esphome
                 double temp = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_condenser_temp, temp, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_condenser_temp, temp);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_condenser_outlet_temp, temp);
                 break;
             }
             case MessageNumber::VAR_out_evaporator_temp:
@@ -1078,11 +1075,11 @@ namespace esphome
                 LOG_MESSAGE(VAR_in_water_heater, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_heater, message.value);
                 break;
-            case MessageNumber::VAR_in_water_heater_temp:
+            case MessageNumber::VAR_in_water_flow_rate:
             {
-                double temp = (double)message.value / 10.0; // Convert to Celsius
-                LOG_MESSAGE(VAR_in_water_heater_temp, temp, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_heater_temp, temp);
+                double flow = (double)message.value / 10.0;
+                LOG_MESSAGE(VAR_in_water_flow_rate, flow, source, dest);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_flow_rate, flow);
                 break;
             }
             case MessageNumber::LVAR_in_energy_total:
@@ -1173,7 +1170,7 @@ namespace esphome
             }
             case MessageNumber::VAR_out_heat_exchanger_outlet:
             {
-                double temp = (double)message.value / 10.0; // Convert to Celsius
+                double temp = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_heat_exchanger_outlet, temp, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_heat_exchanger_outlet, temp);
                 break;
