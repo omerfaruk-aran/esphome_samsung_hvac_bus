@@ -154,6 +154,7 @@ namespace esphome
             ENUM_unknown_808D = 0x808D,                         // TODO: Identify
             ENUM_unknown_808E = 0x808E,                         // TODO: Identify
             ENUM_unknown_80A9 = 0x80A9,                         // TODO: Identify
+            ENUM_unknown_803F = 0x803F,                         // TODO: Identify (high frequency - 53 occurrences)
             ENUM_out_base_pan_heater = 0x80AF,                  // Base Pan Heater (bool)
             ENUM_unknown_80B1 = 0x80B1,                         // TODO: Identify
             ENUM_unknown_80BF = 0x80BF,                         // TODO: Identify
@@ -183,8 +184,11 @@ namespace esphome
             VAR_out_operation_time = 0x822A,                    // Operation time
             VAR_out_error_count = 0x822B,                       // Error count
             VAR_out_operation_count = 0x822C,                   // Operation count
+            VAR_out_unknown_8231 = 0x8231,                      // TODO: Identify (high frequency - 15 occurrences)
             VAR_out_unknown_8233 = 0x8233,                      // TODO: Identify
+            VAR_out_unknown_8234 = 0x8234,                      // TODO: Identify (high frequency - 15 occurrences)
             VAR_out_error_code = 0x8235,                        // Error code
+            VAR_out_unknown_823F = 0x823F,                      // TODO: Identify (highest frequency - 55 occurrences)
             Compressor_Current = 0x8236,                        // VAR, A, Outdoor unit (was incorrectly mapped as commanded frequency)
             Compressor_Power = 0x8237,                          // VAR, W, Outdoor unit (was incorrectly mapped as target frequency)
             Fan_Compressor_Frequency = 0x8238,                  // VAR, Hz or step, Outdoor unit (was incorrectly mapped as current frequency)
@@ -225,13 +229,16 @@ namespace esphome
             Phase_Power = 0x82DF,                               // VAR, W, Outdoor unit
             VAR_out_phase_power = 0x82DF,                       // Phase power
             VAR_out_compressor_speed = 0x82E0,                  // Compressor speed
+            VAR_out_unknown_822E = 0x822E,                      // TODO: Identify (high frequency - 16 occurrences)
             VAR_out_fan_speed_rpm = 0x82E3,                     // Fan speed in RPM
+            VAR_out_unknown_8278 = 0x8278,                      // TODO: Identify (high frequency - 16 occurrences)
             Power_Factor = 0x82E8,                              // VAR, x0.01, e.g., 100 = PF 1.0
             VAR_out_power_factor = 0x82E8,                      // Power factor
             System_Efficiency = 0x82ED,                         // VAR, x0.1, May represent COP
             VAR_out_efficiency = 0x82ED,                        // System efficiency
             System_Capacity = 0x82F6,                           // VAR, kW or BTU/h, Possibly x0.1
             VAR_out_capacity = 0x82F6,                          // System capacity
+            VAR_out_unknown_82FC = 0x82FC,                      // TODO: Identify (high frequency - 17 occurrences)
             VAR_out_unknown_82D1 = 0x82D1,                      // TODO: Identify
             VAR_out_unknown_829A = 0x829A,                      // TODO: Identify
             Total_Energy_Consumption = 0x8408,                  // LVAR, kWh, Outdoor cumulative

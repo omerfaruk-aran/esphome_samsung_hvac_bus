@@ -657,15 +657,31 @@ namespace esphome
             case MessageNumber::VAR_in_temp_water_outlet_target_f: // unit = 'Celsius' from XML
             {
                 double temp = (double)message.value / (double)10;
-                LOG_MESSAGE(VAR_in_temp_water_outlet_target_f, temp, source, dest);
-                target->set_water_outlet_target(source, temp);
+                if (is_valid_temperature(temp))
+                {
+                    LOG_MESSAGE(VAR_in_temp_water_outlet_target_f, temp, source, dest);
+                    target->set_water_outlet_target(source, temp);
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_outlet_target_f, temp);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_outlet_target_f, get_not_available());
+                }
                 break;
             }
             case MessageNumber::VAR_in_temp_water_heater_target_f: // unit = 'Celsius' from XML
             {
                 double temp = (double)message.value / (double)10;
-                LOG_MESSAGE(VAR_in_temp_water_heater_target_f, temp, source, dest);
-                target->set_target_water_temperature(source, temp);
+                if (is_valid_temperature(temp))
+                {
+                    LOG_MESSAGE(VAR_in_temp_water_heater_target_f, temp, source, dest);
+                    target->set_target_water_temperature(source, temp);
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_heater_target_f, temp);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_heater_target_f, get_not_available());
+                }
                 break;
             }
             case MessageNumber::ENUM_in_state_humidity_percent:
@@ -739,14 +755,35 @@ namespace esphome
             }
             case MessageNumber::VAR_in_temp_water_tank_f:
             {
-                LOG_MESSAGE(VAR_in_temp_water_tank_f, (double)message.value, source, dest);
+                double temp = (double)message.value / 10.0;
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_tank_f, get_not_available());
+                }
+                else if (is_valid_temperature(temp))
+                {
+                    LOG_MESSAGE(VAR_in_temp_water_tank_f, temp, source, dest);
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_tank_f, temp);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_tank_f, get_not_available());
+                }
                 break;
             }
             case MessageNumber::VAR_out_pipe_temp:
             {
                 double temp = (double)((int16_t)message.value) / (double)10;
-                LOG_MESSAGE(VAR_out_pipe_temp, temp, source, dest);
-                target->set_outdoor_temperature(source, temp);
+                if (is_valid_temperature(temp))
+                {
+                    LOG_MESSAGE(VAR_out_pipe_temp, temp, source, dest);
+                    target->set_outdoor_temperature(source, temp);
+                    target->set_custom_sensor(source, 0x8204, temp);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x8204, get_not_available());
+                }
                 break;
             }
             case MessageNumber::VAR_in_temp_eva_in_f:
@@ -921,9 +958,16 @@ namespace esphome
             }
             case MessageNumber::Power_Factor:
             {
-                double pf = (double)message.value / 100.0; // Convert to decimal
-                LOG_MESSAGE(Power_Factor, pf, source, dest);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Power_Factor, pf);
+                double pf = (double)message.value / 1000.0; // Convert from thousandths (e.g., 480 -> 0.48)
+                if (is_valid_value(pf, 0.0, 1.0))
+                {
+                    LOG_MESSAGE(Power_Factor, pf, source, dest);
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::Power_Factor, pf);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, (uint16_t)MessageNumber::Power_Factor, get_not_available());
+                }
                 break;
             }
             case MessageNumber::System_Efficiency:
@@ -1359,6 +1403,223 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_out_wattmeter_total_sum, message.value);
                 break;
 
+            // --- High Priority Undefined Messages ---
+            case MessageNumber::VAR_unknown_202:
+            {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, 0x0202, get_not_available());
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x0202, (float)message.value);
+                }
+                break;
+            }
+            case MessageNumber::LONGVAR_unknown_410:
+            {
+                double value = (double)message.value;
+                if (is_valid_value(value))
+                {
+                    target->set_custom_sensor(source, 0x0410, value);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x0410, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_compressor_current:
+            {
+                double current = (double)message.value / 10.0;
+                if (is_valid_value(current, 0.0, 100.0))
+                {
+                    LOG_MESSAGE(VAR_out_compressor_current, current, source, dest);
+                    target->set_custom_sensor(source, 0x8217, current);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x8217, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_system_pressure:
+            {
+                double pressure = (double)message.value / 10.0;
+                if (is_valid_value(pressure, 0.0, 50.0))
+                {
+                    LOG_MESSAGE(VAR_out_system_pressure, pressure, source, dest);
+                    target->set_custom_sensor(source, 0x8224, pressure);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x8224, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_fan_current:
+            {
+                double current = (double)message.value / 10.0;
+                if (is_valid_value(current, 0.0, 100.0))
+                {
+                    LOG_MESSAGE(VAR_out_fan_current, current, source, dest);
+                    target->set_custom_sensor(source, 0x8225, current);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x8225, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_8245:
+            {
+                target->set_custom_sensor(source, 0x8245, (float)message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_compressor_speed:
+            {
+                double speed = (double)message.value;
+                if (is_valid_value(speed, 0.0, 10000.0))
+                {
+                    LOG_MESSAGE(VAR_out_compressor_speed, speed, source, dest);
+                    target->set_custom_sensor(source, 0x82E0, speed);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x82E0, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_fan_speed_rpm:
+            {
+                double rpm = (double)message.value;
+                if (is_valid_value(rpm, 0.0, 10000.0))
+                {
+                    LOG_MESSAGE(VAR_out_fan_speed_rpm, rpm, source, dest);
+                    target->set_custom_sensor(source, 0x82E3, rpm);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x82E3, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_829A:
+            {
+                target->set_custom_sensor(source, 0x829A, (float)message.value);
+                break;
+            }
+            case MessageNumber::ENUM_unknown_803F:
+            {
+                target->set_custom_sensor(source, 0x803F, (float)message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_822E:
+            {
+                target->set_custom_sensor(source, 0x822E, (float)message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_8278:
+            {
+                target->set_custom_sensor(source, 0x8278, (float)message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_82FC:
+            {
+                target->set_custom_sensor(source, 0x82FC, (float)message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_823F:
+            {
+                target->set_custom_sensor(source, 0x823F, (float)message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_8231:
+            {
+                target->set_custom_sensor(source, 0x8231, (float)message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_8234:
+            {
+                target->set_custom_sensor(source, 0x8234, (float)message.value);
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_825A:
+            {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, 0x825A, get_not_available());
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x825A, (float)message.value);
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_825B:
+            {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, 0x825B, get_not_available());
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x825B, (float)message.value);
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_825D:
+            {
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, 0x825D, get_not_available());
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x825D, (float)message.value);
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_unknown_827A:
+            {
+                double value = (double)message.value / 10.0;
+                if (is_valid_value(value))
+                {
+                    target->set_custom_sensor(source, 0x827A, value);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x827A, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::LONGVAR_unknown_41b:
+            {
+                double value = (double)message.value;
+                if (is_valid_value(value))
+                {
+                    target->set_custom_sensor(source, 0x041B, value);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x041B, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_energy_accumulated:
+            {
+                double energy = (double)message.value / 1000.0;
+                if (is_valid_value(energy, 0.0, 1000000.0))
+                {
+                    target->set_custom_sensor(source, 0x8414, energy);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x8414, get_not_available());
+                }
+                break;
+            }
+
             default:
             {
                 double value = 0;
@@ -1435,51 +1696,79 @@ namespace esphome
 
             if (packet_.command.dataType == DataType::Ack)
             {
-                bool ack_found = false;
-                for (auto it = sent_packets.begin(); it != sent_packets.end(); ++it)
+                if (debug_log_messages)
                 {
-                    if (it->packet.command.packetNumber == packet_.command.packetNumber)
+                    bool ack_found = false;
+                    for (auto it = sent_packets.begin(); it != sent_packets.end(); ++it)
                     {
-                        ESP_LOGW(TAG, "found Ack for packet number %d", it->packet.command.packetNumber);
-                        sent_packets.erase(it);
-                        ack_found = true;
-                        break;
+                        if (it->packet.command.packetNumber == packet_.command.packetNumber)
+                        {
+                            ESP_LOGW(TAG, "found Ack for packet number %d", it->packet.command.packetNumber);
+                            sent_packets.erase(it);
+                            ack_found = true;
+                            break;
+                        }
+                    }
+
+                    if (!ack_found)
+                    {
+                        ESP_LOGW(TAG, "Ack not found for packet number %d", packet_.command.packetNumber);
+                    }
+
+                    ESP_LOGW(TAG, "Ack %s sent_packets size: %d", packet_.to_string().c_str(), sent_packets.size());
+                }
+                else
+                {
+                    for (auto it = sent_packets.begin(); it != sent_packets.end(); ++it)
+                    {
+                        if (it->packet.command.packetNumber == packet_.command.packetNumber)
+                        {
+                            sent_packets.erase(it);
+                            break;
+                        }
                     }
                 }
+                return;
+            }
 
-                if (!ack_found)
+            if (debug_log_messages)
+            {
+                if (packet_.command.dataType == DataType::Request)
                 {
-                    ESP_LOGW(TAG, "Ack not found for packet number %d", packet_.command.packetNumber);
+                    ESP_LOGW(TAG, "Request %s", packet_.to_string().c_str());
+                    return;
                 }
-
-                ESP_LOGW(TAG, "Ack %s sent_packets size: %d", packet_.to_string().c_str(), sent_packets.size());
-                return;
+                if (packet_.command.dataType == DataType::Response)
+                {
+                    ESP_LOGW(TAG, "Response %s", packet_.to_string().c_str());
+                    return;
+                }
+                if (packet_.command.dataType == DataType::Write)
+                {
+                    ESP_LOGW(TAG, "Write %s", packet_.to_string().c_str());
+                    return;
+                }
+                if (packet_.command.dataType == DataType::Nack)
+                {
+                    ESP_LOGW(TAG, "Nack %s", packet_.to_string().c_str());
+                    return;
+                }
+                if (packet_.command.dataType == DataType::Read)
+                {
+                    ESP_LOGW(TAG, "Read %s", packet_.to_string().c_str());
+                    return;
+                }
             }
-
-            if (packet_.command.dataType == DataType::Request)
+            else
             {
-                ESP_LOGW(TAG, "Request %s", packet_.to_string().c_str());
-                return;
-            }
-            if (packet_.command.dataType == DataType::Response)
-            {
-                ESP_LOGW(TAG, "Response %s", packet_.to_string().c_str());
-                return;
-            }
-            if (packet_.command.dataType == DataType::Write)
-            {
-                ESP_LOGW(TAG, "Write %s", packet_.to_string().c_str());
-                return;
-            }
-            if (packet_.command.dataType == DataType::Nack)
-            {
-                ESP_LOGW(TAG, "Nack %s", packet_.to_string().c_str());
-                return;
-            }
-            if (packet_.command.dataType == DataType::Read)
-            {
-                ESP_LOGW(TAG, "Read %s", packet_.to_string().c_str());
-                return;
+                if (packet_.command.dataType == DataType::Request || 
+                    packet_.command.dataType == DataType::Response ||
+                    packet_.command.dataType == DataType::Write ||
+                    packet_.command.dataType == DataType::Nack ||
+                    packet_.command.dataType == DataType::Read)
+                {
+                    return;
+                }
             }
 
             if (packet_.command.dataType != DataType::Notification)
@@ -1499,9 +1788,12 @@ namespace esphome
                     info.last_sent_time = now;
                     auto data = info.packet.encode();
                     target->publish_data(data);
-                    ESP_LOGW(TAG, "Resending packet %d number of attempts: %d", info.packet.command.packetNumber, info.retry_count);
+                    if (debug_log_messages)
+                    {
+                        ESP_LOGW(TAG, "Resending packet %d number of attempts: %d", info.packet.command.packetNumber, info.retry_count);
+                    }
                 }
-                else if (info.retry_count >= 3)
+                else if (debug_log_messages && info.retry_count >= 3)
                 {
                     ESP_LOGW(TAG, "Packet %d failed after 3 attempts.", info.packet.command.packetNumber);
                 }

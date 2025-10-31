@@ -137,8 +137,6 @@ samsung_ac:
           id: water_outlet_target_temperature_20_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "DHW Operation Enable (4065)"
           message: 0x4065
@@ -152,8 +150,6 @@ samsung_ac:
           message: 0x4235
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
           id: dhw_setpoint_temp
 
         - name: "Backup Heater Status (406C)"
@@ -192,16 +188,12 @@ samsung_ac:
           id: dhw_tank_temperature_20_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Water Flow Rate (42E9)"
           message: 0x42E9
           id: water_flow_rate_20_00_00
           unit_of_measurement: "L/min" 
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         # --- New Indoor Unit Sensors from Reference Tables ---
         - name: "Zone 2 Room Setpoint (42D6)"
@@ -209,32 +201,24 @@ samsung_ac:
           id: zone2_room_setpoint_20_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Zone 2 Water Setpoint (42D7)"
           message: 0x42D7
           id: zone2_water_setpoint_20_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Water Outlet Zone 1 (42D8)"
           message: 0x42D8
           id: water_outlet_zone1_20_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Water Outlet Zone 2 (42D9)"
           message: 0x42D9
           id: water_outlet_zone2_20_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Flow Rate Control % (42F1)"
           message: 0x42F1
@@ -295,8 +279,6 @@ samsung_ac:
         id: phase_voltage_10_00_00
         message: 0x82de
         unit_of_measurement: "V"
-        filters:
-          - multiply: 0.1
 
       phase_power:
         name: "Phase Power (82DF)"
@@ -308,8 +290,6 @@ samsung_ac:
         id: power_factor_10_00_00
         message: 0x82e8
         unit_of_measurement: "pf"
-        filters:
-          - multiply: 0.01
 
       system_efficiency:
         name: "System Efficiency (82ED)"
@@ -330,23 +310,36 @@ samsung_ac:
         message: 0x8408
         unit_of_measurement: "kWh"
         accuracy_decimals: 3
-        filters:
-          - multiply: 100
+        device_class: energy
+        state_class: total_increasing
+        icon: "mdi:counter"
 
       operation_hours:
         name: "Operation Hours (840B)"
         id: operation_hours_10_00_00
         message: 0x840b
+        unit_of_measurement: "h"
+        accuracy_decimals: 1
+        state_class: total_increasing
+        icon: "mdi:clock-outline"
 
       compressor_hours:
         name: "Compressor Hours (840C)"
         id: compressor_hours_10_00_00
         message: 0x840c
+        unit_of_measurement: "h"
+        accuracy_decimals: 1
+        state_class: total_increasing
+        icon: "mdi:clock-outline"
 
       fan_hours:
         name: "Fan Hours (841A)"
         id: fan_hours_10_00_00
         message: 0x841a
+        unit_of_measurement: "h"
+        accuracy_decimals: 1
+        state_class: total_increasing
+        icon: "mdi:clock-outline"
 
       control_wattmeter_unit:
         name: "Control Wattmeter Unit (8411)"
@@ -358,6 +351,11 @@ samsung_ac:
         name: "Wattmeter Accumulated (8416)"
         id: wattmeter_accumulated_10_00_00
         message: 0x8416
+        unit_of_measurement: "kWh"
+        accuracy_decimals: 3
+        device_class: energy
+        state_class: total_increasing
+        icon: "mdi:counter"
 
       custom_sensor:
         - name: "Compressor Power (8237)"
@@ -369,8 +367,6 @@ samsung_ac:
           message: 0x8236
           id: compressor_current_10_00_00
           unit_of_measurement: "A"
-          filters:
-            - multiply: 0.1
 
         - name: "Fan/Compressor Frequency (8238)"
           message: 0x8238
@@ -381,8 +377,6 @@ samsung_ac:
           message: 0x8204
           id: outdoor_air_sensor_10_00_00
           unit_of_measurement: "°C"
-          filters:
-            - multiply: 0.1
             
         - name: "Defrost Mode (8031)"
           id: defrost_mode_10_00_00
@@ -398,8 +392,6 @@ samsung_ac:
           device_class: energy
           state_class: total_increasing
           icon: "mdi:counter"
-          filters:
-            - multiply: 0.001
 
         - name: "Produced Energy Total (8404)"
           id: produced_energy_total_10_00_00
@@ -409,8 +401,6 @@ samsung_ac:
           device_class: energy
           state_class: total_increasing
           icon: "mdi:counter"
-          filters:
-            - multiply: 0.001
 
         # --- New Outdoor Unit Sensors from Reference Tables ---
         - name: "Operation Mode (8001)"
@@ -458,64 +448,48 @@ samsung_ac:
           id: high_pressure_10_00_00
           unit_of_measurement: "bar"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Low Pressure (8208)"
           message: 0x8208
           id: low_pressure_10_00_00
           unit_of_measurement: "bar"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Discharge Temperature (820A)"
           message: 0x820A
           id: discharge_temperature_10_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Compressor Current (8217)"
           message: 0x8217
           id: compressor_current_8217_10_00_00
           unit_of_measurement: "A"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Condenser Outlet Temperature (8218)"
           message: 0x8218
           id: condenser_outlet_temp_10_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Suction Temperature (821A)"
           message: 0x821A
           id: suction_temperature_10_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "EVI Inlet Temperature (821E)"
           message: 0x821E
           id: evi_inlet_temp_10_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "EVI Outlet Temperature (8220)"
           message: 0x8220
           id: evi_outlet_temp_10_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Outdoor Fan Step (8226)"
           message: 0x8226
@@ -532,24 +506,18 @@ samsung_ac:
           id: dc_link_voltage_10_00_00
           unit_of_measurement: "V"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "High-Pressure Sat. Temperature (829F)"
           message: 0x829F
           id: high_pressure_sat_temp_10_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Low-Pressure Sat. Temperature (82A0)"
           message: 0x82A0
           id: low_pressure_sat_temp_10_00_00
           unit_of_measurement: "°C"
           accuracy_decimals: 1
-          filters:
-            - multiply: 0.1
 
         - name: "Wattmeter Total Sum (8415)"
           message: 0x8415
@@ -563,6 +531,15 @@ samsung_ac:
         - name: "Produced Energy Total (8427)"
           message: 0x8427
           id: produced_energy_total_8427_10_00_00
+          unit_of_measurement: "kWh"
+          accuracy_decimals: 3
+          device_class: energy
+          state_class: total_increasing
+          icon: "mdi:counter"
+
+        - name: "Energy Accumulated (8414)"
+          message: 0x8414
+          id: energy_accumulated_10_00_00
           unit_of_measurement: "kWh"
           accuracy_decimals: 3
           device_class: energy
