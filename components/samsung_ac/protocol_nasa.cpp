@@ -262,7 +262,6 @@ namespace esphome
 
         static int _packetCounter = 0;
 
-        std::vector<Packet> out;
         std::vector<PacketInfo> sent_packets;
 
         /*
@@ -293,7 +292,6 @@ namespace esphome
             MessageSet message(messageNumber);
             message.value = value;
             packet.messages.push_back(message);
-            out.push_back(packet);
 
             return packet;
         }
@@ -520,8 +518,6 @@ namespace esphome
                 return;
 
             ESP_LOGW(TAG, "publish packet %s", packet.to_string().c_str());
-
-            out.push_back(packet);
 
             auto data = packet.encode();
             target->publish_data(data);
