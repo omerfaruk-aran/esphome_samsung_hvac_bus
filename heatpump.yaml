@@ -624,7 +624,7 @@ samsung_ac:
 # Template text sensors for enum display strings
 text_sensor:
   - platform: template
-    name: "Operation Mode Display"
+    name: "Operation Mode"
     id: operation_mode_20_00_00_display
     lambda: |-
       int value = (int)id(operation_mode_20_00_00).state;
@@ -639,7 +639,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "DHW Operation Enable Display"
+    name: "DHW Operation Enable"
     id: dhw_operation_enable_display
     lambda: |-
       int value = (int)id(dhw_operation_enable).state;
@@ -647,7 +647,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "DHW Mode Setting Display"
+    name: "DHW Mode Setting"
     id: dhw_mode_setting_display
     lambda: |-
       int value = (int)id(dhw_mode_setting).state;
@@ -661,7 +661,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "3-Way Valve Position Display"
+    name: "3-Way Valve Position"
     id: dhw_three_way_valve_position_display
     lambda: |-
       int value = (int)id(dhw_three_way_valve_position).state;
@@ -676,7 +676,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "Operation Mode Display"
+    name: "Operation Mode"
     id: operation_mode_10_00_00_display
     lambda: |-
       int value = (int)id(operation_mode_10_00_00).state;
@@ -691,7 +691,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "Defrost Mode Display"
+    name: "Defrost Mode"
     id: defrost_mode_10_00_00_display
     lambda: |-
       int value = (int)id(defrost_mode_10_00_00).state;
@@ -704,7 +704,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "Compressor Running Status Display"
+    name: "Compressor Running Status"
     id: compressor_running_status_10_00_00_display
     lambda: |-
       int value = (int)id(compressor_running_status_10_00_00).state;
@@ -712,7 +712,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "Hot Gas Valve Status Display"
+    name: "Hot Gas Valve Status"
     id: hot_gas_valve_status_10_00_00_display
     lambda: |-
       int value = (int)id(hot_gas_valve_status_10_00_00).state;
@@ -720,7 +720,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "Liquid Line Valve Status Display"
+    name: "Liquid Line Valve Status"
     id: liquid_line_valve_status_10_00_00_display
     lambda: |-
       int value = (int)id(liquid_line_valve_status_10_00_00).state;
@@ -728,7 +728,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "4-Way Reversing Valve Status Display"
+    name: "4-Way Reversing Valve Status"
     id: four_way_reversing_valve_status_10_00_00_display
     lambda: |-
       int value = (int)id(four_way_reversing_valve_status_10_00_00).state;
@@ -736,7 +736,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "EVI Bypass Valve Status Display"
+    name: "EVI Bypass Valve Status"
     id: evi_bypass_valve_status_10_00_00_display
     lambda: |-
       int value = (int)id(evi_bypass_valve_status_10_00_00).state;
@@ -744,7 +744,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "Base Pan Heater Display"
+    name: "Base Pan Heater"
     id: base_pan_heater_10_00_00_display
     lambda: |-
       int value = (int)id(base_pan_heater_10_00_00).state;
@@ -752,7 +752,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "PHE Heater Display"
+    name: "PHE Heater"
     id: phe_heater_10_00_00_display
     lambda: |-
       int value = (int)id(phe_heater_10_00_00).state;
@@ -760,7 +760,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "Backup Heater Status Display"
+    name: "Backup Heater Status"
     id: dhw_backup_heater_status_display
     lambda: |-
       int value = (int)id(dhw_backup_heater_status).state;
@@ -768,7 +768,7 @@ text_sensor:
     update_interval: 1s
 
   - platform: template
-    name: "Booster Heater Status Display"
+    name: "Booster Heater Status"
     id: dhw_booster_heater_status_display
     lambda: |-
       int value = (int)id(dhw_booster_heater_status).state;
