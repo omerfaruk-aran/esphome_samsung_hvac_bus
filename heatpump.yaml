@@ -666,17 +666,14 @@ text_sensor:
     lambda: |-
       int value = (int)id(dhw_three_way_valve_position).state;
       switch(value) {
-        case 0: return std::string("Off/Closed");
-        case 1: return std::string("Heating Loop");
-        case 2: return std::string("DHW Loop");
-        case 3: return std::string("Both Loops");
-        case 9: return std::string("Unknown Position 9");
+        case 0: return std::string("Heating Loop");
+        case 1: return std::string("DHW Loop");
         default: return std::string("Position ").append(to_string(value));
       }
     update_interval: 1s
 
   - platform: template
-    name: "Operation Mode"
+    name: "Outdoor Operation Mode"
     id: operation_mode_10_00_00_display
     lambda: |-
       int value = (int)id(operation_mode_10_00_00).state;
