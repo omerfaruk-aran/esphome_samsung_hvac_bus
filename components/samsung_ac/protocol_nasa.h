@@ -107,6 +107,7 @@ namespace esphome
             VAR_in_water_flow = 0x4238,                         // Indoor water flow
             VAR_in_water_pressure = 0x4239,                     // Indoor water pressure
             VAR_in_water_valve = 0x423E,                        // Indoor water valve state
+            VAR_in_temp_water_heating_loop = 0x4236,           // Indoor water temperature (heating loop)
             VAR_in_temp_water_outlet_target_f = 0x4247,         // Indoor water outlet target temperature
             VAR_in_power_consumption = 0x427F,                  // Indoor power consumption
             VAR_in_water_level = 0x428C,                        // Indoor water level
@@ -184,6 +185,9 @@ namespace esphome
             VAR_out_operation_time = 0x822A,                    // Operation time
             VAR_out_error_count = 0x822B,                       // Error count
             VAR_out_operation_count = 0x822C,                   // Operation count
+            VAR_out_operation_hours_alt = 0x8287,               // Operation hours (alternative)
+            VAR_out_power_22fc_unknown = 0x22FC,                // Power (unknown, e.g., 1173W)
+            VAR_out_power_824c_unknown = 0x824C,                 // Power (unknown, e.g., 5022W)
             VAR_out_unknown_8231 = 0x8231,                      // TODO: Identify (high frequency - 15 occurrences)
             VAR_out_unknown_8233 = 0x8233,                      // TODO: Identify
             VAR_out_unknown_8234 = 0x8234,                      // TODO: Identify (high frequency - 15 occurrences)

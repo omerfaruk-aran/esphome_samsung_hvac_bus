@@ -1,6 +1,7 @@
 #include <set>
 #include <cmath>
 #include <limits>
+#include <string>
 #include "esphome/core/log.h"
 #include "esphome/core/util.h"
 #include "esphome/core/hal.h"
@@ -528,6 +529,138 @@ namespace esphome
             sent_packets.push_back({packet, 0, millis()});
         }
 
+        std::string enum_value_to_display_string(MessageNumber message_number, int value)
+        {
+            switch (message_number)
+            {
+            case MessageNumber::ENUM_in_operation_mode:
+            case MessageNumber::ENUM_out_operation_mode:
+                switch (value)
+                {
+                case 0:
+                    return "Auto";
+                case 1:
+                    return "Cool";
+                case 2:
+                    return "Dry";
+                case 3:
+                    return "Fan";
+                case 4:
+                    return "Heat";
+                default:
+                    return "Unknown (" + std::to_string(value) + ")";
+                }
+            case MessageNumber::ENUM_in_water_heater_mode:
+                switch (value)
+                {
+                case 0:
+                    return "Eco";
+                case 1:
+                    return "Standard";
+                case 2:
+                    return "Power";
+                case 3:
+                    return "Force";
+                default:
+                    return "Unknown (" + std::to_string(value) + ")";
+                }
+            case MessageNumber::ENUM_in_fan_mode:
+            case MessageNumber::ENUM_out_fan_mode:
+                switch (value)
+                {
+                case 0:
+                    return "Auto";
+                case 1:
+                    return "Low";
+                case 2:
+                    return "Mid";
+                case 3:
+                    return "High";
+                case 4:
+                    return "Turbo";
+                case 254:
+                    return "Off";
+                default:
+                    return "Unknown (" + std::to_string(value) + ")";
+                }
+            case MessageNumber::ENUM_out_defrost_mode:
+                switch (value)
+                {
+                case 0:
+                    return "Off";
+                case 1:
+                    return "Defrosting";
+                case 2:
+                    return "Preheat";
+                default:
+                    return "Unknown (" + std::to_string(value) + ")";
+                }
+            case MessageNumber::ENUM_out_heat_cool_mode:
+                switch (value)
+                {
+                case 0:
+                    return "Cool";
+                case 1:
+                    return "Heat";
+                default:
+                    return "Unknown (" + std::to_string(value) + ")";
+                }
+            case MessageNumber::ENUM_out_compressor_state:
+                switch (value)
+                {
+                case 0:
+                    return "Off";
+                case 1:
+                    return "Starting";
+                case 2:
+                    return "Running";
+                case 3:
+                    return "Stopping";
+                default:
+                    return "Unknown (" + std::to_string(value) + ")";
+                }
+            case MessageNumber::ENUM_out_4way_valve:
+                switch (value)
+                {
+                case 0:
+                    return "Cool";
+                case 1:
+                    return "Heat";
+                default:
+                    return "Unknown (" + std::to_string(value) + ")";
+                }
+            case MessageNumber::ENUM_in_3way_valve_position:
+                switch (value)
+                {
+                case 0:
+                    return "Off/Closed";
+                case 1:
+                    return "Heating Loop";
+                case 2:
+                    return "DHW Loop";
+                case 3:
+                    return "Both Loops";
+                case 9:
+                    return "Unknown Position 9";
+                default:
+                    return "Position " + std::to_string(value);
+                }
+            case MessageNumber::ENUM_in_operation_power:
+            case MessageNumber::ENUM_in_water_heater_power:
+            case MessageNumber::ENUM_out_compressor_running_status:
+            case MessageNumber::ENUM_out_hot_gas_valve_status:
+            case MessageNumber::ENUM_out_liquid_line_valve_status:
+            case MessageNumber::ENUM_out_4way_reversing_valve_status:
+            case MessageNumber::ENUM_out_evi_bypass_valve_status:
+            case MessageNumber::ENUM_in_operation_automatic_cleaning:
+            case MessageNumber::ENUM_out_base_pan_heater:
+            case MessageNumber::ENUM_out_phe_heater:
+                return value != 0 ? "On" : "Off";
+            default:
+                return std::to_string(value);
+            }
+        }
+
         Mode operation_mode_to_mode(int value)
         {
             switch (value)
@@ -542,8 +675,6 @@ namespace esphome
                 return Mode::Fan;
             case 4:
                 return Mode::Heat;
-                // case 21:  Cool Storage
-                // case 24: Hot Water
             default:
                 return Mode::Unknown;
             }
@@ -691,37 +822,52 @@ namespace esphome
             }
             case MessageNumber::ENUM_in_operation_power:
             {
-                LOG_MESSAGE(ENUM_in_operation_power, (double)message.value, source, dest);
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_operation_power, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_operation_power = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_power(source, message.value != 0);
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_operation_power, message.value);
                 break;
             }
             case MessageNumber::ENUM_in_operation_automatic_cleaning:
             {
-                LOG_MESSAGE(ENUM_in_operation_automatic_cleaning, (double)message.value, source, dest);
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_operation_automatic_cleaning, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_operation_automatic_cleaning = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_automatic_cleaning(source, message.value != 0);
+                
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_operation_automatic_cleaning, message.value);
                 break;
             }
             case MessageNumber::ENUM_in_water_heater_power:
             {
-                LOG_MESSAGE(ENUM_in_water_heater_power, (double)message.value, source, dest);
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_water_heater_power, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_water_heater_power = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_water_heater_power(source, message.value != 0);
+                
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_water_heater_power, message.value);
                 break;
             }
             case MessageNumber::ENUM_in_operation_mode:
             {
-                LOG_MESSAGE(ENUM_in_operation_mode, (double)message.value, source, dest);
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_operation_mode, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_operation_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_mode(source, operation_mode_to_mode(message.value));
+                
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_operation_mode, message.value);
                 break;
             }
             case MessageNumber::ENUM_in_water_heater_mode:
             {
-                LOG_MESSAGE(ENUM_in_water_heater_mode, (double)message.value, source, dest);
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_water_heater_mode, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_water_heater_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_water_heater_mode(source, water_heater_mode_to_waterheatermode(message.value));
+                
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_water_heater_mode, message.value);
                 return;
             }
             case MessageNumber::ENUM_in_fan_mode:
             {
-                LOG_MESSAGE(ENUM_in_fan_mode, (double)message.value, source, dest);
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_fan_mode, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_fan_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 FanMode mode = FanMode::Unknown;
                 if (message.value == 0)
                     mode = FanMode::Auto;
@@ -734,6 +880,8 @@ namespace esphome
                 else if (message.value == 4)
                     mode = FanMode::Turbo;
                 target->set_fanmode(source, mode);
+                
+                target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_fan_mode, message.value);
                 break;
             }
             case MessageNumber::ENUM_in_fan_mode_real:
@@ -751,6 +899,24 @@ namespace esphome
             {
                 LOG_MESSAGE(ENUM_in_louver_hl_swing, (double)message.value, source, dest);
                 target->set_swing_vertical(source, message.value == 1);
+                break;
+            }
+            case MessageNumber::VAR_in_temp_water_heating_loop:
+            {
+                double temp = (double)message.value / 10.0;
+                if (is_error_value(message.value))
+                {
+                    target->set_custom_sensor(source, 0x4236, get_not_available());
+                }
+                else if (is_valid_temperature(temp))
+                {
+                    LOG_MESSAGE(VAR_in_temp_water_heating_loop, temp, source, dest);
+                    target->set_custom_sensor(source, 0x4236, temp);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x4236, get_not_available());
+                }
                 break;
             }
             case MessageNumber::VAR_in_temp_water_tank_f:
@@ -819,7 +985,14 @@ namespace esphome
                 int code = static_cast<int>(message.value);
                 if (debug_log_messages)
                 {
-                    ESP_LOGW(TAG, "s:%s d:%s VAR_out_error_code %d", source.c_str(), dest.c_str(), code);
+                    if (code != 0)
+                    {
+                        ESP_LOGW(TAG, "s:%s d:%s VAR_out_error_code %d", source.c_str(), dest.c_str(), code);
+                    }
+                    else
+                    {
+                        ESP_LOGD(TAG, "s:%s d:%s VAR_out_error_code %d", source.c_str(), dest.c_str(), code);
+                    }
                 }
                 target->set_error_code(source, code);
                 break;
@@ -833,13 +1006,21 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_operation_state, message.value);
                 break;
             case MessageNumber::ENUM_out_operation_mode:
-                LOG_MESSAGE(ENUM_out_operation_mode, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_operation_mode, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_operation_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_operation_mode, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_heat_cool_mode:
-                LOG_MESSAGE(ENUM_out_heat_cool_mode, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_heat_cool_mode, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_heat_cool_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_heat_cool_mode, message.value);
                 break;
+            }
             case MessageNumber::VAR_out_compressor_freq:
                 LOG_MESSAGE(VAR_out_compressor_freq, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_compressor_freq, message.value);
@@ -849,21 +1030,37 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_speed, message.value);
                 break;
             case MessageNumber::ENUM_out_fan_mode:
-                LOG_MESSAGE(ENUM_out_fan_mode, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_fan_mode, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_fan_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_fan_mode, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_compressor_state:
-                LOG_MESSAGE(ENUM_out_compressor_state, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_compressor_state, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_compressor_state = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_compressor_state, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_defrost_mode:
-                LOG_MESSAGE(ENUM_out_defrost_mode, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_defrost_mode, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_defrost_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_defrost_mode, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_4way_valve:
-                LOG_MESSAGE(ENUM_out_4way_valve, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_4way_valve, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_4way_valve = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_4way_valve, message.value);
                 break;
+            }
             case MessageNumber::VAR_out_discharge_temp:
             {
                 double temp = (double)message.value / 10.0;
@@ -919,6 +1116,13 @@ namespace esphome
                 float freq = message.value;
                 ESP_LOGD(TAG, "Fan/Compressor frequency: %.1f Hz", freq);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Fan_Compressor_Frequency, freq);
+                break;
+            }
+            case MessageNumber::VAR_out_fan_power:
+            {
+                double power = (double)message.value; // Already in Watts
+                LOG_MESSAGE(VAR_out_fan_power, power, source, dest);
+                target->set_custom_sensor(source, 0x8227, power);
                 break;
             }
             case MessageNumber::Fan_Power:
@@ -996,6 +1200,13 @@ namespace esphome
                 double hours = (double)message.value; // Already in hours
                 LOG_MESSAGE(Operation_Hours, hours, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Operation_Hours, hours);
+                break;
+            }
+            case MessageNumber::VAR_out_operation_hours_alt:
+            {
+                double hours = (double)message.value; // Already in hours
+                LOG_MESSAGE(VAR_out_operation_hours_alt, hours, source, dest);
+                target->set_custom_sensor(source, 0x8287, hours);
                 break;
             }
             case MessageNumber::Compressor_Hours:
@@ -1165,7 +1376,10 @@ namespace esphome
             case MessageNumber::VAR_out_unknown_8243:
             case MessageNumber::VAR_out_unknown_8233:
             {
-                LOG_MESSAGE(Unknown_VAR, message.value, source, dest);
+                if (message.value != 0)
+                {
+                    LOG_MESSAGE(Unknown_VAR, message.value, source, dest);
+                }
                 target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
                 break;
             }
@@ -1173,22 +1387,39 @@ namespace esphome
             case MessageNumber::ENUM_unknown_8031:
             case MessageNumber::ENUM_unknown_80BF:
             {
-                LOG_MESSAGE(Unknown_ENUM, message.value, source, dest);
+                if (message.value != 0)
+                {
+                    LOG_MESSAGE(Unknown_ENUM, message.value, source, dest);
+                }
                 target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
                 break;
             }
             case MessageNumber::Produced_Energy_Actual:
             {
-                double energy = message.value / 1000.0;
-                ESP_LOGD(TAG, "Energy Actual: %.3f kWh", energy);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Produced_Energy_Actual, energy);
+                double energy = (double)message.value / 1000.0;
+                if (is_valid_value(energy, 0.0, 1000000.0))
+                {
+                    ESP_LOGD(TAG, "Energy Actual: %.3f kWh", energy);
+                    target->set_custom_sensor(source, 0x8426, energy);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x8426, get_not_available());
+                }
                 break;
             }
             case MessageNumber::Produced_Energy_Total:
             {
-                double energy = message.value / 1000.0;
-                ESP_LOGD(TAG, "Energy Total: %.3f kWh", energy);
-                target->set_custom_sensor(source, (uint16_t)MessageNumber::Produced_Energy_Total, energy);
+                double energy = (double)message.value / 1000.0;
+                if (is_valid_value(energy, 0.0, 1000000.0))
+                {
+                    ESP_LOGD(TAG, "Energy Total: %.3f kWh", energy);
+                    target->set_custom_sensor(source, 0x8404, energy);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x8404, get_not_available());
+                }
                 break;
             }
             case MessageNumber::LVAR_OUT_CONTROL_WATTMETER_TOTAL_PRODUCED:
@@ -1196,6 +1427,20 @@ namespace esphome
                 double energy = message.value / 1000.0;
                 ESP_LOGD(TAG, "Wattmeter Total Produced: %.3f kWh", energy);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_OUT_CONTROL_WATTMETER_TOTAL_PRODUCED, energy);
+                break;
+            }
+            case MessageNumber::LVAR_NM_OUT_SENSOR_VOLTAGE:
+            {
+                double voltage = (double)message.value / 10.0; // Convert to Volts (e.g., 315 -> 31.5V)
+                if (is_valid_value(voltage, 0.0, 500.0))
+                {
+                    LOG_MESSAGE(LVAR_NM_OUT_SENSOR_VOLTAGE, voltage, source, dest);
+                    target->set_custom_sensor(source, 0x24FC, voltage);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x24FC, get_not_available());
+                }
                 break;
             }
             case MessageNumber::VAR_out_high_pressure:
@@ -1254,18 +1499,58 @@ namespace esphome
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_power, power);
                 break;
             }
+            case MessageNumber::VAR_out_power_22fc_unknown:
+            {
+                double power = (double)message.value; // Already in Watts
+                if (is_valid_value(power, 0.0, 100000.0))
+                {
+                    LOG_MESSAGE(VAR_out_power_22fc_unknown, power, source, dest);
+                    target->set_custom_sensor(source, 0x22FC, power);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x22FC, get_not_available());
+                }
+                break;
+            }
+            case MessageNumber::VAR_out_power_824c_unknown:
+            {
+                double power = (double)message.value; // Already in Watts
+                if (is_valid_value(power, 0.0, 100000.0))
+                {
+                    LOG_MESSAGE(VAR_out_power_824c_unknown, power, source, dest);
+                    target->set_custom_sensor(source, 0x824C, power);
+                }
+                else
+                {
+                    target->set_custom_sensor(source, 0x824C, get_not_available());
+                }
+                break;
+            }
             case MessageNumber::ENUM_in_backup_heater_status:
-                LOG_MESSAGE(ENUM_in_backup_heater_status, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_backup_heater_status, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_backup_heater_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_backup_heater_status, message.value);
                 break;
+            }
             case MessageNumber::ENUM_in_booster_heater_status:
-                LOG_MESSAGE(ENUM_in_booster_heater_status, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_booster_heater_status, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_booster_heater_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_booster_heater_status, message.value);
                 break;
+            }
             case MessageNumber::ENUM_in_3way_valve_position:
-                LOG_MESSAGE(ENUM_in_3way_valve_position, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_3way_valve_position, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_in_3way_valve_position = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_3way_valve_position, message.value);
                 break;
+            }
             case MessageNumber::VAR_in_circulation_pump_speed:
             {
                 double percent = (double)message.value; // Already in percent (0-100)
@@ -1276,33 +1561,61 @@ namespace esphome
 
             // --- New Outdoor Unit Messages from Reference Tables ---
             case MessageNumber::ENUM_out_compressor_running_status:
-                LOG_MESSAGE(ENUM_out_compressor_running_status, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_compressor_running_status, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_compressor_running_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_compressor_running_status, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_hot_gas_valve_status:
-                LOG_MESSAGE(ENUM_out_hot_gas_valve_status, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_hot_gas_valve_status, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_hot_gas_valve_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_hot_gas_valve_status, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_liquid_line_valve_status:
-                LOG_MESSAGE(ENUM_out_liquid_line_valve_status, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_liquid_line_valve_status, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_liquid_line_valve_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_liquid_line_valve_status, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_4way_reversing_valve_status:
-                LOG_MESSAGE(ENUM_out_4way_reversing_valve_status, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_4way_reversing_valve_status, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_4way_reversing_valve_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_4way_reversing_valve_status, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_evi_bypass_valve_status:
-                LOG_MESSAGE(ENUM_out_evi_bypass_valve_status, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_evi_bypass_valve_status, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_evi_bypass_valve_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_evi_bypass_valve_status, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_base_pan_heater:
-                LOG_MESSAGE(ENUM_out_base_pan_heater, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_base_pan_heater, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_base_pan_heater = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_base_pan_heater, message.value);
                 break;
+            }
             case MessageNumber::ENUM_out_phe_heater:
-                LOG_MESSAGE(ENUM_out_phe_heater, message.value, source, dest);
+            {
+                std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_phe_heater, message.value);
+                ESP_LOGD(TAG, "[%s->%s] ENUM_out_phe_heater = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
+                
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_phe_heater, message.value);
                 break;
+            }
             case MessageNumber::VAR_out_fan_step:
                 LOG_MESSAGE(VAR_out_fan_step, message.value, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_step, message.value);
@@ -1609,7 +1922,7 @@ namespace esphome
             case MessageNumber::VAR_out_energy_accumulated:
             {
                 double energy = (double)message.value / 1000.0;
-                if (is_valid_value(energy, 0.0, 1000000.0))
+                if (is_valid_value(energy, 0.0, 10000000.0))
                 {
                     target->set_custom_sensor(source, 0x8414, energy);
                 }
@@ -1646,27 +1959,59 @@ namespace esphome
                     break;
 
                 case 0x8427:
-                    value = (double)message.value;
-                    LOG_MESSAGE(total_produced_energy, value, source, dest);
+                    value = (double)message.value / 1000.0;
+                    if (is_valid_value(value, 0.0, 1000000.0))
+                    {
+                        LOG_MESSAGE(total_produced_energy, value, source, dest);
+                        target->set_custom_sensor(source, 0x8427, value);
+                    }
+                    else
+                    {
+                        target->set_custom_sensor(source, 0x8427, get_not_available());
+                    }
                     break;
 
                 case 0x8426: 
-                    value = (double)message.value; 
-                    LOG_MESSAGE(actual_produced_energy, value, source, dest); 
+                    value = (double)message.value / 1000.0;
+                    if (is_valid_value(value, 0.0, 1000000.0))
+                    {
+                        LOG_MESSAGE(actual_produced_energy, value, source, dest);
+                        target->set_custom_sensor(source, 0x8426, value);
+                    }
+                    else
+                    {
+                        target->set_custom_sensor(source, 0x8426, get_not_available());
+                    }
                     break; 
 
                 case 0x8415:
                     value = (double)message.value;
-                    LOG_MESSAGE(NASA_OUTDOOR_CONTROL_WATTMETER_TOTAL_SUM, value, source, dest);
+                    if (is_valid_value(value, 0.0, 1000000.0))
+                    {
+                        LOG_MESSAGE(NASA_OUTDOOR_CONTROL_WATTMETER_TOTAL_SUM, value, source, dest);
+                        target->set_custom_sensor(source, 0x8415, value);
+                    }
+                    else
+                    {
+                        target->set_custom_sensor(source, 0x8415, get_not_available());
+                    }
                     break;
 
                 case 0x8416:
                     value = (double)message.value;
-                    LOG_MESSAGE(NASA_OUTDOOR_CONTROL_WATTMETER_TOTAL_SUM_ACCUM, value, source, dest);
+                    if (is_valid_value(value, 0.0, 1000000.0))
+                    {
+                        LOG_MESSAGE(NASA_OUTDOOR_CONTROL_WATTMETER_TOTAL_SUM_ACCUM, value, source, dest);
+                        target->set_custom_sensor(source, 0x8416, value);
+                    }
+                    else
+                    {
+                        target->set_custom_sensor(source, 0x8416, get_not_available());
+                    }
                     break;
 
                 default:
-                    if (debug_log_undefined_messages)
+                    if (debug_log_undefined_messages && message.value != 0)
                     {
                         ESP_LOGW(TAG, "CARLTON Undefined s:%s d:%s %s", source.c_str(), dest.c_str(), message.to_string().c_str());
                     }
@@ -2044,7 +2389,6 @@ namespace esphome
             case 0x8201:
             case 0x8202:
             case 0x822d:
-            case 0x8287:
             case 0x82a1:
             case 0x82b5:
             case 0x82b6:
@@ -2138,7 +2482,7 @@ namespace esphome
             }
 
             default:
-                if (debug_log_undefined_messages)
+                if (debug_log_undefined_messages && message.value != 0)
                 {
                     ESP_LOGW(TAG, "s:%s d:%s !! unknown %s", source.c_str(), dest.c_str(), message.to_string().c_str());
                 }

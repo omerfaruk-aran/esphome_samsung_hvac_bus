@@ -53,8 +53,8 @@ uart:
 
 # Import custom component from GitHub
 external_components:
-#  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
-  - source: ./components  # Point to the components directory
+  - source: "github://carltonlane79/esphome_samsung_hvac_bus@eu_heatpump"
+#  - source: ./components  # Point to the components directory
     components: [samsung_ac]
 
 # Configuration of AC component
@@ -123,14 +123,15 @@ samsung_ac:
         accuracy_decimals: 1
         #message: 0x4206
 
-      water_temperature:
-        name: "Water Temperature (Heating Loop) (4236)"
-        id: water_temperature_20_00_00
-        accuracy_decimals: 1
-        message: 0x4236
-
       # Indoor Custom sensors
       custom_sensor:
+        - name: "Water Temperature (Heating Loop) (4236)"
+          message: 0x4236
+          id: water_temperature_20_00_00
+          unit_of_measurement: "°C"
+          accuracy_decimals: 1
+          device_class: temperature
+          state_class: measurement
 
         - name: "Water Outlet Target Temperature (4247)"
           message: 0x4247
@@ -314,14 +315,6 @@ samsung_ac:
         state_class: total_increasing
         icon: "mdi:counter"
 
-      operation_hours:
-        name: "Operation Hours (840B)"
-        id: operation_hours_10_00_00
-        message: 0x840b
-        unit_of_measurement: "h"
-        accuracy_decimals: 1
-        state_class: total_increasing
-        icon: "mdi:clock-outline"
 
       compressor_hours:
         name: "Compressor Hours (840C)"
@@ -358,6 +351,14 @@ samsung_ac:
         icon: "mdi:counter"
 
       custom_sensor:
+        - name: "Operation Hours (8287)"
+          message: 0x8287
+          id: operation_hours_10_00_00
+          unit_of_measurement: "h"
+          accuracy_decimals: 1
+          state_class: total_increasing
+          icon: "mdi:clock-outline"
+
         - name: "Compressor Power (8237)"
           message: 0x8237
           id: compressor_power_10_00_00
@@ -545,3 +546,231 @@ samsung_ac:
           device_class: energy
           state_class: total_increasing
           icon: "mdi:counter"
+
+        - name: "Fan Power (8227)"
+          message: 0x8227
+          id: fan_power_8227_10_00_00
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          icon: "mdi:flash"
+
+        - name: "Outdoor Unit Power (8413)"
+          message: 0x8413
+          id: outdoor_unit_power_10_00_00
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          icon: "mdi:flash"
+
+        - name: "Total Power (8228)"
+          message: 0x8228
+          id: total_power_8228_10_00_00
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          icon: "mdi:flash"
+
+        - name: "Indoor Energy Total (4401)"
+          message: 0x4401
+          id: indoor_energy_total_10_00_00
+          unit_of_measurement: "kWh"
+          accuracy_decimals: 3
+          device_class: energy
+          state_class: total_increasing
+          icon: "mdi:counter"
+
+        - name: "Indoor Operation Hours (4426)"
+          message: 0x4426
+          id: indoor_operation_hours_10_00_00
+          unit_of_measurement: "h"
+          accuracy_decimals: 1
+          state_class: total_increasing
+          icon: "mdi:clock-outline"
+
+        - name: "Water Heater Hours (4427)"
+          message: 0x4427
+          id: water_heater_hours_10_00_00
+          unit_of_measurement: "h"
+          accuracy_decimals: 1
+          state_class: total_increasing
+          icon: "mdi:clock-outline"
+
+        - name: "Power824C_unknown"
+          message: 0x824C
+          id: power_824c_unknown_10_00_00
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          icon: "mdi:flash"
+
+        - name: "Power22FC_unknown"
+          message: 0x22FC
+          id: power_22fc_unknown_10_00_00
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          icon: "mdi:flash"
+
+        - name: "NM Out Sensor Voltage (24FC)"
+          message: 0x24FC
+          id: nm_out_sensor_voltage_10_00_00
+          unit_of_measurement: "V"
+          accuracy_decimals: 1
+          device_class: voltage
+          state_class: measurement
+          icon: "mdi:flash"
+
+# Template text sensors for enum display strings
+text_sensor:
+  - platform: template
+    name: "Operation Mode Display (4001)"
+    id: operation_mode_20_00_00_display
+    lambda: |-
+      int value = (int)id(operation_mode_20_00_00).state;
+      switch(value) {
+        case 0: return std::string("Auto");
+        case 1: return std::string("Cool");
+        case 2: return std::string("Dry");
+        case 3: return std::string("Fan");
+        case 4: return std::string("Heat");
+        default: return std::string("Unknown (").append(to_string(value)).append(")");
+      }
+    update_interval: 1s
+
+  - platform: template
+    name: "DHW Operation Enable Display (4065)"
+    id: dhw_operation_enable_display
+    lambda: |-
+      int value = (int)id(dhw_operation_enable).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "DHW Mode Setting Display (4066)"
+    id: dhw_mode_setting_display
+    lambda: |-
+      int value = (int)id(dhw_mode_setting).state;
+      switch(value) {
+        case 0: return std::string("Eco");
+        case 1: return std::string("Standard");
+        case 2: return std::string("Power");
+        case 3: return std::string("Force");
+        default: return std::string("Unknown (").append(to_string(value)).append(")");
+      }
+    update_interval: 1s
+
+  - platform: template
+    name: "3-Way Valve Position Display (4067)"
+    id: dhw_three_way_valve_position_display
+    lambda: |-
+      int value = (int)id(dhw_three_way_valve_position).state;
+      switch(value) {
+        case 0: return std::string("Off/Closed");
+        case 1: return std::string("Heating Loop");
+        case 2: return std::string("DHW Loop");
+        case 3: return std::string("Both Loops");
+        case 9: return std::string("Unknown Position 9");
+        default: return std::string("Position ").append(to_string(value));
+      }
+    update_interval: 1s
+
+  - platform: template
+    name: "Operation Mode Display (8001)"
+    id: operation_mode_10_00_00_display
+    lambda: |-
+      int value = (int)id(operation_mode_10_00_00).state;
+      switch(value) {
+        case 0: return std::string("Auto");
+        case 1: return std::string("Cool");
+        case 2: return std::string("Dry");
+        case 3: return std::string("Fan");
+        case 4: return std::string("Heat");
+        default: return std::string("Unknown (").append(to_string(value)).append(")");
+      }
+    update_interval: 1s
+
+  - platform: template
+    name: "Defrost Mode Display (8031)"
+    id: defrost_mode_10_00_00_display
+    lambda: |-
+      int value = (int)id(defrost_mode_10_00_00).state;
+      switch(value) {
+        case 0: return std::string("Off");
+        case 1: return std::string("Defrosting");
+        case 2: return std::string("Preheat");
+        default: return std::string("Unknown (").append(to_string(value)).append(")");
+      }
+    update_interval: 1s
+
+  - platform: template
+    name: "Compressor Running Status Display (8010)"
+    id: compressor_running_status_10_00_00_display
+    lambda: |-
+      int value = (int)id(compressor_running_status_10_00_00).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "Hot Gas Valve Status Display (8017)"
+    id: hot_gas_valve_status_10_00_00_display
+    lambda: |-
+      int value = (int)id(hot_gas_valve_status_10_00_00).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "Liquid Line Valve Status Display (8019)"
+    id: liquid_line_valve_status_10_00_00_display
+    lambda: |-
+      int value = (int)id(liquid_line_valve_status_10_00_00).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "4-Way Reversing Valve Status Display (801A)"
+    id: four_way_reversing_valve_status_10_00_00_display
+    lambda: |-
+      int value = (int)id(four_way_reversing_valve_status_10_00_00).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "EVI Bypass Valve Status Display (8021)"
+    id: evi_bypass_valve_status_10_00_00_display
+    lambda: |-
+      int value = (int)id(evi_bypass_valve_status_10_00_00).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "Base Pan Heater Display (80AF)"
+    id: base_pan_heater_10_00_00_display
+    lambda: |-
+      int value = (int)id(base_pan_heater_10_00_00).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "PHE Heater Display (80D7)"
+    id: phe_heater_10_00_00_display
+    lambda: |-
+      int value = (int)id(phe_heater_10_00_00).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "Backup Heater Status Display (406C)"
+    id: dhw_backup_heater_status_display
+    lambda: |-
+      int value = (int)id(dhw_backup_heater_status).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
+
+  - platform: template
+    name: "Booster Heater Status Display (4087)"
+    id: dhw_booster_heater_status_display
+    lambda: |-
+      int value = (int)id(dhw_booster_heater_status).state;
+      return value != 0 ? std::string("On") : std::string("Off");
+    update_interval: 1s
