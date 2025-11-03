@@ -629,15 +629,9 @@ namespace esphome
                 switch (value)
                 {
                 case 0:
-                    return "Off/Closed";
-                case 1:
                     return "Heating Loop";
-                case 2:
+                case 1:
                     return "DHW Loop";
-                case 3:
-                    return "Both Loops";
-                case 9:
-                    return "Unknown Position 9";
                 default:
                     return "Position " + std::to_string(value);
                 }
