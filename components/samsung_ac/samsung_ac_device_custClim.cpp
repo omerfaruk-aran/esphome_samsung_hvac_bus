@@ -19,17 +19,19 @@ namespace esphome
       traits.set_visual_min_temperature(setMin);
       traits.set_visual_max_temperature(setMax);
 
-      std::set<climate::ClimateMode> modes;
+      // --- supported modes (usiamo ClimateModeMask invece di std::set) ---
+      climate::ClimateModeMask modes_mask;
       for (int i = 0; i < 7; i++) {
-        if (m[i] >= 0)modes.insert((climate::ClimateMode)i);
+        if (m[i] >= 0) modes_mask.add((climate::ClimateMode)i);
       }
-      traits.set_supported_modes(modes);
+      traits.set_supported_modes(modes_mask);
 
-      std::set<climate::ClimatePreset> presets;
+      // --- supported presets (usiamo ClimatePresetMask invece di std::set) ---
+      climate::ClimatePresetMask presets_mask;
       for (int i = 0; i < 8; i++) {
-        if (p[i] >= 0)presets.insert((climate::ClimatePreset)i);
+        if (p[i] >= 0) presets_mask.add((climate::ClimatePreset)i);
       }
-      traits.set_supported_presets(presets);
+      traits.set_supported_presets(presets_mask);
 
       return traits;
     }
@@ -44,7 +46,7 @@ namespace esphome
 
       auto modeOpt = call.get_mode();
       if (modeOpt.has_value()){
-        request.power = modeOpt.value() >0;
+        request.power = modeOpt.value() > 0;
         ESP_LOGV(TAG, "CustClim req: power=%u", request.power.value());
         if (modeAddr) {
           esphome::climate::ClimateMode mod = modeOpt.value();
