@@ -12,75 +12,29 @@ namespace esphome
   {
     climate::ClimateTraits Samsung_AC_Climate::traits()
     {
-      auto traits = climate::ClimateTraits();
+      climate::ClimateTraits traits;
 
-      traits.set_supports_current_temperature(true);
+      traits.add_feature_flags(climate::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE);
+      traits.set_visual_temperature_step(1.0f);
+      traits.set_visual_min_temperature(16.0f);
+      traits.set_visual_max_temperature(30.0f);
 
-      traits.set_visual_temperature_step(1);
-      traits.set_visual_min_temperature(16);
-      traits.set_visual_max_temperature(30);
+      traits.set_supported_modes({climate::CLIMATE_MODE_OFF,
+                                  climate::CLIMATE_MODE_AUTO,
+                                  climate::CLIMATE_MODE_COOL,
+                                  climate::CLIMATE_MODE_DRY,
+                                  climate::CLIMATE_MODE_FAN_ONLY,
+                                  climate::CLIMATE_MODE_HEAT});
 
-      const std::set<climate::ClimateMode> modes = {
-          climate::CLIMATE_MODE_OFF,
-          climate::CLIMATE_MODE_AUTO,
-          climate::CLIMATE_MODE_COOL,
-          climate::CLIMATE_MODE_DRY,
-          climate::CLIMATE_MODE_FAN_ONLY,
-          climate::CLIMATE_MODE_HEAT};
-      traits.set_supported_modes(modes);
+      traits.set_supported_fan_modes({climate::CLIMATE_FAN_HIGH,
+                                      climate::CLIMATE_FAN_MIDDLE,
+                                      climate::CLIMATE_FAN_LOW,
+                                      climate::CLIMATE_FAN_AUTO});
 
-      std::set<climate::ClimateFanMode> fan = {
-          climate::ClimateFanMode::CLIMATE_FAN_HIGH,
-          climate::ClimateFanMode::CLIMATE_FAN_MIDDLE,
-          climate::ClimateFanMode::CLIMATE_FAN_LOW};
-
-      if (this->mode != climate::CLIMATE_MODE_FAN_ONLY)
-      {
-        fan.insert(climate::ClimateFanMode::CLIMATE_FAN_AUTO);
-      }
-
-      if (is_nasa_address(device->address))
-      {
-        // fan.insert(climate::ClimateFanMode::CLIMATE_FAN_DIFFUSE);
-      }
-
-      traits.set_supported_fan_modes(fan);
-
-      std::set<std::string> customFan;
-      customFan.insert("Turbo");
-      traits.set_supported_custom_fan_modes(customFan);
-
-      auto supported = device->get_supported_alt_modes();
-      if (!supported->empty())
-      {
-        std::set<climate::ClimatePreset> presets;
-        std::set<std::string> custom_presets;
-        for (const AltModeDesc &mode : *supported)
-        {
-          auto preset = altmodename_to_preset(mode.name);
-          if (preset)
-            presets.insert(preset.value());
-          else
-            custom_presets.insert(mode.name);
-        };
-        traits.set_supported_presets(presets);
-        traits.set_supported_custom_presets(custom_presets);
-      }
-
-      bool h = device->supports_horizontal_swing();
-      bool v = device->supports_vertical_swing();
-      if (h || v)
-      {
-        std::set<climate::ClimateSwingMode> swingMode;
-        swingMode.insert(climate::ClimateSwingMode::CLIMATE_SWING_OFF);
-        if (h)
-          swingMode.insert(climate::ClimateSwingMode::CLIMATE_SWING_HORIZONTAL);
-        if (v)
-          swingMode.insert(climate::ClimateSwingMode::CLIMATE_SWING_VERTICAL);
-        if (h && v)
-          swingMode.insert(climate::ClimateSwingMode::CLIMATE_SWING_BOTH);
-        traits.set_supported_swing_modes(swingMode);
-      }
+      traits.set_supported_swing_modes({climate::CLIMATE_SWING_OFF,
+                                        climate::CLIMATE_SWING_HORIZONTAL,
+                                        climate::CLIMATE_SWING_VERTICAL,
+                                        climate::CLIMATE_SWING_BOTH});
 
       return traits;
     }
@@ -114,10 +68,10 @@ namespace esphome
         request.fan_mode = climatefanmode_to_fanmode(fanmodeOpt.value());
       }
 
-      auto customFanmodeOpt = call.get_custom_fan_mode();
-      if (customFanmodeOpt.has_value())
+      const char *customFanmode = call.get_custom_fan_mode();
+      if (customFanmode != nullptr)
       {
-        request.fan_mode = customfanmode_to_fanmode(customFanmodeOpt.value());
+        request.fan_mode = customfanmode_to_fanmode(std::string(customFanmode));
       }
 
       auto presetOpt = call.get_preset();
@@ -126,10 +80,10 @@ namespace esphome
         set_alt_mode_by_name(request, preset_to_altmodename(presetOpt.value()));
       }
 
-      auto customPresetOpt = call.get_custom_preset();
-      if (customPresetOpt.has_value())
+      const char *customPreset = call.get_custom_preset();
+      if (customPreset != nullptr)
       {
-        set_alt_mode_by_name(request, customPresetOpt.value());
+        set_alt_mode_by_name(request, AltModeName(customPreset));
       }
 
       auto swingModeOpt = call.get_swing_mode();
