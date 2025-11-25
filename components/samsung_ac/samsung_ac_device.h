@@ -25,6 +25,9 @@ namespace esphome
     public:
       climate::ClimateTraits traits();
       void control(const climate::ClimateCall &call);
+      void apply_fanmode_from_device(FanMode value);
+      void apply_altmode_from_device(const AltModeDesc &mode);
+
       Samsung_AC_Device *device;
 
     protected:
@@ -383,15 +386,7 @@ namespace esphome
       {
         if (climate != nullptr)
         {
-          auto fanmode = fanmode_to_climatefanmode(value);
-          if (fanmode.has_value())
-          {
-            climate->fan_mode = fanmode;
-          }
-          else
-          {
-            climate->fan_mode.reset();
-          }
+          climate->apply_fanmode_from_device(value);
           climate->publish_state();
         }
       }
@@ -409,15 +404,8 @@ namespace esphome
             return;
           }
 
-          auto preset = altmodename_to_preset(mode->name);
-          if (preset)
-          {
-            climate->preset = preset.value();
-          }
-          else
-          {
-             ESP_LOGW(TAG, "Alt mode %s has no matching preset", mode->name.c_str());
-          }
+          climate->apply_altmode_from_device(*mode);
+          
           climate->publish_state();
         }
       }
