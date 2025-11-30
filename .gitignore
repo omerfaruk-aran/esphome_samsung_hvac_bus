@@ -4,6 +4,7 @@ __pycache__
 test.exe
 .pio/
 .venv/
+.venvs/
 .vscode/
 src/
 platformio.ini
