@@ -2,9 +2,9 @@
 #include <map>
 #include <cmath>
 #include <string>
-#include "esphome/core/log.h"
 #include "esphome/core/hal.h"
 #include "util.h"
+#include "log.h"
 #include "protocol_non_nasa.h"
 
 std::map<std::string, esphome::samsung_ac::NonNasaCommand20> last_command20s_;
@@ -159,21 +159,18 @@ namespace esphome
 
         DecodeResult NonNasaDataPacket::decode(std::vector<uint8_t> &data)
         {
-            if (data[0] != 0x32)
-                return DecodeResult::InvalidStartByte;
-
             if (data.size() != 14)
-                return DecodeResult::UnexpectedSize;
+                return { DecodeResultType::Discard };
 
             if (data[data.size() - 1] != 0x34)
-                return DecodeResult::InvalidEndByte;
+                return { DecodeResultType::Discard };
 
             auto crc_expected = build_checksum(data);
             auto crc_actual = data[data.size() - 2];
             if (crc_actual != build_checksum(data))
             {
-                ESP_LOGW(TAG, "NonNASA: invalid crc - got %d but should be %d: %s", crc_actual, crc_expected, bytes_to_hex(data).c_str());
-                return DecodeResult::CrcError;
+                LOGW("NonNASA: invalid crc - got %d but should be %d: %s", crc_actual, crc_expected, bytes_to_hex(data).c_str());
+                return { DecodeResultType::Discard };
             }
 
             src = long_to_hex(data[1]);
@@ -196,7 +193,7 @@ namespace esphome
                 if (command20.wind_direction == (NonNasaWindDirection)0)
                     command20.wind_direction = NonNasaWindDirection::Stop;
 
-                return DecodeResult::Ok;
+                return { DecodeResultType::Processed, (uint16_t) data.size() };
             }
             case NonNasaCommand::CmdC0: // outdoor unit data
             {
@@ -208,17 +205,17 @@ namespace esphome
                 commandC0.outdoor_unit_outdoor_temp_c = data[8] - 55;
                 commandC0.outdoor_unit_discharge_temp_c = data[10] - 55;
                 commandC0.outdoor_unit_condenser_mid_temp_c = data[11] - 55;
-                return DecodeResult::Ok;
+                return { DecodeResultType::Processed, (uint16_t) data.size() };
             }
             case NonNasaCommand::CmdC1: // outdoor unit data
             {
                 commandC1.outdoor_unit_sump_temp_c = data[8] - 55;
-                return DecodeResult::Ok;
+                return { DecodeResultType::Processed, (uint16_t) data.size() };
             }
             case NonNasaCommand::CmdC6:
             {
                 commandC6.control_status = data[4];
-                return DecodeResult::Ok;
+                return { DecodeResultType::Processed, (uint16_t) data.size() };
             }
             case NonNasaCommand::CmdF0: // outdoor unit data
             {
@@ -232,7 +229,7 @@ namespace esphome
                 commandF0.inverter_current_frequency_hz = data[7];
                 commandF0.outdoor_unit_bldc_fan = data[8] & 0b00000011; // not sure if correct, i have no ou with BLDC-fan
                 commandF0.outdoor_unit_error_code = data[10];
-                return DecodeResult::Ok;
+                return { DecodeResultType::Processed, (uint16_t) data.size() };
             }
             case NonNasaCommand::CmdF1: // outdoor unit eev-values
             {
@@ -240,7 +237,7 @@ namespace esphome
                 commandF1.outdoor_unit_EEV_B = (data[6] * 256) + data[7];
                 commandF1.outdoor_unit_EEV_C = (data[8] * 256) + data[9];
                 commandF1.outdoor_unit_EEV_D = (data[10] * 256) + data[11];
-                return DecodeResult::Ok;
+                return { DecodeResultType::Processed, (uint16_t) data.size() };
             }
             case NonNasaCommand::CmdF3: // power consumption
             {
@@ -254,14 +251,14 @@ namespace esphome
                 commandF3.inverter_voltage_v = (float)data[9] * 2;
                 // Power consumption of the outdoo unit inverter in W
                 commandF3.inverter_power_w = commandF3.inverter_current_a * commandF3.inverter_voltage_v;
-                return DecodeResult::Ok;
+                return { DecodeResultType::Processed, (uint16_t) data.size() };
             }
             default:
             {
                 commandRaw.length = data.size() - 4 - 1;
                 auto begin = data.begin() + 4;
                 std::copy(begin, begin + commandRaw.length, commandRaw.data);
-                return DecodeResult::Ok;
+                return { DecodeResultType::Processed, (uint16_t) data.size() };
             }
             }
         }
@@ -417,12 +414,12 @@ namespace esphome
 
             if (request.alt_mode)
             {
-                ESP_LOGW(TAG, "change altmode is currently not implemented");
+                LOGW("change altmode is currently not implemented");
             }
 
             if (request.swing_mode)
             {
-                ESP_LOGW(TAG, "change swingmode is currently not implemented");
+                LOGW("change swingmode is currently not implemented");
             }
 
             // Add to the queue with the current time
@@ -488,7 +485,7 @@ namespace esphome
             }
         }
 
-        DecodeResult try_decode_non_nasa_packet(std::vector<uint8_t> data)
+        DecodeResult try_decode_non_nasa_packet(std::vector<uint8_t> &data)
         {
             return nonpacket_.decode(data);
         }
@@ -501,15 +498,14 @@ namespace esphome
                 if (item.time_sent == 0)
                 {
                     item.time_sent = now;
-                    auto data = item.request.encode();
-                    target->publish_data(data);
+                    target->publish_data(0, item.request.encode());
                 }
             }
         }
 
         void send_register_controller(MessageTarget *target)
         {
-            ESP_LOGD(TAG, "Sending controller registration request...");
+            LOGD("Sending controller registration request...");
 
             // Registers our device as a "controller" with the outdoor unit. This will cause the
             // outdoor unit to poll us with a request_control message approximately every second,
@@ -533,14 +529,14 @@ namespace esphome
             data[12] = build_checksum(data);
 
             // Send now
-            target->publish_data(data);
+            target->publish_data(0, std::move(data));
         }
 
         void process_non_nasa_packet(MessageTarget *target)
         {
             if (debug_log_undefined_messages)
             {
-                ESP_LOGW(TAG, "MSG: %s", nonpacket_.to_string().c_str());
+                LOG_PACKET_RECV("RECV", nonpacket_);
             }
 
             target->register_address(nonpacket_.src);
@@ -610,7 +606,7 @@ namespace esphome
                 {
                     if (controller_registered == false)
                     {
-                        ESP_LOGD(TAG, "Controller registered");
+                        LOGD("Controller registered");
                         controller_registered = true;
                     }
                     if (indoor_unit_awake)
@@ -681,7 +677,7 @@ namespace esphome
                     // Both the outdoor and the indoor unit must be awake before we can send a command
                     indoor_unit_awake = false;
                     item.retry_count++;
-                    ESP_LOGD(TAG, "Device is likely sleeping, waking...");
+                    LOGD("Device is likely sleeping, waking...");
                     send_register_controller(target);
                     break;
                 }

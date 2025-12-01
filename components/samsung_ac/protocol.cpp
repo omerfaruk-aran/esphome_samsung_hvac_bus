@@ -1,6 +1,6 @@
-#include "esphome/core/log.h"
 #include "protocol.h"
 #include "util.h"
+#include "log.h"
 #include "protocol_nasa.h"
 #include "protocol_non_nasa.h"
 
@@ -8,36 +8,38 @@ namespace esphome
 {
     namespace samsung_ac
     {
-        bool debug_log_raw_bytes = false;
         bool non_nasa_keepalive = false;
-        bool debug_log_undefined_messages = false;
-        bool debug_log_messages = false;
 
         ProtocolProcessing protocol_processing = ProtocolProcessing::Auto;
 
+        uint16_t skip_data(std::vector<uint8_t> &data, int from)
+        {
+            // Skip over filler data or broken packets
+            // Example:
+            // 320037d8fedbff81cb7ffbfd808d00803f008243000082350000805e008031008248ffff801a0082d400000b6a34 f9f6f1f9f9 32000e200002
+            // Note that first part is a mangled packet, then regular filler data, then start of a new packet
+            // and that one new proper packet will continue with the next data read
+
+            // find next value of 0x32, and retry with that one
+            return std::find(data.begin() + from, data.end(), 0x32) - data.begin();
+        }
+
         // This functions is designed to run after a new value was added
         // to the data vector. One by one.
-        DataResult process_data(std::vector<uint8_t> &data, MessageTarget *target)
+        DecodeResult process_data(std::vector<uint8_t> &data, MessageTarget *target)
         {
-            if (data.size() > 1500)
-            {
-                ESP_LOGV(TAG, "current packat exceeds the size limits: %s", bytes_to_hex(data).c_str());
-                return DataResult::Clear;
-            }
+            if (*data.begin() != 0x32)
+                return { DecodeResultType::Discard, skip_data(data, 0) };
+
+
+            DecodeResult  result = { DecodeResultType::Fill, 0 };
 
             // Check if its a decodeable NonNASA packat
-            DecodeResult result = DecodeResult::Ok;
-
             if (protocol_processing == ProtocolProcessing::Auto || protocol_processing == ProtocolProcessing::NonNASA)
             {
                 result = try_decode_non_nasa_packet(data);
-                if (result == DecodeResult::Ok)
+                if (result.type == DecodeResultType::Processed)
                 {
-                    if (debug_log_raw_bytes)
-                    {
-                        ESP_LOGW(TAG, "RAW: %s", bytes_to_hex(data).c_str());
-                    }
-
                     // Non-NASA protocol confirmed, use for future packets
                     if (protocol_processing == ProtocolProcessing::Auto)
                     {
@@ -45,54 +47,36 @@ namespace esphome
                     }
 
                     process_non_nasa_packet(target);
-                    return DataResult::Clear;
+                    return result;
                 }
             }
-
-            if (protocol_processing == ProtocolProcessing::Auto || protocol_processing == ProtocolProcessing::NASA)
+            if (protocol_processing == ProtocolProcessing::NonNASA)
             {
-                result = try_decode_nasa_packet(data);
-                if (result == DecodeResult::Ok)
+                if (result.type == DecodeResultType::Discard)
                 {
-                    if (debug_log_raw_bytes)
-                    {
-                        ESP_LOGW(TAG, "RAW: %s", bytes_to_hex(data).c_str());
-                    }
-
-                    // NASA protocol confirmed, use for future packets
-                    if (protocol_processing == ProtocolProcessing::Auto)
-                    {
-                        protocol_processing = ProtocolProcessing::NASA;
-                    }
-
-                    process_nasa_packet(target);
-                    return DataResult::Clear;
+                    return { DecodeResultType::Discard, skip_data(data, 1) };
                 }
+                return result;
             }
 
-            if (result == DecodeResult::SizeDidNotMatch || result == DecodeResult::UnexpectedSize)
-            {
-                return DataResult::Fill;
-            }
+            // fallback to nasa
 
-            if (debug_log_raw_bytes)
+            result = try_decode_nasa_packet(data);
+            if (result.type == DecodeResultType::Processed)
             {
-                ESP_LOGV(TAG, "RAW: %s", bytes_to_hex(data).c_str());
-            }
+                // NASA protocol confirmed, use for future packets
+                if (protocol_processing == ProtocolProcessing::Auto)
+                {
+                    protocol_processing = ProtocolProcessing::NASA;
+                }
 
-            if (result == DecodeResult::InvalidStartByte)
-            {
-                ESP_LOGV(TAG, "invalid start byte: %s", bytes_to_hex(data).c_str());
+                process_nasa_packet(target);
             }
-            else if (result == DecodeResult::InvalidEndByte)
+            if (result.type == DecodeResultType::Discard)
             {
-                ESP_LOGV(TAG, "invalid end byte: %s", bytes_to_hex(data).c_str());
+                return { DecodeResultType::Discard, skip_data(data, 1) };
             }
-            else if (result == DecodeResult::CrcError)
-            {
-                // is logged within decoder
-            }
-            return DataResult::Clear;
+            return result;
         }
 
         bool is_nasa_address(const std::string &address)
