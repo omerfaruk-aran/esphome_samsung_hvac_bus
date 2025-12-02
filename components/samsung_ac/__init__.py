@@ -81,6 +81,7 @@ CONF_DEVICE_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM = "outdoor_instantaneous_power"
 CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = "outdoor_cumulative_energy"
 CONF_DEVICE_OUT_SENSOR_CT1 = "outdoor_current"
 CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
+CONF_FLOW_CONTROL_PIN_2 = "flow_control_pin_2"
 
 
 CONF_CAPABILITIES = "capabilities"
@@ -326,6 +327,7 @@ CONFIG_SCHEMA = (
             cv.GenerateID(): cv.declare_id(Samsung_AC),
             # cv.Optional(CONF_PAUSE, default=False): cv.boolean,
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
+            cv.Optional(CONF_FLOW_CONTROL_PIN_2): pins.gpio_output_pin_schema,
             cv.Optional(CONF_DEBUG_MQTT_HOST, default=""): cv.string,
             cv.Optional(CONF_DEBUG_MQTT_PORT, default=1883): cv.int_,
             cv.Optional(CONF_DEBUG_MQTT_USERNAME, default=""): cv.string,
@@ -352,6 +354,9 @@ async def to_code(config):
     if CONF_FLOW_CONTROL_PIN in config:
         pin = await gpio_pin_expression(config[CONF_FLOW_CONTROL_PIN])
         cg.add(var.set_flow_control_pin(pin))
+    if CONF_FLOW_CONTROL_PIN_2 in config:
+        pin = await gpio_pin_expression(config[CONF_FLOW_CONTROL_PIN_2])
+        cg.add(var.set_flow_control_pin_2(pin))
 
     for device_index, device in enumerate(config[CONF_DEVICES]):
         var_dev = cg.new_Pvariable(
