@@ -8,19 +8,19 @@ namespace esphome
 {
     namespace samsung_ac
     {
-        extern bool debug_log_raw_bytes;
         extern bool non_nasa_keepalive;
-        extern bool debug_log_undefined_messages;
-        extern bool debug_log_messages;
 
-        enum class DecodeResult
+        enum class DecodeResultType
         {
-            Ok = 0,
-            InvalidStartByte = 1,
-            InvalidEndByte = 2,
-            SizeDidNotMatch = 3,
-            UnexpectedSize = 4,
-            CrcError = 5
+            Fill = 1,
+            Discard = 2,
+            Processed = 3
+        };
+
+        struct DecodeResult
+        {
+            DecodeResultType type;
+            uint16_t bytes; // when Processed
         };
 
         enum class Mode
@@ -74,7 +74,8 @@ namespace esphome
         {
         public:
             virtual uint32_t get_miliseconds() = 0;
-            virtual void publish_data(std::vector<uint8_t> &data) = 0;
+            virtual void publish_data(uint8_t id, std::vector<uint8_t> &&data) = 0;
+            virtual void ack_data(uint8_t id) = 0;
             virtual void register_address(const std::string address) = 0;
             virtual void set_power(const std::string address, bool value) = 0;
             virtual void set_automatic_cleaning(const std::string address, bool value) = 0;
@@ -132,13 +133,7 @@ namespace esphome
 
         extern ProtocolProcessing protocol_processing;
 
-        enum class DataResult
-        {
-            Fill = 0,
-            Clear = 1
-        };
-
-        DataResult process_data(std::vector<uint8_t> &data, MessageTarget *target);
+        DecodeResult process_data(std::vector<uint8_t> &data, MessageTarget *target);
 
         Protocol *get_protocol(const std::string &address);
 

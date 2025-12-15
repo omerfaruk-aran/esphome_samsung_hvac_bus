@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include "protocol.h"
 
 namespace esphome
@@ -172,7 +173,7 @@ namespace esphome
             std::string to_string();
         };
 
-        DecodeResult try_decode_nasa_packet(std::vector<uint8_t> data);
+        DecodeResult try_decode_nasa_packet(std::vector<uint8_t> &data);
         void process_nasa_packet(MessageTarget *target);
 
         class NasaProtocol : public Protocol
@@ -182,6 +183,8 @@ namespace esphome
 
             void publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request) override;
             void protocol_update(MessageTarget *target) override;
+        protected:
+            std::map<std::string, ProtocolRequest> outgoing_queue_; // std::string address -> ProtocolRequest
         };
 
     } // namespace samsung_ac

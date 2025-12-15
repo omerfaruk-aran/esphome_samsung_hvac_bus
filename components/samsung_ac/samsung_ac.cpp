@@ -1,7 +1,7 @@
-#include "esphome/core/log.h"
 #include "samsung_ac.h"
 #include "debug_mqtt.h"
 #include "util.h"
+#include "log.h"
 #include <vector>
 
 namespace esphome
@@ -12,7 +12,7 @@ namespace esphome
     {
       if (debug_log_messages)
       {
-        ESP_LOGW(TAG, "setup");
+        LOGW("setup");
       }
       if (this->flow_control_pin_ != nullptr)
       {
@@ -24,7 +24,7 @@ namespace esphome
     {
       if (debug_log_messages)
       {
-        ESP_LOGW(TAG, "update");
+        LOGW("update");
       }
 
       for (const auto &pair : devices_)
@@ -43,7 +43,7 @@ namespace esphome
       // Waiting for first update before beginning processing data
       if (data_processing_init)
       {
-        ESP_LOGCONFIG(TAG, "Data Processing starting");
+        LOGC("Data Processing starting");
         data_processing_init = false;
       }
 
@@ -54,7 +54,7 @@ namespace esphome
           devices += ", ";
         devices += pair.second->address;
       }
-      ESP_LOGCONFIG(TAG, "Configured devices: %s", devices.c_str());
+      LOGC("Configured devices: %s", devices.c_str());
 
       std::string knownIndoor, knownOutdoor, knownOther;
       for (const auto &address : addresses_)
@@ -66,12 +66,12 @@ namespace esphome
         target += address;
       }
 
-      ESP_LOGCONFIG(TAG, "Discovered devices:");
-      ESP_LOGCONFIG(TAG, "  Outdoor: %s", (knownOutdoor.length() == 0 ? "-" : knownOutdoor.c_str()));
-      ESP_LOGCONFIG(TAG, "  Indoor:  %s", (knownIndoor.length() == 0 ? "-" : knownIndoor.c_str()));
+      LOGC("Discovered devices:");
+      LOGC("  Outdoor: %s", (knownOutdoor.length() == 0 ? "-" : knownOutdoor.c_str()));
+      LOGC("  Indoor:  %s", (knownIndoor.length() == 0 ? "-" : knownIndoor.c_str()));
       if (knownOther.length() > 0)
       {
-        ESP_LOGCONFIG(TAG, "  Other:   %s", knownOther.c_str());
+        LOGC("  Other:   %s", knownOther.c_str());
       }
     }
 
@@ -79,7 +79,7 @@ namespace esphome
     {
       if (find_device(device->address) != nullptr)
       {
-        ESP_LOGW(TAG, "There is already and device for address %s registered.", device->address.c_str());
+        LOGW("There is already and device for address %s registered.", device->address.c_str());
         return;
       }
 
@@ -88,25 +88,42 @@ namespace esphome
 
     void Samsung_AC::dump_config()
     {
-      ESP_LOGCONFIG(TAG, "Samsung_AC:");
+      LOGC("Samsung_AC:");
       LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
     }
 
-    void Samsung_AC::publish_data(std::vector<uint8_t> &data)
+    void Samsung_AC::publish_data(uint8_t id, std::vector<uint8_t> &&data) 
     {
-      ESP_LOGW(TAG, "write %s", bytes_to_hex(data).c_str());
+      const uint32_t now = millis();
 
-      if (this->flow_control_pin_ != nullptr) {
-        ESP_LOGD(TAG, "switching flow_control_pin to write");
-        this->flow_control_pin_->digital_write(true);
-        }
+      if (id == 0)
+      {
+        LOG_RAW_SEND(now-last_transmission_, data);
+        last_transmission_ = now;
+        this->before_write();
+        this->write_array(data);
+        this->flush();
+        this->after_write();
+        return;
+      }
 
-      this->write_array(data);
-      this->flush();
+      OutgoingData outData;
+      outData.id = id;
+      outData.data = std::move(data);
+      outData.nextRetry = 0;
+      outData.retries = 0;
+      outData.timeout = now + sendTimeout;
+      send_queue_.push_back(std::move(outData));
+    }
 
-      if (this->flow_control_pin_ != nullptr) {
-        ESP_LOGD(TAG, "switching flow_control_pin to read");
-        this->flow_control_pin_->digital_write(false);
+    void Samsung_AC::ack_data(uint8_t id)
+    {
+        if (!send_queue_.empty())
+        {
+          auto senddata = &send_queue_.front();
+          if (senddata->id == id) {
+            send_queue_.pop_front();
+          }
         }
     }
 
@@ -115,32 +132,17 @@ namespace esphome
       if (data_processing_init)
         return;
 
+      // if more data is expected, do not allow anything to be written
+      if (!read_data())
+        return;
+
+      // If there is no data we use the time to send
+      // And if written, break the loop
+      if (write_data())
+        return;
+
+      // Allow device protocols to perform recurring tasks when idle (at most every 200ms)
       const uint32_t now = millis();
-      if (!data_.empty() && (now - last_transmission_ >= 500))
-      {
-        ESP_LOGW(TAG, "Last transmission too long ago. Reset RX index.");
-        data_.clear();
-      }
-
-      while (available())
-      {
-        last_transmission_ = now;
-        uint8_t c;
-        if (!read_byte(&c))
-          continue;
-        if (data_.empty() && c != 0x32)
-          continue; // skip until start-byte found
-
-        data_.push_back(c);
-
-        if (process_data(data_, this) == DataResult::Clear)
-        {
-          data_.clear();
-          break; // wait for next loop
-        }
-      }
-
-      // Allow device protocols to perform recurring tasks (at most every 200ms)
       if (now - last_protocol_update_ >= 200)
       {
         last_protocol_update_ = now;
@@ -149,6 +151,99 @@ namespace esphome
           Samsung_AC_Device *device = pair.second;
           device->protocol_update(this);
         }
+      }
+    }
+
+    bool Samsung_AC::read_data()
+    {
+      // read as long as there is anything to read
+      while (available())
+      {
+        uint8_t c;
+        if (read_byte(&c))
+        {
+          data_.push_back(c);
+        }
+      }
+
+      if (data_.empty())
+        return true;
+
+      const uint32_t now = millis();
+
+      auto result = process_data(data_, this);
+      if (result.type == DecodeResultType::Fill)
+        return false;
+
+      if (result.type == DecodeResultType::Discard)
+      {
+        // collect more so that we can log all discarded bytes at once, but don't wait for too long
+        if (result.bytes == data_.size() && now-last_transmission_ < 1000)
+          return false;
+        LOG_RAW_DISCARDED(now-last_transmission_, data_, 0, result.bytes);
+      }
+      else
+      {
+        LOG_RAW(now-last_transmission_, data_, 0, result.bytes);
+      }
+
+      if (result.bytes == data_.size())
+        data_.clear();
+      else
+      {
+        std::move(data_.begin() + result.bytes, data_.end(), data_.begin());
+        data_.resize(data_.size() - result.bytes);
+      }
+      last_transmission_ = now;
+      return false;
+    }
+
+    bool Samsung_AC::write_data()
+    {
+      if (send_queue_.empty())
+        return false;
+
+      auto senddata = &send_queue_.front();
+
+      const uint32_t now = millis();
+      if (senddata->timeout <= now && senddata->retries >= minRetries) {
+        LOGE("Packet sending timeout %d after %d retries", senddata->id, senddata->retries);
+        send_queue_.pop_front();
+        return true;
+      }
+
+      if (now-last_transmission_ > silenceInterval && senddata->nextRetry < now)
+      {
+        if (senddata->nextRetry > 0){
+          LOGW("Retry sending packet %d", senddata->id);
+          senddata->retries++;
+        }
+
+        LOG_RAW_SEND(now-last_transmission_,  senddata->data);
+
+        last_transmission_ = now;
+        senddata->nextRetry = now + retryInterval;
+        this->before_write();
+        this->write_array(senddata->data);
+        this->flush();
+        this->after_write();
+      }
+      return true;
+    }
+
+    void Samsung_AC::before_write()
+    {
+      if (this->flow_control_pin_ != nullptr) {
+        LOGD("switching flow_control_pin to write");
+        this->flow_control_pin_->digital_write(true);
+      }
+    }
+
+    void Samsung_AC::after_write()
+    {
+      if (this->flow_control_pin_ != nullptr) {
+        LOGD("switching flow_control_pin to read");
+        this->flow_control_pin_->digital_write(false);
       }
     }
 
