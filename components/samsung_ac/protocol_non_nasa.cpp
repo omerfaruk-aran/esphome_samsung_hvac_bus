@@ -159,28 +159,41 @@ namespace esphome
 
         DecodeResult NonNasaDataPacket::decode(std::vector<uint8_t> &data)
         {
-            if (data.size() != 14)
-                return { DecodeResultType::Discard };
+            // Stream-safe: wait until we have at least 14 bytes
+            if (data.size() < 14)
+                return {DecodeResultType::Fill, 0};
 
-            if (data[data.size() - 1] != 0x34)
-                return { DecodeResultType::Discard };
+            // Only examine the first 14 bytes (buffer may contain more)
+            // Frame format: 0x32 .... 0x34 (14 bytes total)
+            if (data[0] != 0x32)
+                return {DecodeResultType::Discard, 1};
 
-            auto crc_expected = build_checksum(data);
-            auto crc_actual = data[data.size() - 2];
-            if (crc_actual != build_checksum(data))
+            if (data[13] != 0x34)
+                return {DecodeResultType::Discard, 1};
+
+            // Validate checksum against first 14 bytes
+            uint8_t crc_expected = build_checksum(data); // uses bytes [1..11]
+            uint8_t crc_actual = data[12];
+
+            if (crc_actual != crc_expected)
             {
-                LOGW("NonNASA: invalid crc - got %d but should be %d: %s", crc_actual, crc_expected, bytes_to_hex(data).c_str());
-                return { DecodeResultType::Discard };
+                if (debug_log_undefined_messages)
+                    LOGW("NonNASA: invalid crc - got %d but should be %d: %s",
+                         crc_actual, crc_expected,
+                         bytes_to_hex(std::vector<uint8_t>(data.begin(), data.begin() + 14)).c_str());
+
+                // resync gently (consume 1) - safer in streams
+                return {DecodeResultType::Discard, 1};
             }
 
+            // Decode using first 14 bytes
             src = long_to_hex(data[1]);
             dst = long_to_hex(data[2]);
 
             cmd = (NonNasaCommand)data[3];
             switch (cmd)
             {
-            case NonNasaCommand::Cmd20: // temperatures
-            {
+            case NonNasaCommand::Cmd20:
                 command20.target_temp = data[4] - 55;
                 command20.room_temp = data[5] - 55;
                 command20.pipe_in = data[6] - 55;
@@ -193,11 +206,10 @@ namespace esphome
                 if (command20.wind_direction == (NonNasaWindDirection)0)
                     command20.wind_direction = NonNasaWindDirection::Stop;
 
-                return { DecodeResultType::Processed, (uint16_t) data.size() };
-            }
-            case NonNasaCommand::CmdC0: // outdoor unit data
-            {
-                commandC0.outdoor_unit_operation_mode = data[4]; // modes need to be specified
+                return {DecodeResultType::Processed, 14};
+
+            case NonNasaCommand::CmdC0:
+                commandC0.outdoor_unit_operation_mode = data[4];
                 commandC0.outdoor_unit_4_way_valve = data[6] & 0b10000000;
                 commandC0.outdoor_unit_hot_gas_bypass = data[6] & 0b00100000;
                 commandC0.outdoor_unit_compressor = data[6] & 0b00000100;
@@ -205,20 +217,17 @@ namespace esphome
                 commandC0.outdoor_unit_outdoor_temp_c = data[8] - 55;
                 commandC0.outdoor_unit_discharge_temp_c = data[10] - 55;
                 commandC0.outdoor_unit_condenser_mid_temp_c = data[11] - 55;
-                return { DecodeResultType::Processed, (uint16_t) data.size() };
-            }
-            case NonNasaCommand::CmdC1: // outdoor unit data
-            {
+                return {DecodeResultType::Processed, 14};
+
+            case NonNasaCommand::CmdC1:
                 commandC1.outdoor_unit_sump_temp_c = data[8] - 55;
-                return { DecodeResultType::Processed, (uint16_t) data.size() };
-            }
+                return {DecodeResultType::Processed, 14};
+
             case NonNasaCommand::CmdC6:
-            {
                 commandC6.control_status = data[4];
-                return { DecodeResultType::Processed, (uint16_t) data.size() };
-            }
-            case NonNasaCommand::CmdF0: // outdoor unit data
-            {
+                return {DecodeResultType::Processed, 14};
+
+            case NonNasaCommand::CmdF0:
                 commandF0.outdoor_unit_freeze_protection = data[4] & 0b10000000;
                 commandF0.outdoor_unit_heating_overload = data[4] & 0b01000000;
                 commandF0.outdoor_unit_defrost_control = data[4] & 0b00100000;
@@ -227,39 +236,32 @@ namespace esphome
                 commandF0.inverter_order_frequency_hz = data[5];
                 commandF0.inverter_target_frequency_hz = data[6];
                 commandF0.inverter_current_frequency_hz = data[7];
-                commandF0.outdoor_unit_bldc_fan = data[8] & 0b00000011; // not sure if correct, i have no ou with BLDC-fan
+                commandF0.outdoor_unit_bldc_fan = data[8] & 0b00000011;
                 commandF0.outdoor_unit_error_code = data[10];
-                return { DecodeResultType::Processed, (uint16_t) data.size() };
-            }
-            case NonNasaCommand::CmdF1: // outdoor unit eev-values
-            {
+                return {DecodeResultType::Processed, 14};
+
+            case NonNasaCommand::CmdF1:
                 commandF1.outdoor_unit_EEV_A = (data[4] * 256) + data[5];
                 commandF1.outdoor_unit_EEV_B = (data[6] * 256) + data[7];
                 commandF1.outdoor_unit_EEV_C = (data[8] * 256) + data[9];
                 commandF1.outdoor_unit_EEV_D = (data[10] * 256) + data[11];
-                return { DecodeResultType::Processed, (uint16_t) data.size() };
-            }
-            case NonNasaCommand::CmdF3: // power consumption
-            {
-                // Maximum frequency for Inverter (compressor-motor of outdoor-unit) in Hz
+                return {DecodeResultType::Processed, 14};
+
+            case NonNasaCommand::CmdF3:
                 commandF3.inverter_max_frequency_hz = data[4];
-                // Sum of required heating/cooling capacity ordered by the indoor-units in kW
                 commandF3.inverter_total_capacity_requirement_kw = (float)data[5] / 10;
-                // DC-current to the inverter of outdoor-unit in A
                 commandF3.inverter_current_a = (float)data[8] / 10;
-                // voltage of the DC-link to inverter in V
                 commandF3.inverter_voltage_v = (float)data[9] * 2;
-                // Power consumption of the outdoo unit inverter in W
                 commandF3.inverter_power_w = commandF3.inverter_current_a * commandF3.inverter_voltage_v;
-                return { DecodeResultType::Processed, (uint16_t) data.size() };
-            }
+                return {DecodeResultType::Processed, 14};
+
             default:
-            {
-                commandRaw.length = data.size() - 4 - 1;
-                auto begin = data.begin() + 4;
-                std::copy(begin, begin + commandRaw.length, commandRaw.data);
-                return { DecodeResultType::Processed, (uint16_t) data.size() };
-            }
+                commandRaw.length = 14 - 4 - 1;
+                {
+                    auto begin = data.begin() + 4;
+                    std::copy(begin, begin + commandRaw.length, commandRaw.data);
+                }
+                return {DecodeResultType::Processed, 14};
             }
         }
 
@@ -457,9 +459,9 @@ namespace esphome
                 return Mode::Auto;
             }
         }
-		
-		// TODO
-		WaterHeaterMode nonnasa_water_heater_mode_to_mode(int value)
+
+        // TODO
+        WaterHeaterMode nonnasa_water_heater_mode_to_mode(int value)
         {
             switch (value)
             {
@@ -565,36 +567,36 @@ namespace esphome
                 // has been acknowledged, it should be ignored. This prevents the UI status bouncing
                 // between states after a command has been issued.
                 bool pending_control_message = false;
-                for (auto& item : nonnasa_requests)
+                for (auto &item : nonnasa_requests)
                 {
-                   if (item.time_sent > 0 && nonpacket_.src == item.request.dst)
-                   {
-                      pending_control_message = true;
-                      break;
-                   }
+                    if (item.time_sent > 0 && nonpacket_.src == item.request.dst)
+                    {
+                        pending_control_message = true;
+                        break;
+                    }
                 }
 
                 if (!pending_control_message)
                 {
-                   last_command20s_[nonpacket_.src] = nonpacket_.command20;
-                   target->set_target_temperature(nonpacket_.src, nonpacket_.command20.target_temp);
-                   // TODO
-                   target->set_water_outlet_target(nonpacket_.src, false);
-                   // TODO
-                   target->set_target_water_temperature(nonpacket_.src, false);
-                   target->set_room_temperature(nonpacket_.src, nonpacket_.command20.room_temp);
-                   target->set_power(nonpacket_.src, nonpacket_.command20.power);
-                   // TODO
-                   target->set_water_heater_power(nonpacket_.src, false);
-                   target->set_mode(nonpacket_.src, nonnasa_mode_to_mode(nonpacket_.command20.mode));
-                   // TODO
-				   target->set_water_heater_mode(nonpacket_.src, nonnasa_water_heater_mode_to_mode(-0));
-                   target->set_fanmode(nonpacket_.src, nonnasa_fanspeed_to_fanmode(nonpacket_.command20.fanspeed));
-                   // TODO
-                   target->set_altmode(nonpacket_.src, 0);
-                   // TODO
-                   target->set_swing_horizontal(nonpacket_.src, false);
-                   target->set_swing_vertical(nonpacket_.src, false);
+                    last_command20s_[nonpacket_.src] = nonpacket_.command20;
+                    target->set_target_temperature(nonpacket_.src, nonpacket_.command20.target_temp);
+                    // TODO
+                    target->set_water_outlet_target(nonpacket_.src, false);
+                    // TODO
+                    target->set_target_water_temperature(nonpacket_.src, false);
+                    target->set_room_temperature(nonpacket_.src, nonpacket_.command20.room_temp);
+                    target->set_power(nonpacket_.src, nonpacket_.command20.power);
+                    // TODO
+                    target->set_water_heater_power(nonpacket_.src, false);
+                    target->set_mode(nonpacket_.src, nonnasa_mode_to_mode(nonpacket_.command20.mode));
+                    // TODO
+                    target->set_water_heater_mode(nonpacket_.src, nonnasa_water_heater_mode_to_mode(-0));
+                    target->set_fanmode(nonpacket_.src, nonnasa_fanspeed_to_fanmode(nonpacket_.command20.fanspeed));
+                    // TODO
+                    target->set_altmode(nonpacket_.src, 0);
+                    // TODO
+                    target->set_swing_horizontal(nonpacket_.src, false);
+                    target->set_swing_vertical(nonpacket_.src, false);
                 }
             }
             else if (nonpacket_.cmd == NonNasaCommand::CmdC6)
