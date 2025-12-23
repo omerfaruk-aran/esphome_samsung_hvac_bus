@@ -61,12 +61,24 @@ namespace esphome
         Address Address::parse(const std::string &str)
         {
             Address address;
+
+            // NASA address format MUST be "kk.cc.aa" (e.g. "20.00.00")
+            if (str.find('.') == std::string::npos)
+            {
+                // Avoid UB (pEnd++ on '\0') and make the misconfiguration obvious
+                LOGE("NASA: invalid address format '%s' (expected 'kk.cc.aa' e.g. '20.00.00')", str.c_str());
+                address.klass = AddressClass::Undefined;
+                address.channel = 0;
+                address.address = 0;
+                return address;
+            }
+
             char *pEnd;
             address.klass = (AddressClass)strtol(str.c_str(), &pEnd, 16);
             pEnd++; // .
-            address.channel = strtol(pEnd, &pEnd, 16);
+            address.channel = (uint8_t)strtol(pEnd, &pEnd, 16);
             pEnd++; // .
-            address.address = strtol(pEnd, &pEnd, 16);
+            address.address = (uint8_t)strtol(pEnd, &pEnd, 16);
             return address;
         }
 
@@ -151,7 +163,7 @@ namespace esphome
                 buffer.size = set.size - 2;
                 for (int i = 0; i < buffer.size; i++)
                 {
-                    buffer.data[i] = data[i];
+                    buffer.data[i] = data[index + 2 + i]; // <-- FIX: payload starts after 2-byte message number
                 }
                 set.structure = buffer;
                 break;
@@ -262,60 +274,80 @@ namespace esphome
 
         DecodeResult Packet::decode(std::vector<uint8_t> &data)
         {
-            const uint16_t size = (uint16_t)data[1] << 8 | (uint16_t)data[2];
-
+            // Need at least start + 2 size bytes + something
             if (data.size() < 4)
-            {
-                return {DecodeResultType::Fill};
-            }
-            if (size > 1500)
-            {
-                LOGW("Packet exceeds size limits: %s", bytes_to_hex(data).c_str());
-                return {DecodeResultType::Discard};
-            }
-
-            if (size + 2 > data.size()) // need more data
                 return {DecodeResultType::Fill};
 
+            // Start byte check (helps resync if upper layer feeds garbage)
+            if (data[0] != 0x32)
+                return {DecodeResultType::Discard, 1};
 
-            if (data[size + 1] != 0x34)
+            const uint16_t size = ((uint16_t)data[1] << 8) | (uint16_t)data[2];
+
+            // NASA packets are "total_len = size + 2". Minimal practical size is 14 (for empty message list)
+            // If size is insane, it's almost certainly a Non-NASA frame (where data[1] is src) or misalignment.
+            if (size < 14 || size > 1500)
             {
-                LOGW("invalid end byte: %s", bytes_to_hex(data).c_str());
-                return {DecodeResultType::Discard};
+                // IMPORTANT: consume 1 byte to resync; do NOT spam warnings by default
+                // (otherwise Non-NASA frames flood logs)
+                if (debug_log_undefined_messages)
+                    LOGW("NASA: invalid size %u, discarding 1 byte (resync). Head=%s", size, bytes_to_hex(data).c_str());
+                return {DecodeResultType::Discard, 1};
             }
 
-            uint16_t crc_actual = crc16(data, 3, size - 4);
-            uint16_t crc_expected = (int)data[size - 1] << 8 | (int)data[size];
+            // Need the full packet in buffer
+            const uint16_t total_len = (uint16_t)(size + 2);
+            if (total_len > data.size())
+                return {DecodeResultType::Fill};
+
+            // Work only on the first packet bytes (buffer may contain multiple packets)
+            std::vector<uint8_t> pkt(data.begin(), data.begin() + total_len);
+
+            // End byte must be at index size+1
+            if (pkt[size + 1] != 0x34)
+            {
+                // Misaligned start byte inside payload: discard 1 and resync
+                if (debug_log_undefined_messages)
+                    LOGW("NASA: invalid end byte, discarding 1 byte (resync). Pkt=%s", bytes_to_hex(pkt).c_str());
+                return {DecodeResultType::Discard, 1};
+            }
+
+            // CRC check (if end byte is correct, size is likely trustworthy)
+            uint16_t crc_actual = crc16(pkt, 3, size - 4);
+            uint16_t crc_expected = ((uint16_t)pkt[size - 1] << 8) | (uint16_t)pkt[size];
             if (crc_expected != crc_actual)
             {
-                LOGW("NASA: invalid crc - got %d but should be %d: %s", crc_actual, crc_expected, bytes_to_hex(data).c_str());
-                return {DecodeResultType::Discard};
+                if (debug_log_undefined_messages)
+                    LOGW("NASA: invalid crc - got %u but should be %u: %s", crc_actual, crc_expected, bytes_to_hex(pkt).c_str());
+
+                // Here size boundary is believable -> skip whole packet
+                return {DecodeResultType::Discard, total_len};
             }
 
             unsigned int cursor = 3;
 
-            sa.decode(data, cursor);
+            sa.decode(pkt, cursor);
             cursor += sa.size;
 
-            da.decode(data, cursor);
+            da.decode(pkt, cursor);
             cursor += da.size;
 
-            command.decode(data, cursor);
+            command.decode(pkt, cursor);
             cursor += command.size;
 
-            int capacity = (int)data[cursor];
+            int capacity = (int)pkt[cursor];
             cursor++;
 
             messages.clear();
             for (int i = 1; i <= capacity; ++i)
             {
-                MessageSet set = MessageSet::decode(data, cursor, capacity);
+                MessageSet set = MessageSet::decode(pkt, cursor, capacity);
                 messages.push_back(set);
                 cursor += set.size;
             }
 
-            return {DecodeResultType::Processed, (uint16_t)(size + 2)};
-        };
+            return {DecodeResultType::Processed, total_len};
+        }
 
         std::vector<uint8_t> Packet::encode()
         {
@@ -388,10 +420,16 @@ namespace esphome
 
         void NasaProtocol::protocol_update(MessageTarget *target)
         {
-            for (const auto& pair : outgoing_queue_) {
+            for (const auto &pair : outgoing_queue_)
+            {
                 const std::string &address = pair.first;
                 const ProtocolRequest &request = pair.second;
-                Packet packet = Packet::createa_partial(Address::parse(address), DataType::Request);
+
+                Address da = Address::parse(address);
+                if (da.klass == AddressClass::Undefined)
+                    continue;
+
+                Packet packet = Packet::createa_partial(da, DataType::Request);
 
                 if (request.mode)
                 {
@@ -475,7 +513,7 @@ namespace esphome
                 }
 
                 if (packet.messages.size() == 0)
-                    return;
+                    continue;
 
                 LOG_PACKET_SEND("Publish packet", packet);
 

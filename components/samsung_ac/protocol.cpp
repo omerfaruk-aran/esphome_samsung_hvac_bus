@@ -28,11 +28,32 @@ namespace esphome
         // to the data vector. One by one.
         DecodeResult process_data(std::vector<uint8_t> &data, MessageTarget *target)
         {
+            if (data.empty())
+                return {DecodeResultType::Fill, 0};
+
             if (*data.begin() != 0x32)
-                return { DecodeResultType::Discard, skip_data(data, 0) };
+                return {DecodeResultType::Discard, skip_data(data, 0)};
 
+            // --- AUTO fast-dispatch: prevent NASA decoder from eating Non-NASA streams ---
+            if (protocol_processing == ProtocolProcessing::Auto)
+            {
+                if (data.size() < 2)
+                    return {DecodeResultType::Fill, 0};
 
-            DecodeResult  result = { DecodeResultType::Fill, 0 };
+                // If second byte is too large to be NASA size_hi, treat as Non-NASA stream
+                if (data[1] > 0x05)
+                {
+                    auto r = try_decode_non_nasa_packet(data);
+                    if (r.type == DecodeResultType::Processed)
+                    {
+                        protocol_processing = ProtocolProcessing::NonNASA;
+                        process_non_nasa_packet(target);
+                    }
+                    return r; // Fill/Discard/Processed as-is
+                }
+            }
+
+            DecodeResult result = {DecodeResultType::Fill, 0};
 
             // Check if its a decodeable NonNASA packat
             if (protocol_processing == ProtocolProcessing::Auto || protocol_processing == ProtocolProcessing::NonNASA)
@@ -54,7 +75,7 @@ namespace esphome
             {
                 if (result.type == DecodeResultType::Discard)
                 {
-                    return { DecodeResultType::Discard, skip_data(data, 1) };
+                    return {DecodeResultType::Discard, skip_data(data, 1)};
                 }
                 return result;
             }
@@ -74,7 +95,7 @@ namespace esphome
             }
             if (result.type == DecodeResultType::Discard)
             {
-                return { DecodeResultType::Discard, skip_data(data, 1) };
+                return {DecodeResultType::Discard, skip_data(data, 1)};
             }
             return result;
         }
