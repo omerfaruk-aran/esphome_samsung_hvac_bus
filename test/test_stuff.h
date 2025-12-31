@@ -133,6 +133,43 @@ public:
             last_custom_sensors.insert(message_number);
         }
 
+        // Cmd8D: Power/Energy methods
+        std::string last_set_outdoor_current_address;
+        float last_set_outdoor_current_value;
+        void set_outdoor_current(const std::string address, float value)
+        {
+            cout << "> " << address << " set_outdoor_current=" << to_string(value) << endl;
+            last_set_outdoor_current_address = address;
+            last_set_outdoor_current_value = value;
+        }
+
+        std::string last_set_outdoor_voltage_address;
+        float last_set_outdoor_voltage_value;
+        void set_outdoor_voltage(const std::string address, float value)
+        {
+            cout << "> " << address << " set_outdoor_voltage=" << to_string(value) << endl;
+            last_set_outdoor_voltage_address = address;
+            last_set_outdoor_voltage_value = value;
+        }
+
+        std::string last_set_outdoor_instantaneous_power_address;
+        float last_set_outdoor_instantaneous_power_value;
+        void set_outdoor_instantaneous_power(const std::string address, float value)
+        {
+            cout << "> " << address << " set_outdoor_instantaneous_power=" << to_string(value) << endl;
+            last_set_outdoor_instantaneous_power_address = address;
+            last_set_outdoor_instantaneous_power_value = value;
+        }
+
+        std::string last_set_outdoor_cumulative_energy_address;
+        float last_set_outdoor_cumulative_energy_value;
+        void set_outdoor_cumulative_energy(const std::string address, float value)
+        {
+            cout << "> " << address << " set_outdoor_cumulative_energy=" << to_string(value) << endl;
+            last_set_outdoor_cumulative_energy_address = address;
+            last_set_outdoor_cumulative_energy_value = value;
+        }
+
         void assert_only_address(const std::string address)
         {
             assert(last_register_address == address);

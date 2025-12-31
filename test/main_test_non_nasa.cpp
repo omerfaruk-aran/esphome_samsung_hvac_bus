@@ -1,6 +1,7 @@
 #include "test_stuff.h"
 #include "../components/samsung_ac/protocol_non_nasa.h"
 #include <functional>
+#include <cmath>
 
 using namespace std;
 using namespace esphome::samsung_ac;
@@ -359,6 +360,52 @@ void test_cmdc0_outdoor_temperature()
     assert(target.last_set_outdoor_temperature_value == -5.0f);
 }
 
+void test_cmd8d_power_energy()
+{
+    std::cout << "test_cmd8d_power_energy" << std::endl;
+    
+    // Build Cmd8D packet: current=100 (raw), voltage=60 (raw), power = (100/10) * (60*2) = 10 * 120 = 1200W
+    // Raw current=100 is divided by 10 to get 10.0A (published current)
+    // Raw voltage=60 is multiplied by 2 to get 120.0V (published voltage)
+    // Power = published_current * published_voltage = 10.0 * 120.0 = 1200W
+    auto packet = build_packet(0xc8, 0x00, 0x8d, [](std::vector<uint8_t> &data) {
+        data[8] = 100;  // raw current (will be / 10 = 10.0A) (will be / 10 = 10.0A)
+        data[10] = 60;  // raw voltage (will be * 2 = 120V)
+    });
+    
+    DebugTarget target;
+    esphome::test_millis_value = 1000; // Start at 1 second
+    test_process_data(packet_to_hex(packet), target);
+    
+    assert(target.last_register_address == "c8");
+    assert(target.last_set_outdoor_current_address == "c8");
+    assert(target.last_set_outdoor_current_value == 10.0f); // 100 / 10 = 10.0A
+    assert(target.last_set_outdoor_voltage_address == "c8");
+    assert(target.last_set_outdoor_voltage_value == 120.0f); // 60 * 2
+    assert(target.last_set_outdoor_instantaneous_power_address == "c8");
+    assert(std::abs(target.last_set_outdoor_instantaneous_power_value - 1200.0f) < 0.01f); // 10.0 * 120.0 = 1200W
+    
+    // First update - no energy calculated yet
+    assert(target.last_set_outdoor_cumulative_energy_address == "c8");
+    assert(target.last_set_outdoor_cumulative_energy_value == 0.0f);
+    
+    // Second update after 1 hour - should accumulate energy
+    // Reset target and process first packet
+    target = DebugTarget();
+    esphome::test_millis_value = 1000;
+    test_process_data(packet_to_hex(packet), target);
+    
+    // Process second packet 1 hour later
+    esphome::test_millis_value = 1000 + 3600000; // 1 hour = 3600000 ms
+    test_process_data(packet_to_hex(packet), target);
+    
+    // Energy should be approximately 1200W * 1 hour = 1.2 kWh = 1200 Wh
+    // Using trapezoidal rule: average_power = (1200 + 1200) / 2 = 1200W
+    // Energy = 1200W * 1 hour = 1200 Wh = 1.2 kWh
+    // Published in Wh: 1.2 kWh * 1000 = 1200 Wh
+    assert(target.last_set_outdoor_cumulative_energy_value > 1100.0f);
+    assert(target.last_set_outdoor_cumulative_energy_value < 1300.0f);
+}
 
 int main(int argc, char *argv[])
 {
@@ -371,4 +418,5 @@ int main(int argc, char *argv[])
     
     // New tests for sensor features
     test_cmdc0_outdoor_temperature();
+    test_cmd8d_power_energy();
 };

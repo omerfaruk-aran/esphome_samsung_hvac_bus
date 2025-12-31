@@ -99,6 +99,15 @@ namespace esphome
             std::string to_string();
         };
 
+        struct NonNasaCommand8D // from outdoor unit
+        {
+            float inverter_current_a = 0;
+            float inverter_voltage_v = 0;
+            float inverter_power_w = 0;
+
+            std::string to_string();
+        };
+
         struct NonNasaCommandF1 // from outdoor unit
         {
             uint16_t outdoor_unit_EEV_A = 0;
@@ -136,6 +145,7 @@ namespace esphome
         {
             Cmd20 = 0x20,
             Cmd54 = 0x54,
+            Cmd8D = 0x8d,
             CmdC0 = 0xc0,
             CmdC1 = 0xc1,
             CmdC6 = 0xc6,
@@ -160,6 +170,7 @@ namespace esphome
             {
                 NonNasaCommand20 command20;
                 NonNasaCommandRaw command54; // Control message ack
+                NonNasaCommand8D command8D;
                 NonNasaCommandC0 commandC0;
                 NonNasaCommandC1 commandC1;
                 NonNasaCommandC6 commandC6;
