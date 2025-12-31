@@ -407,6 +407,45 @@ void test_cmd8d_power_energy()
     assert(target.last_set_outdoor_cumulative_energy_value < 1300.0f);
 }
 
+void test_cmd20_eva_temperatures()
+{
+    std::cout << "test_cmd20_eva_temperatures" << std::endl;
+    
+    // Build Cmd20 packet with pipe_in=23°C, pipe_out=25°C
+    auto packet = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 22 + 55; // target_temp
+        data[5] = 24 + 55; // room_temp
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = 0;       // wind_direction/fanspeed
+        data[8] = 0x01;    // mode = Heat, power = false
+        data[11] = 25 + 55; // pipe_out = 25°C
+    });
+    
+    DebugTarget target;
+    test_process_data(packet_to_hex(packet), target);
+    
+    assert(target.last_register_address == "00");
+    assert(target.last_set_indoor_eva_in_temperature_address == "00");
+    assert(target.last_set_indoor_eva_in_temperature_value == 23.0f);
+    assert(target.last_set_indoor_eva_out_temperature_address == "00");
+    assert(target.last_set_indoor_eva_out_temperature_value == 25.0f);
+    
+    // Test negative temperatures
+    packet = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 22 + 55;
+        data[5] = 24 + 55;
+        data[6] = (uint8_t)(-5 + 55); // pipe_in = -5°C
+        data[7] = 0;
+        data[8] = 0x01;
+        data[11] = (uint8_t)(-3 + 55); // pipe_out = -3°C
+    });
+    
+    target = DebugTarget();
+    test_process_data(packet_to_hex(packet), target);
+    assert(target.last_set_indoor_eva_in_temperature_value == -5.0f);
+    assert(target.last_set_indoor_eva_out_temperature_value == -3.0f);
+}
+
 int main(int argc, char *argv[])
 {
     // test_read_file();
@@ -419,4 +458,5 @@ int main(int argc, char *argv[])
     // New tests for sensor features
     test_cmdc0_outdoor_temperature();
     test_cmd8d_power_energy();
+    test_cmd20_eva_temperatures();
 };

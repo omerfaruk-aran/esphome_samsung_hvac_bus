@@ -709,6 +709,15 @@ namespace esphome
                     }
                 }
 
+                // Publish EVA (evaporator) temperatures - pipe_in/pipe_out are equivalent to eva_in/eva_out
+                // These are sensor readings and should always be published, regardless of pending control messages
+                // Compare to CmdC0 and Cmd8D handlers which explicitly do not check for pending control messages
+                // Cast to int8_t first to preserve sign (uint8_t wraps negative values), then to float
+                float pipe_in_temp = static_cast<float>(static_cast<int8_t>(nonpacket_.command20.pipe_in));
+                float pipe_out_temp = static_cast<float>(static_cast<int8_t>(nonpacket_.command20.pipe_out));
+                target->set_indoor_eva_in_temperature(nonpacket_.src, pipe_in_temp);
+                target->set_indoor_eva_out_temperature(nonpacket_.src, pipe_out_temp);
+
                 if (!pending_control_message)
                 {
                     last_command20s_[nonpacket_.src] = nonpacket_.command20;

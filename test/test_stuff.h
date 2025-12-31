@@ -170,6 +170,24 @@ public:
             last_set_outdoor_cumulative_energy_value = value;
         }
 
+        std::string last_set_indoor_eva_in_temperature_address;
+        float last_set_indoor_eva_in_temperature_value;
+        void set_indoor_eva_in_temperature(const std::string address, float value)
+        {
+            cout << "> " << address << " set_indoor_eva_in_temperature=" << to_string(value) << endl;
+            last_set_indoor_eva_in_temperature_address = address;
+            last_set_indoor_eva_in_temperature_value = value;
+        }
+
+        std::string last_set_indoor_eva_out_temperature_address;
+        float last_set_indoor_eva_out_temperature_value;
+        void set_indoor_eva_out_temperature(const std::string address, float value)
+        {
+            cout << "> " << address << " set_indoor_eva_out_temperature=" << to_string(value) << endl;
+            last_set_indoor_eva_out_temperature_address = address;
+            last_set_indoor_eva_out_temperature_value = value;
+        }
+
         void assert_only_address(const std::string address)
         {
             assert(last_register_address == address);
