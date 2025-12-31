@@ -1,5 +1,6 @@
 #include "test_stuff.h"
 #include "../components/samsung_ac/protocol_non_nasa.h"
+#include <functional>
 
 using namespace std;
 using namespace esphome::samsung_ac;
@@ -298,6 +299,67 @@ void test_previous_data_is_used_correctly()
     assert_str(bytes_to_hex(request2.encode()), target.last_publish_data);
 }
 
+// Helper function to build a valid non-nasa packet with checksum
+std::vector<uint8_t> build_packet(uint8_t src, uint8_t dst, uint8_t cmd, std::function<void(std::vector<uint8_t>&)> fill_data)
+{
+    std::vector<uint8_t> data(14, 0);
+    data[0] = 0x32;
+    data[1] = src;
+    data[2] = dst;
+    data[3] = cmd;
+    data[13] = 0x34;
+    
+    // Fill in data bytes
+    if (fill_data)
+    {
+        fill_data(data);
+    }
+    
+    // Calculate checksum (XOR of bytes 1-11)
+    uint8_t checksum = data[1];
+    for (int i = 2; i < 12; i++)
+    {
+        checksum ^= data[i];
+    }
+    data[12] = checksum;
+    
+    return data;
+}
+
+// Helper to convert packet to hex string
+std::string packet_to_hex(std::vector<uint8_t> &data)
+{
+    return bytes_to_hex(data);
+}
+
+void test_cmdc0_outdoor_temperature()
+{
+    std::cout << "test_cmdc0_outdoor_temperature" << std::endl;
+    
+    // Build CmdC0 packet: outdoor temp = 25°C (25 + 55 = 80 = 0x50)
+    auto packet = build_packet(0xc8, 0x00, 0xc0, [](std::vector<uint8_t> &data) {
+        data[8] = 25 + 55; // outdoor_temp = 25°C
+    });
+    
+    DebugTarget target;
+    test_process_data(packet_to_hex(packet), target);
+    
+    assert(target.last_register_address == "c8");
+    assert(target.last_set_outdoor_temperature_address == "c8");
+    assert(target.last_set_outdoor_temperature_value == 25.0f);
+    
+    // Test negative temperature: -5°C (-5 + 55 = 50 = 0x32, but as uint8_t it wraps)
+    // Actually, -5°C would be stored as 50, but we need to test signed conversion
+    packet = build_packet(0xc8, 0x00, 0xc0, [](std::vector<uint8_t> &data) {
+        data[8] = (uint8_t)(-5 + 55); // -5°C
+    });
+    
+    target = DebugTarget();
+    test_process_data(packet_to_hex(packet), target);
+    assert(target.last_set_outdoor_temperature_value == -5.0f);
+}
+
+
 int main(int argc, char *argv[])
 {
     // test_read_file();
@@ -306,4 +368,7 @@ int main(int argc, char *argv[])
     test_target();
 
     test_previous_data_is_used_correctly();
+    
+    // New tests for sensor features
+    test_cmdc0_outdoor_temperature();
 };

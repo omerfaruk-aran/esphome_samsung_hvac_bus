@@ -599,6 +599,17 @@ namespace esphome
                     target->set_swing_vertical(nonpacket_.src, false);
                 }
             }
+            else if (nonpacket_.cmd == NonNasaCommand::CmdC0)
+            {
+                // CmdC0 comes from the outdoor unit and contains outdoor temperature
+                // The temperature is already in Celsius (after subtracting 55 from raw value)
+                // Note: No pending control message check needed here since CmdC0 comes from the
+                // outdoor unit (typically "c8"), while control messages are sent to indoor units.
+                // Outdoor temperature updates are independent status data and should always be processed.
+                // Cast to int8_t first to preserve sign (uint8_t wraps negative values), then to float
+                float temp = static_cast<float>(static_cast<int8_t>(nonpacket_.commandC0.outdoor_unit_outdoor_temp_c));
+                target->set_outdoor_temperature(nonpacket_.src, temp);
+            }
             else if (nonpacket_.cmd == NonNasaCommand::CmdC6)
             {
                 // We have received a request_control message. This is a message outdoor units will
