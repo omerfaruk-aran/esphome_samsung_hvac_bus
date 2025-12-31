@@ -446,6 +446,42 @@ void test_cmd20_eva_temperatures()
     assert(target.last_set_indoor_eva_out_temperature_value == -3.0f);
 }
 
+void test_cmdf0_error_code()
+{
+    std::cout << "test_cmdf0_error_code" << std::endl;
+    
+    // Build CmdF0 packet with error code = 0 (no error)
+    auto packet = build_packet(0xc8, 0x00, 0xf0, [](std::vector<uint8_t> &data) {
+        data[4] = 0;  // status flags
+        data[5] = 0;  // inverter_order_frequency
+        data[6] = 0;  // inverter_target_frequency
+        data[7] = 0;  // inverter_current_frequency
+        data[8] = 0;  // bldc_fan
+        data[10] = 0; // error_code = 0
+    });
+    
+    DebugTarget target;
+    test_process_data(packet_to_hex(packet), target);
+    
+    assert(target.last_register_address == "c8");
+    assert(target.last_set_error_code_address == "c8");
+    assert(target.last_set_error_code_value == 0);
+    
+    // Test with error code = 5
+    packet = build_packet(0xc8, 0x00, 0xf0, [](std::vector<uint8_t> &data) {
+        data[4] = 0;
+        data[5] = 0;
+        data[6] = 0;
+        data[7] = 0;
+        data[8] = 0;
+        data[10] = 5; // error_code = 5
+    });
+    
+    target = DebugTarget();
+    test_process_data(packet_to_hex(packet), target);
+    assert(target.last_set_error_code_value == 5);
+}
+
 int main(int argc, char *argv[])
 {
     // test_read_file();
@@ -459,4 +495,5 @@ int main(int argc, char *argv[])
     test_cmdc0_outdoor_temperature();
     test_cmd8d_power_energy();
     test_cmd20_eva_temperatures();
+    test_cmdf0_error_code();
 };

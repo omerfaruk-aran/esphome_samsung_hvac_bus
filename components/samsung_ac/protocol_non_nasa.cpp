@@ -777,6 +777,19 @@ namespace esphome
                 float cumulative_energy_wh = static_cast<float>(tracker.accumulated_energy_kwh * 1000.0);
                 target->set_outdoor_cumulative_energy(nonpacket_.src, cumulative_energy_wh);
             }
+            else if (nonpacket_.cmd == NonNasaCommand::CmdF0)
+            {
+                // CmdF0 comes from the outdoor unit and contains error code and status information
+                // Note: No pending control message check needed here since CmdF0 comes from the
+                // outdoor unit (typically "c8"), while control messages are sent to indoor units.
+                // Outdoor error code updates are independent status data and should always be processed.
+                int error_code = static_cast<int>(nonpacket_.commandF0.outdoor_unit_error_code);
+                if (debug_log_messages && error_code != 0)
+                {
+                    LOGW("s:%s d:%s CmdF0 outdoor_unit_error_code %d", nonpacket_.src.c_str(), nonpacket_.dst.c_str(), error_code);
+                }
+                target->set_error_code(nonpacket_.src, error_code);
+            }
             else if (nonpacket_.cmd == NonNasaCommand::CmdC6)
             {
                 // We have received a request_control message. This is a message outdoor units will

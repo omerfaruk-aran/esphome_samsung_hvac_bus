@@ -188,6 +188,15 @@ public:
             last_set_indoor_eva_out_temperature_value = value;
         }
 
+        std::string last_set_error_code_address;
+        int last_set_error_code_value;
+        void set_error_code(const std::string address, int value)
+        {
+            cout << "> " << address << " set_error_code=" << to_string(value) << endl;
+            last_set_error_code_address = address;
+            last_set_error_code_value = value;
+        }
+
         void assert_only_address(const std::string address)
         {
             assert(last_register_address == address);
