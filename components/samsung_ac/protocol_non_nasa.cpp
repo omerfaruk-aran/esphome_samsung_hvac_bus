@@ -11,106 +11,105 @@ std::map<std::string, esphome::samsung_ac::NonNasaCommand20> last_command20s_;
 
 esphome::samsung_ac::NonNasaDataPacket nonpacket_;
 
-// Track cumulative energy calculation per device address
-// Note: Energy tracker persists across device reconnections. This is intentional to maintain
-// cumulative energy across device restarts. The tracker is keyed by device address, so if
-// a device is removed and re-added with the same address, energy continues accumulating.
-// Note: Uses double for accumulated_energy_kwh to maintain precision during long-term accumulation,
-// matching NASA protocol approach. Converted to float only when publishing (API requirement).
-struct CumulativeEnergyTracker
-{
-    double accumulated_energy_kwh = 0.0; // Accumulated energy in kWh (double for precision)
-    uint32_t last_update_time_ms = 0;   // Last time power was updated (milliseconds)
-    float last_power_w = 0.0f;           // Last power value in Watts
-    bool has_previous_update = false;   // Track if we've had at least one update (handles millis()=0 edge case)
-};
-
-std::map<std::string, CumulativeEnergyTracker> cumulative_energy_trackers_;
-
-// Energy calculation constants
-// MIN_DELTA_MS: Minimum time delta between energy updates (100ms)
-//   - Skips calculations for very small intervals (negligible energy)
-//   - Reduces unnecessary CPU usage and improves precision
-// MAX_DELTA_MS: Maximum time delta between energy updates (1 hour)
-//   - Caps maximum delta to avoid huge increments from stale data
-//   - Prevents unrealistic energy calculations from long gaps
-constexpr uint32_t MIN_DELTA_MS = 100;        // Minimum 100ms between energy updates
-constexpr uint32_t MAX_DELTA_MS = 3600000;     // Maximum 1 hour (3600000 ms) between updates
-
-// Helper function to update cumulative energy tracker
-// This function handles all edge cases: wraparound, first update, time delta validation, and energy calculation
-// Uses trapezoidal rule for energy calculation: Energy = Average_Power (W) × Time (hours)
-// Returns true if energy was calculated and tracker was updated, false otherwise
-static bool update_cumulative_energy_tracker(CumulativeEnergyTracker &tracker, float current_power_w, uint32_t now)
-{
-    // Clamp power to non-negative: HVAC systems consume power (positive values)
-    // Negative values would indicate measurement error or sensor issues
-    if (current_power_w < 0.0f)
-    {
-        if (debug_log_messages)
-        {
-            LOGW("Cmd8D: Negative power detected (%.2f W), clamping to 0", current_power_w);
-        }
-        current_power_w = 0.0f;
-    }
-
-    // Handle first update: just store values, don't calculate energy yet
-    if (!tracker.has_previous_update)
-    {
-        tracker.last_power_w = current_power_w;
-        tracker.last_update_time_ms = now;
-        tracker.has_previous_update = true;
-        return false; // No energy calculated on first update
-    }
-
-    // Calculate time delta, handling millis() wraparound (occurs every ~49.7 days)
-    uint32_t delta_ms;
-    if (now >= tracker.last_update_time_ms)
-    {
-        delta_ms = now - tracker.last_update_time_ms;
-    }
-    else
-    {
-        // Wraparound detected: calculate from last_update_time_ms to UINT32_MAX, then from 0 to now
-        delta_ms = (UINT32_MAX - tracker.last_update_time_ms) + now + 1;
-    }
-
-    // Validate time delta: skip if too small (negligible energy) or too large (stale data)
-    if (delta_ms < MIN_DELTA_MS)
-    {
-        return false; // Skip calculation for very small intervals
-    }
-    if (delta_ms > MAX_DELTA_MS)
-    {
-        if (debug_log_messages)
-        {
-            LOGW("Cmd8D: Large time delta detected (%u ms, ~%.1f hours), capping to 1 hour", delta_ms, delta_ms / 3600000.0f);
-        }
-        delta_ms = MAX_DELTA_MS; // Cap to 1 hour
-    }
-
-    // Calculate energy using trapezoidal rule: Energy = Average_Power (W) × Time (hours)
-    // Average power = (last_power + current_power) / 2
-    // Time in hours = delta_ms / (1000 * 3600)
-    // Energy in kWh = (Average_Power (W) × Time (hours)) / 1000
-    double average_power_w = (static_cast<double>(tracker.last_power_w) + static_cast<double>(current_power_w)) / 2.0;
-    double time_hours = static_cast<double>(delta_ms) / 3600000.0; // Convert ms to hours
-    double energy_kwh = (average_power_w * time_hours) / 1000.0;    // Convert W×h to kWh
-
-    // Accumulate energy
-    tracker.accumulated_energy_kwh += energy_kwh;
-
-    // Update tracker state
-    tracker.last_power_w = current_power_w;
-    tracker.last_update_time_ms = now;
-
-    return true; // Energy was calculated and tracker was updated
-}
-
 namespace esphome
 {
     namespace samsung_ac
     {
+        // Track cumulative energy calculation per device address
+        // Note: Energy tracker persists across device reconnections. This is intentional to maintain
+        // cumulative energy across device restarts. The tracker is keyed by device address, so if
+        // a device is removed and re-added with the same address, energy continues accumulating.
+        // Note: Uses double for accumulated_energy_kwh to maintain precision during long-term accumulation,
+        // matching NASA protocol approach. Converted to float only when publishing (API requirement).
+        struct CumulativeEnergyTracker
+        {
+            double accumulated_energy_kwh = 0.0; // Accumulated energy in kWh (double for precision)
+            uint32_t last_update_time_ms = 0;   // Last time power was updated (milliseconds)
+            float last_power_w = 0.0f;           // Last power value in Watts
+            bool has_previous_update = false;   // Track if we've had at least one update (handles millis()=0 edge case)
+        };
+
+        std::map<std::string, CumulativeEnergyTracker> cumulative_energy_trackers_;
+
+        // Energy calculation constants
+        // MIN_DELTA_MS: Minimum time delta between energy updates (100ms)
+        //   - Skips calculations for very small intervals (negligible energy)
+        //   - Reduces unnecessary CPU usage and improves precision
+        // MAX_DELTA_MS: Maximum time delta between energy updates (1 hour)
+        //   - Caps maximum delta to avoid huge increments from stale data
+        //   - Prevents unrealistic energy calculations from long gaps
+        constexpr uint32_t MIN_DELTA_MS = 100;        // Minimum 100ms between energy updates
+        constexpr uint32_t MAX_DELTA_MS = 3600000;     // Maximum 1 hour (3600000 ms) between updates
+
+        // Helper function to update cumulative energy tracker
+        // This function handles all edge cases: wraparound, first update, time delta validation, and energy calculation
+        // Uses trapezoidal rule for energy calculation: Energy = Average_Power (W) × Time (hours)
+        // Returns true if energy was calculated and tracker was updated, false otherwise
+        static bool update_cumulative_energy_tracker(CumulativeEnergyTracker &tracker, float current_power_w, uint32_t now)
+        {
+            // Clamp power to non-negative: HVAC systems consume power (positive values)
+            // Negative values would indicate measurement error or sensor issues
+            if (current_power_w < 0.0f)
+            {
+                if (debug_log_messages)
+                {
+                    LOGW("Cmd8D: Negative power detected (%.2f W), clamping to 0", current_power_w);
+                }
+                current_power_w = 0.0f;
+            }
+
+            // Handle first update: just store values, don't calculate energy yet
+            if (!tracker.has_previous_update)
+            {
+                tracker.last_power_w = current_power_w;
+                tracker.last_update_time_ms = now;
+                tracker.has_previous_update = true;
+                return false; // No energy calculated on first update
+            }
+
+            // Calculate time delta, handling millis() wraparound (occurs every ~49.7 days)
+            uint32_t delta_ms;
+            if (now >= tracker.last_update_time_ms)
+            {
+                delta_ms = now - tracker.last_update_time_ms;
+            }
+            else
+            {
+                // Wraparound detected: calculate from last_update_time_ms to UINT32_MAX, then from 0 to now
+                delta_ms = (UINT32_MAX - tracker.last_update_time_ms) + now + 1;
+            }
+
+            // Validate time delta: skip if too small (negligible energy) or too large (stale data)
+            if (delta_ms < MIN_DELTA_MS)
+            {
+                return false; // Skip calculation for very small intervals
+            }
+            if (delta_ms > MAX_DELTA_MS)
+            {
+                if (debug_log_messages)
+                {
+                    LOGW("Cmd8D: Large time delta detected (%u ms, ~%.1f hours), capping to 1 hour", delta_ms, delta_ms / 3600000.0f);
+                }
+                delta_ms = MAX_DELTA_MS; // Cap to 1 hour
+            }
+
+            // Calculate energy using trapezoidal rule: Energy = Average_Power (W) × Time (hours)
+            // Average power = (last_power + current_power) / 2
+            // Time in hours = delta_ms / (1000 * 3600)
+            // Energy in kWh = (Average_Power (W) × Time (hours)) / 1000
+            double average_power_w = (static_cast<double>(tracker.last_power_w) + static_cast<double>(current_power_w)) / 2.0;
+            double time_hours = static_cast<double>(delta_ms) / 3600000.0; // Convert ms to hours
+            double energy_kwh = (average_power_w * time_hours) / 1000.0;    // Convert W×h to kWh
+
+            // Accumulate energy
+            tracker.accumulated_energy_kwh += energy_kwh;
+
+            // Update tracker state
+            tracker.last_power_w = current_power_w;
+            tracker.last_update_time_ms = now;
+
+            return true; // Energy was calculated and tracker was updated
+        }
         std::list<NonNasaRequestQueueItem> nonnasa_requests;
         bool controller_registered = false;
         bool indoor_unit_awake = true;
