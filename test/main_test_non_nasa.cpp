@@ -1,5 +1,7 @@
 #include "test_stuff.h"
 #include "../components/samsung_ac/protocol_non_nasa.h"
+#include <functional>
+#include <cmath>
 
 using namespace std;
 using namespace esphome::samsung_ac;
@@ -298,6 +300,188 @@ void test_previous_data_is_used_correctly()
     assert_str(bytes_to_hex(request2.encode()), target.last_publish_data);
 }
 
+// Helper function to build a valid non-nasa packet with checksum
+std::vector<uint8_t> build_packet(uint8_t src, uint8_t dst, uint8_t cmd, std::function<void(std::vector<uint8_t>&)> fill_data)
+{
+    std::vector<uint8_t> data(14, 0);
+    data[0] = 0x32;
+    data[1] = src;
+    data[2] = dst;
+    data[3] = cmd;
+    data[13] = 0x34;
+    
+    // Fill in data bytes
+    if (fill_data)
+    {
+        fill_data(data);
+    }
+    
+    // Calculate checksum (XOR of bytes 1-11)
+    uint8_t checksum = data[1];
+    for (int i = 2; i < 12; i++)
+    {
+        checksum ^= data[i];
+    }
+    data[12] = checksum;
+    
+    return data;
+}
+
+// Helper to convert packet to hex string
+std::string packet_to_hex(std::vector<uint8_t> &data)
+{
+    return bytes_to_hex(data);
+}
+
+void test_cmdc0_outdoor_temperature()
+{
+    std::cout << "test_cmdc0_outdoor_temperature" << std::endl;
+    
+    // Build CmdC0 packet: outdoor temp = 25°C (25 + 55 = 80 = 0x50)
+    auto packet = build_packet(0xc8, 0x00, 0xc0, [](std::vector<uint8_t> &data) {
+        data[8] = 25 + 55; // outdoor_temp = 25°C
+    });
+    
+    DebugTarget target;
+    test_process_data(packet_to_hex(packet), target);
+    
+    assert(target.last_register_address == "c8");
+    assert(target.last_set_outdoor_temperature_address == "c8");
+    assert(target.last_set_outdoor_temperature_value == 25.0f);
+    
+    // Test negative temperature: -5°C (-5 + 55 = 50 = 0x32, but as uint8_t it wraps)
+    // Actually, -5°C would be stored as 50, but we need to test signed conversion
+    packet = build_packet(0xc8, 0x00, 0xc0, [](std::vector<uint8_t> &data) {
+        data[8] = (uint8_t)(-5 + 55); // -5°C
+    });
+    
+    target = DebugTarget();
+    test_process_data(packet_to_hex(packet), target);
+    assert(target.last_set_outdoor_temperature_value == -5.0f);
+}
+
+void test_cmd8d_power_energy()
+{
+    std::cout << "test_cmd8d_power_energy" << std::endl;
+    
+    // Build Cmd8D packet: current=100 (raw), voltage=60 (raw), power = (100/10) * (60*2) = 10 * 120 = 1200W
+    // Raw current=100 is divided by 10 to get 10.0A (published current)
+    // Raw voltage=60 is multiplied by 2 to get 120.0V (published voltage)
+    // Power = published_current * published_voltage = 10.0 * 120.0 = 1200W
+    auto packet = build_packet(0xc8, 0x00, 0x8d, [](std::vector<uint8_t> &data) {
+        data[8] = 100;  // raw current (will be / 10 = 10.0A) (will be / 10 = 10.0A)
+        data[10] = 60;  // raw voltage (will be * 2 = 120V)
+    });
+    
+    DebugTarget target;
+    esphome::test_millis_value = 1000; // Start at 1 second
+    test_process_data(packet_to_hex(packet), target);
+    
+    assert(target.last_register_address == "c8");
+    assert(target.last_set_outdoor_current_address == "c8");
+    assert(target.last_set_outdoor_current_value == 10.0f); // 100 / 10 = 10.0A
+    assert(target.last_set_outdoor_voltage_address == "c8");
+    assert(target.last_set_outdoor_voltage_value == 120.0f); // 60 * 2
+    assert(target.last_set_outdoor_instantaneous_power_address == "c8");
+    assert(std::abs(target.last_set_outdoor_instantaneous_power_value - 1200.0f) < 0.01f); // 10.0 * 120.0 = 1200W
+    
+    // First update - no energy calculated yet
+    assert(target.last_set_outdoor_cumulative_energy_address == "c8");
+    assert(target.last_set_outdoor_cumulative_energy_value == 0.0f);
+    
+    // Second update after 1 hour - should accumulate energy
+    // Reset target and process first packet
+    target = DebugTarget();
+    esphome::test_millis_value = 1000;
+    test_process_data(packet_to_hex(packet), target);
+    
+    // Process second packet 1 hour later
+    esphome::test_millis_value = 1000 + 3600000; // 1 hour = 3600000 ms
+    test_process_data(packet_to_hex(packet), target);
+    
+    // Energy should be approximately 1200W * 1 hour = 1.2 kWh = 1200 Wh
+    // Using trapezoidal rule: average_power = (1200 + 1200) / 2 = 1200W
+    // Energy = 1200W * 1 hour = 1200 Wh = 1.2 kWh
+    // Published in Wh: 1.2 kWh * 1000 = 1200 Wh
+    assert(target.last_set_outdoor_cumulative_energy_value > 1100.0f);
+    assert(target.last_set_outdoor_cumulative_energy_value < 1300.0f);
+}
+
+void test_cmd20_eva_temperatures()
+{
+    std::cout << "test_cmd20_eva_temperatures" << std::endl;
+    
+    // Build Cmd20 packet with pipe_in=23°C, pipe_out=25°C
+    auto packet = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 22 + 55; // target_temp
+        data[5] = 24 + 55; // room_temp
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = 0;       // wind_direction/fanspeed
+        data[8] = 0x01;    // mode = Heat, power = false
+        data[11] = 25 + 55; // pipe_out = 25°C
+    });
+    
+    DebugTarget target;
+    test_process_data(packet_to_hex(packet), target);
+    
+    assert(target.last_register_address == "00");
+    assert(target.last_set_indoor_eva_in_temperature_address == "00");
+    assert(target.last_set_indoor_eva_in_temperature_value == 23.0f);
+    assert(target.last_set_indoor_eva_out_temperature_address == "00");
+    assert(target.last_set_indoor_eva_out_temperature_value == 25.0f);
+    
+    // Test negative temperatures
+    packet = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 22 + 55;
+        data[5] = 24 + 55;
+        data[6] = (uint8_t)(-5 + 55); // pipe_in = -5°C
+        data[7] = 0;
+        data[8] = 0x01;
+        data[11] = (uint8_t)(-3 + 55); // pipe_out = -3°C
+    });
+    
+    target = DebugTarget();
+    test_process_data(packet_to_hex(packet), target);
+    assert(target.last_set_indoor_eva_in_temperature_value == -5.0f);
+    assert(target.last_set_indoor_eva_out_temperature_value == -3.0f);
+}
+
+void test_cmdf0_error_code()
+{
+    std::cout << "test_cmdf0_error_code" << std::endl;
+    
+    // Build CmdF0 packet with error code = 0 (no error)
+    auto packet = build_packet(0xc8, 0x00, 0xf0, [](std::vector<uint8_t> &data) {
+        data[4] = 0;  // status flags
+        data[5] = 0;  // inverter_order_frequency
+        data[6] = 0;  // inverter_target_frequency
+        data[7] = 0;  // inverter_current_frequency
+        data[8] = 0;  // bldc_fan
+        data[10] = 0; // error_code = 0
+    });
+    
+    DebugTarget target;
+    test_process_data(packet_to_hex(packet), target);
+    
+    assert(target.last_register_address == "c8");
+    assert(target.last_set_error_code_address == "c8");
+    assert(target.last_set_error_code_value == 0);
+    
+    // Test with error code = 5
+    packet = build_packet(0xc8, 0x00, 0xf0, [](std::vector<uint8_t> &data) {
+        data[4] = 0;
+        data[5] = 0;
+        data[6] = 0;
+        data[7] = 0;
+        data[8] = 0;
+        data[10] = 5; // error_code = 5
+    });
+    
+    target = DebugTarget();
+    test_process_data(packet_to_hex(packet), target);
+    assert(target.last_set_error_code_value == 5);
+}
+
 int main(int argc, char *argv[])
 {
     // test_read_file();
@@ -306,4 +490,10 @@ int main(int argc, char *argv[])
     test_target();
 
     test_previous_data_is_used_correctly();
+    
+    // New tests for sensor features
+    test_cmdc0_outdoor_temperature();
+    test_cmd8d_power_energy();
+    test_cmd20_eva_temperatures();
+    test_cmdf0_error_code();
 };

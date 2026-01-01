@@ -125,6 +125,14 @@ samsung_ac:
       # measured below. This property can be used to correct that value.
       room_temperature_offset: -1.4
 
+      # EVA (Evaporator) temperatures - measures refrigerant temperatures at the indoor unit
+      # These sensors help monitor system performance and diagnose issues
+      # Supported on both NASA and Non-NASA devices
+      indoor_eva_in_temperature:
+        name: "Kitchen EVA In temperature"
+      indoor_eva_out_temperature:
+        name: "Kitchen EVA Out temperature"
+
       # Only supported on NASA devices
       room_humidity:
         name: "Kitchen humidity"
