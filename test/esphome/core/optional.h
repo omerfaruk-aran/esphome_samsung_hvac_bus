@@ -1,13 +1,13 @@
 #pragma once
 
-#include <experimental/optional>
+#include <optional>
 
-// Fakes the esphome optional type with std experimental/optional
+// Fakes the esphome optional type with std::optional (C++17)
 
 namespace esphome
 {
     template <typename T>
-    using optional = std::experimental::optional<T>;
-    /*        using opt_null_t = std::experimental::nullopt_t;
-    constexpr auto nullopt = std::experimental::nullopt;*/
+    using optional = std::optional<T>;
+    /*        using opt_null_t = std::nullopt_t;
+    constexpr auto nullopt = std::nullopt;*/
 }

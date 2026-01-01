@@ -89,7 +89,7 @@ namespace esphome
             return esp_mqtt_client_publish(mqtt_client, topic.c_str(), payload.c_str(), payload.length(), 0, false) != -1;
 #endif
 #else
-        return false
+        return false;
 #endif
         }
     } // namespace samsung_ac
