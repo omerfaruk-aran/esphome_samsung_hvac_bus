@@ -72,7 +72,8 @@ NonNasaDataPacket test_decode(std::string data)
 {
     NonNasaDataPacket p;
     auto bytes = hex_to_bytes(data);
-    assert(p.decode(bytes) == DecodeResult::Ok);
+    auto result = p.decode(bytes);
+    assert(result.type == DecodeResultType::Processed);
     std::cout << p.to_string() << std::endl;
     return p;
 }
@@ -250,56 +251,6 @@ void test_target()
     target.assert_values("00", true, 24.000000, 24.000000, Mode::Cool, FanMode::High);
 }
 
-void test_previous_data_is_used_correctly()
-{
-    debug_log_packets = true;
-
-    // Sending package 20 on non nasa requiers to send the previous values
-    // these values need to be stored for each address. This test makes sure
-    // this process works.
-    std::cout << "test_previous_data_is_used_correctly" << std::endl;
-
-    DebugTarget target;
-
-    // Test1
-
-    // prepare last values
-    test_process_data("3200c8204d51500001100051e434", target);
-
-    ProtocolRequest req1;
-    req1.power = false;
-    get_protocol("00")->publish_request(&target, "00", req1);
-    test_process_data("32c8f0f80345f0c913000000ac34", target); // trigger publish
-
-    NonNasaRequest request1;
-    request1.dst = "00";
-    request1.room_temp = 26.000000;
-    request1.target_temp = 22.000000;
-    request1.power = false;
-    request1.fanspeed = NonNasaFanspeed::Auto;
-    request1.mode = NonNasaMode::Heat;
-    assert_str(bytes_to_hex(request1.encode()), target.last_publish_data);
-
-    // Test2
-
-    // prepare last values
-    test_process_data("3201c8204f4f4efd821c004e8a34", target);
-
-    ProtocolRequest req2;
-    req2.power = true;
-    get_protocol("01")->publish_request(&target, "01", req2);
-    test_process_data("32c8f0f80345f0c913000000ac34", target); // trigger publish
-
-    NonNasaRequest request2;
-    request2.dst = "01";
-    request2.room_temp = 24.000000;
-    request2.target_temp = 24.000000;
-    request2.power = true;
-    request2.fanspeed = NonNasaFanspeed::High;
-    request2.mode = NonNasaMode::Cool;
-    assert_str(bytes_to_hex(request2.encode()), target.last_publish_data);
-}
-
 // Helper function to build a valid non-nasa packet with checksum
 std::vector<uint8_t> build_packet(uint8_t src, uint8_t dst, uint8_t cmd, std::function<void(std::vector<uint8_t>&)> fill_data)
 {
@@ -331,6 +282,63 @@ std::vector<uint8_t> build_packet(uint8_t src, uint8_t dst, uint8_t cmd, std::fu
 std::string packet_to_hex(std::vector<uint8_t> &data)
 {
     return bytes_to_hex(data);
+}
+
+void test_previous_data_is_used_correctly()
+{
+    // Sending package 20 on non nasa requiers to send the previous values
+    // these values need to be stored for each address. This test makes sure
+    // this process works.
+    std::cout << "test_previous_data_is_used_correctly" << std::endl;
+
+    DebugTarget target;
+
+    // Test1
+
+    // prepare last values
+    test_process_data("3200c8204d51500001100051e434", target);
+
+    ProtocolRequest req1;
+    req1.power = false;
+    get_protocol("00")->publish_request(&target, "00", req1);
+    // Use CmdC6 (request_control) packet to trigger send_requests()
+    // Format: src=c8 (outdoor), dst=d0 (controller), cmd=c6, control_status=0x01
+    auto cmdC6_packet1 = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01; // control_status = true
+    });
+    test_process_data(packet_to_hex(cmdC6_packet1), target); // trigger publish
+
+    NonNasaRequest request1;
+    request1.dst = "00";
+    request1.room_temp = 26.000000;
+    request1.target_temp = 22.000000;
+    request1.power = false;
+    request1.fanspeed = NonNasaFanspeed::Auto;
+    request1.mode = NonNasaMode::Heat;
+    assert_str(bytes_to_hex(request1.encode()), target.last_publish_data);
+
+    // Test2
+
+    // prepare last values
+    test_process_data("3201c8204f4f4efd821c004e8a34", target);
+
+    ProtocolRequest req2;
+    req2.power = true;
+    get_protocol("01")->publish_request(&target, "01", req2);
+    // Use CmdC6 (request_control) packet to trigger send_requests()
+    auto cmdC6_packet2 = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01; // control_status = true
+    });
+    test_process_data(packet_to_hex(cmdC6_packet2), target); // trigger publish
+
+    NonNasaRequest request2;
+    request2.dst = "01";
+    request2.room_temp = 24.000000;
+    request2.target_temp = 24.000000;
+    request2.power = true;
+    request2.fanspeed = NonNasaFanspeed::High;
+    request2.mode = NonNasaMode::Cool;
+    assert_str(bytes_to_hex(request2.encode()), target.last_publish_data);
 }
 
 void test_cmdc0_outdoor_temperature()

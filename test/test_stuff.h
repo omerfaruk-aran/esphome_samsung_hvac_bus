@@ -3,6 +3,7 @@
 #include <bitset>
 #include <cassert>
 #include <optional>
+#include <set>
 #include "esphome/core/optional.h"
 
 #include "../components/samsung_ac/util.h"
@@ -14,20 +15,25 @@ using namespace esphome::samsung_ac;
 class DebugTarget : public MessageTarget
 {
 public:
-    uint32_t get_miliseconds()
+    uint32_t get_miliseconds() override
     {
         return 0;
     }
 
     std::string last_publish_data;
-    void publish_data(std::vector<uint8_t> &data)
+    void publish_data(uint8_t id, std::vector<uint8_t> &&data) override
     {
         last_publish_data = bytes_to_hex(data);
         cout << "> publish_data " << last_publish_data << endl;
     }
 
+    void ack_data(uint8_t id) override
+    {
+        cout << "> ack_data id=" << (int)id << endl;
+    }
+
     std::string last_register_address;
-    void register_address(const std::string address)
+    void register_address(const std::string address) override
     {
         cout << "> register_address " << address << endl;
         last_register_address = address;
@@ -35,16 +41,26 @@ public:
 
     std::string last_set_power_address;
     bool last_set_power_value;
-    void set_power(const std::string address, bool value)
+    void set_power(const std::string address, bool value) override
     {
         cout << "> " << address << " set_power=" << to_string(value) << endl;
         last_set_power_address = address;
         last_set_power_value = value;
     }
 
+    void set_automatic_cleaning(const std::string address, bool value) override
+    {
+        cout << "> " << address << " set_automatic_cleaning=" << to_string(value) << endl;
+    }
+
+    void set_water_heater_power(const std::string address, bool value) override
+    {
+        cout << "> " << address << " set_water_heater_power=" << to_string(value) << endl;
+    }
+
     std::string last_set_room_temperature_address;
     float last_set_room_temperature_value;
-    void set_room_temperature(const std::string address, float value)
+    void set_room_temperature(const std::string address, float value) override
     {
         cout << "> " << address << " set_room_temperature=" << to_string(value) << endl;
         last_set_room_temperature_address = address;
@@ -62,140 +78,152 @@ public:
 
     std::string last_set_target_temperature_address;
     float last_set_target_temperature_value;
-    void set_target_temperature(const std::string address, float value)
+    void set_target_temperature(const std::string address, float value) override
     {
         cout << "> " << address << " set_target_temperature=" << to_string(value) << endl;
         last_set_target_temperature_address = address;
         last_set_target_temperature_value = value;
     }
 
+    void set_water_outlet_target(const std::string address, float value) override
+    {
+        cout << "> " << address << " set_water_outlet_target=" << to_string(value) << endl;
+    }
+
     std::string last_set_outdoor_temperature_address;
     float last_set_outdoor_temperature_value;
-    void set_outdoor_temperature(const std::string address, float value)
+    void set_outdoor_temperature(const std::string address, float value) override
     {
         cout << "> " << address << " set_outdoor_temperature=" << to_string(value) << endl;
         last_set_outdoor_temperature_address = address;
         last_set_outdoor_temperature_value = value;
+    }
 
-        std::string last_set_target_water_temperature_address;
-        float last_set_target_water_temperature_value;
-        void set_target_water_temperature(const std::string address, float value)
-        {
-            cout << "> " << address << " set_target_water_temperature=" << to_string(value) << endl;
-            last_set_target_water_temperature_address = address;
-            last_set_target_water_temperature_value = value;
-        }
+    std::string last_set_target_water_temperature_address;
+    float last_set_target_water_temperature_value;
+    void set_target_water_temperature(const std::string address, float value) override
+    {
+        cout << "> " << address << " set_target_water_temperature=" << to_string(value) << endl;
+        last_set_target_water_temperature_address = address;
+        last_set_target_water_temperature_value = value;
+    }
 
-        std::string last_set_room_humidity_address;
-        float last_set_room_humidity_value;
-        void set_room_humidity(const std::string address, float value)
-        {
-            cout << "> " << address << " set_room_humidity=" << to_string(value) << endl;
-            last_set_room_humidity_address = address;
-            last_set_room_humidity_value = value;
-        }
+    std::string last_set_room_humidity_address;
+    float last_set_room_humidity_value;
+    void set_room_humidity(const std::string address, float value)
+    {
+        cout << "> " << address << " set_room_humidity=" << to_string(value) << endl;
+        last_set_room_humidity_address = address;
+        last_set_room_humidity_value = value;
+    }
 
-        std::string last_set_mode_address;
-        Mode last_set_mode_mode;
-        void set_mode(const std::string address, Mode mode)
-        {
-            cout << "> " << address << " set_mode=" << to_string((int)mode) << endl;
-            last_set_mode_address = address;
-            last_set_mode_mode = mode;
-        }
+    std::string last_set_mode_address;
+    Mode last_set_mode_mode;
+    void set_mode(const std::string address, Mode mode) override
+    {
+        cout << "> " << address << " set_mode=" << to_string((int)mode) << endl;
+        last_set_mode_address = address;
+        last_set_mode_mode = mode;
+    }
 
-        std::string last_set_fanmode_address;
-        FanMode last_set_fanmode_mode;
-        void set_fanmode(const std::string address, FanMode fanmode)
+    void set_water_heater_mode(const std::string address, WaterHeaterMode waterheatermode) override
+    {
+        cout << "> " << address << " set_water_heater_mode=" << to_string((int)waterheatermode) << endl;
+    }
+
+    std::string last_set_fanmode_address;
+    FanMode last_set_fanmode_mode;
+    void set_fanmode(const std::string address, FanMode fanmode) override
         {
             cout << "> " << address << " set_fanmode=" << to_string((int)fanmode) << endl;
             last_set_fanmode_address = address;
             last_set_fanmode_mode = fanmode;
         }
 
-        void set_altmode(const std::string address, AltMode altmode)
-        {
-            cout << "> " << address << " set_altmode=" << to_string((int)altmode) << endl;
-        }
+    void set_altmode(const std::string address, AltMode altmode) override
+    {
+        cout << "> " << address << " set_altmode=" << to_string((int)altmode) << endl;
+    }
 
-        void set_swing_vertical(const std::string address, bool vertical)
-        {
-            cout << "> " << address << " set_swing_vertical=" << to_string((int)vertical) << endl;
-        }
+    void set_swing_vertical(const std::string address, bool vertical) override
+    {
+        cout << "> " << address << " set_swing_vertical=" << to_string((int)vertical) << endl;
+    }
 
-        void set_swing_horizontal(const std::string address, bool horizontal)
-        {
-            cout << "> " << address << " set_swing_horizontal=" << to_string((int)horizontal) << endl;
-        }
+    void set_swing_horizontal(const std::string address, bool horizontal) override
+    {
+        cout << "> " << address << " set_swing_horizontal=" << to_string((int)horizontal) << endl;
+    }
 
-        void set_custom_sensor(const std::string address, uint16_t message_number, float value)
+    std::set<uint16_t> last_custom_sensors;
+    void set_custom_sensor(const std::string address, uint16_t message_number, float value) override
         {
             last_custom_sensors.insert(message_number);
         }
 
-        // Cmd8D: Power/Energy methods
-        std::string last_set_outdoor_current_address;
-        float last_set_outdoor_current_value;
-        void set_outdoor_current(const std::string address, float value)
+    // Cmd8D: Power/Energy methods
+    std::string last_set_outdoor_current_address;
+    float last_set_outdoor_current_value;
+    void set_outdoor_current(const std::string &address, float value) override
         {
             cout << "> " << address << " set_outdoor_current=" << to_string(value) << endl;
             last_set_outdoor_current_address = address;
             last_set_outdoor_current_value = value;
         }
 
-        std::string last_set_outdoor_voltage_address;
-        float last_set_outdoor_voltage_value;
-        void set_outdoor_voltage(const std::string address, float value)
+    std::string last_set_outdoor_voltage_address;
+    float last_set_outdoor_voltage_value;
+    void set_outdoor_voltage(const std::string &address, float value) override
         {
             cout << "> " << address << " set_outdoor_voltage=" << to_string(value) << endl;
             last_set_outdoor_voltage_address = address;
             last_set_outdoor_voltage_value = value;
         }
 
-        std::string last_set_outdoor_instantaneous_power_address;
-        float last_set_outdoor_instantaneous_power_value;
-        void set_outdoor_instantaneous_power(const std::string address, float value)
+    std::string last_set_outdoor_instantaneous_power_address;
+    float last_set_outdoor_instantaneous_power_value;
+    void set_outdoor_instantaneous_power(const std::string &address, float value) override
         {
             cout << "> " << address << " set_outdoor_instantaneous_power=" << to_string(value) << endl;
             last_set_outdoor_instantaneous_power_address = address;
             last_set_outdoor_instantaneous_power_value = value;
         }
 
-        std::string last_set_outdoor_cumulative_energy_address;
-        float last_set_outdoor_cumulative_energy_value;
-        void set_outdoor_cumulative_energy(const std::string address, float value)
+    std::string last_set_outdoor_cumulative_energy_address;
+    float last_set_outdoor_cumulative_energy_value;
+    void set_outdoor_cumulative_energy(const std::string &address, float value) override
         {
             cout << "> " << address << " set_outdoor_cumulative_energy=" << to_string(value) << endl;
             last_set_outdoor_cumulative_energy_address = address;
             last_set_outdoor_cumulative_energy_value = value;
         }
 
-        std::string last_set_indoor_eva_in_temperature_address;
-        float last_set_indoor_eva_in_temperature_value;
-        void set_indoor_eva_in_temperature(const std::string address, float value)
+    std::string last_set_indoor_eva_in_temperature_address;
+    float last_set_indoor_eva_in_temperature_value;
+    void set_indoor_eva_in_temperature(const std::string address, float value) override
         {
             cout << "> " << address << " set_indoor_eva_in_temperature=" << to_string(value) << endl;
             last_set_indoor_eva_in_temperature_address = address;
             last_set_indoor_eva_in_temperature_value = value;
         }
 
-        std::string last_set_indoor_eva_out_temperature_address;
-        float last_set_indoor_eva_out_temperature_value;
-        void set_indoor_eva_out_temperature(const std::string address, float value)
+    std::string last_set_indoor_eva_out_temperature_address;
+    float last_set_indoor_eva_out_temperature_value;
+    void set_indoor_eva_out_temperature(const std::string address, float value) override
         {
             cout << "> " << address << " set_indoor_eva_out_temperature=" << to_string(value) << endl;
             last_set_indoor_eva_out_temperature_address = address;
             last_set_indoor_eva_out_temperature_value = value;
         }
 
-        std::string last_set_error_code_address;
-        int last_set_error_code_value;
-        void set_error_code(const std::string address, int value)
-        {
-            cout << "> " << address << " set_error_code=" << to_string(value) << endl;
-            last_set_error_code_address = address;
-            last_set_error_code_value = value;
-        }
+    std::string last_set_error_code_address;
+    int last_set_error_code_value;
+    void set_error_code(const std::string address, int error_code) override
+    {
+        cout << "> " << address << " set_error_code=" << to_string(error_code) << endl;
+        last_set_error_code_address = address;
+        last_set_error_code_value = error_code;
+    }
 
         void assert_only_address(const std::string address)
         {
@@ -240,7 +268,8 @@ public:
     {
         cout << "test: " << hex << std::endl;
         auto bytes = hex_to_bytes(hex);
-        assert(process_data(bytes, &target) == DataResult::Clear);
+        auto result = process_data(bytes, &target);
+        assert(result.type == DecodeResultType::Processed);
     }
 
     DebugTarget test_process_data(const std::string &hex)
@@ -262,9 +291,10 @@ public:
 
     namespace esphome
     {
+        uint32_t test_millis_value = 0;
         uint32_t millis()
         {
-            return 0;
+            return test_millis_value;
         }
         uint32_t micros()
         {
