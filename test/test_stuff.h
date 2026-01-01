@@ -48,14 +48,22 @@ public:
         last_set_power_value = value;
     }
 
+    std::string last_set_automatic_cleaning_address;
+    bool last_set_automatic_cleaning_value;
     void set_automatic_cleaning(const std::string address, bool value) override
     {
         cout << "> " << address << " set_automatic_cleaning=" << to_string(value) << endl;
+        last_set_automatic_cleaning_address = address;
+        last_set_automatic_cleaning_value = value;
     }
 
+    std::string last_set_water_heater_power_address;
+    bool last_set_water_heater_power_value;
     void set_water_heater_power(const std::string address, bool value) override
     {
         cout << "> " << address << " set_water_heater_power=" << to_string(value) << endl;
+        last_set_water_heater_power_address = address;
+        last_set_water_heater_power_value = value;
     }
 
     std::string last_set_room_temperature_address;
@@ -85,9 +93,13 @@ public:
         last_set_target_temperature_value = value;
     }
 
+    std::string last_set_water_outlet_target_address;
+    float last_set_water_outlet_target_value;
     void set_water_outlet_target(const std::string address, float value) override
     {
         cout << "> " << address << " set_water_outlet_target=" << to_string(value) << endl;
+        last_set_water_outlet_target_address = address;
+        last_set_water_outlet_target_value = value;
     }
 
     std::string last_set_outdoor_temperature_address;
@@ -126,9 +138,13 @@ public:
         last_set_mode_mode = mode;
     }
 
+    std::string last_set_water_heater_mode_address;
+    WaterHeaterMode last_set_water_heater_mode_value;
     void set_water_heater_mode(const std::string address, WaterHeaterMode waterheatermode) override
     {
         cout << "> " << address << " set_water_heater_mode=" << to_string((int)waterheatermode) << endl;
+        last_set_water_heater_mode_address = address;
+        last_set_water_heater_mode_value = waterheatermode;
     }
 
     std::string last_set_fanmode_address;
@@ -140,19 +156,31 @@ public:
             last_set_fanmode_mode = fanmode;
         }
 
+    std::string last_set_altmode_address;
+    AltMode last_set_altmode_value;
     void set_altmode(const std::string address, AltMode altmode) override
     {
         cout << "> " << address << " set_altmode=" << to_string((int)altmode) << endl;
+        last_set_altmode_address = address;
+        last_set_altmode_value = altmode;
     }
 
+    std::string last_set_swing_vertical_address;
+    bool last_set_swing_vertical_value;
     void set_swing_vertical(const std::string address, bool vertical) override
     {
         cout << "> " << address << " set_swing_vertical=" << to_string((int)vertical) << endl;
+        last_set_swing_vertical_address = address;
+        last_set_swing_vertical_value = vertical;
     }
 
+    std::string last_set_swing_horizontal_address;
+    bool last_set_swing_horizontal_value;
     void set_swing_horizontal(const std::string address, bool horizontal) override
     {
         cout << "> " << address << " set_swing_horizontal=" << to_string((int)horizontal) << endl;
+        last_set_swing_horizontal_address = address;
+        last_set_swing_horizontal_value = horizontal;
     }
 
     std::set<uint16_t> last_custom_sensors;
