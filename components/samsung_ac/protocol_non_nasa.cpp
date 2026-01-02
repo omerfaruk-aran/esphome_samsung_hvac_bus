@@ -440,6 +440,40 @@ namespace esphome
             }
         }
 
+        NonNasaWindDirection swingmode_to_wind_direction(SwingMode swing)
+        {
+            switch (swing)
+            {
+            case SwingMode::Fix:
+                return NonNasaWindDirection::Stop;
+            case SwingMode::Vertical:
+                return NonNasaWindDirection::Vertical;
+            case SwingMode::Horizontal:
+                return NonNasaWindDirection::Horizontal;
+            case SwingMode::All:
+                return NonNasaWindDirection::FourWay;
+            default:
+                return NonNasaWindDirection::Stop;
+            }
+        }
+
+        uint8_t encode_request_wind_direction(NonNasaWindDirection wind_dir)
+        {
+            switch (wind_dir)
+            {
+            case NonNasaWindDirection::Stop:
+                return 0x1F;
+            case NonNasaWindDirection::Vertical:
+                return 0x1A;
+            case NonNasaWindDirection::Horizontal:
+                return 0x1B;
+            case NonNasaWindDirection::FourWay:
+                return 0x1C;
+            default:
+                return 0x1F; // Default: swing off
+            }
+        }
+
         std::vector<uint8_t> NonNasaRequest::encode()
         {
             std::vector<uint8_t> data{
@@ -447,7 +481,7 @@ namespace esphome
                 0xD0,                     // 01 src
                 (uint8_t)hex_to_int(dst), // 02 dst
                 0xB0,                     // 03 cmd
-                0x1F,                     // 04 ?
+                0x1F,                     // 04 swing
                 0x04,                     // 05 ?
                 0,                        // 06 temp + fanmode
                 0,                        // 07 operation mode
@@ -463,6 +497,7 @@ namespace esphome
             // seems to be like a building management system.
             bool individual = false;
 
+            data[4] = encode_request_wind_direction(wind_direction);
             if (room_temp > 0)
                 data[5] = room_temp;
             data[6] = (target_temp & 31U) | encode_request_fanspeed(fanspeed);
@@ -472,8 +507,6 @@ namespace esphome
             data[9] = (uint8_t)0x21;
             data[12] = build_checksum(data);
 
-            data[9] = (uint8_t)0x21;
-
             return data;
         }
 
@@ -482,12 +515,17 @@ namespace esphome
             NonNasaRequest request;
             request.dst = dst_address;
 
-            auto last_command20_ = last_command20s_[dst_address];
-            request.room_temp = last_command20_.room_temp;
-            request.power = last_command20_.power;
-            request.target_temp = last_command20_.target_temp;
-            request.fanspeed = last_command20_.fanspeed;
-            request.mode = last_command20_.mode;
+            auto it = last_command20s_.find(dst_address);
+            if (it != last_command20s_.end())
+            {
+                auto &last_command20_ = it->second;
+                request.room_temp = last_command20_.room_temp;
+                request.power = last_command20_.power;
+                request.target_temp = last_command20_.target_temp;
+                request.fanspeed = last_command20_.fanspeed;
+                request.mode = last_command20_.mode;
+                request.wind_direction = last_command20_.wind_direction;
+            }
 
             return request;
         }
@@ -553,7 +591,8 @@ namespace esphome
 
             if (request.swing_mode)
             {
-                LOGW("change swingmode is currently not implemented");
+                NonNasaWindDirection wind_dir = swingmode_to_wind_direction(request.swing_mode.value());
+                req.wind_direction = wind_dir;
             }
 
             // Add to the queue with the current time
@@ -687,13 +726,29 @@ namespace esphome
                 // packet, so as a backup approach check if the state of the device matches that of the
                 // sent control packet. This also serves as a backup approach if for some reason a device
                 // doesn't send control_acknowledgement messages at all.
+                LOGD("Cmd20 received: src=%s, wind_direction=%d, target_temp=%d, power=%d, mode=%d, fanspeed=%d",
+                     nonpacket_.src.c_str(),
+                     (uint8_t)nonpacket_.command20.wind_direction,
+                     nonpacket_.command20.target_temp,
+                     nonpacket_.command20.power,
+                     (uint8_t)nonpacket_.command20.mode,
+                     (uint8_t)nonpacket_.command20.fanspeed);
+
+                size_t before_size = nonnasa_requests.size();
                 nonnasa_requests.remove_if([&](const NonNasaRequestQueueItem &item)
                                            { return item.time_sent > 0 &&
                                                     nonpacket_.src == item.request.dst &&
                                                     item.request.target_temp == nonpacket_.command20.target_temp &&
                                                     item.request.fanspeed == nonpacket_.command20.fanspeed &&
                                                     item.request.mode == nonpacket_.command20.mode &&
-                                                    item.request.power == nonpacket_.command20.power; });
+                                                    item.request.power == nonpacket_.command20.power &&
+                                                    item.request.wind_direction == nonpacket_.command20.wind_direction; });
+                size_t after_size = nonnasa_requests.size();
+                if (before_size != after_size)
+                {
+                    LOGD("Cmd20: Removed %zu matching request(s) for %s (backup ack)", 
+                         before_size - after_size, nonpacket_.src.c_str());
+                }
 
                 // If a state update comes through after a control message has been sent, but before it
                 // has been acknowledged, it should be ignored. This prevents the UI status bouncing
@@ -735,9 +790,13 @@ namespace esphome
                     target->set_fanmode(nonpacket_.src, nonnasa_fanspeed_to_fanmode(nonpacket_.command20.fanspeed));
                     // TODO
                     target->set_altmode(nonpacket_.src, 0);
-                    // TODO
-                    target->set_swing_horizontal(nonpacket_.src, false);
-                    target->set_swing_vertical(nonpacket_.src, false);
+                    // Cmd20 swing decode: converting wind_direction to vertical/horizontal booleans
+                    target->set_swing_horizontal(nonpacket_.src, 
+                        (nonpacket_.command20.wind_direction == NonNasaWindDirection::Horizontal) ||
+                        (nonpacket_.command20.wind_direction == NonNasaWindDirection::FourWay));
+                    target->set_swing_vertical(nonpacket_.src, 
+                        (nonpacket_.command20.wind_direction == NonNasaWindDirection::Vertical) ||
+                        (nonpacket_.command20.wind_direction == NonNasaWindDirection::FourWay));
                 }
             }
             else if (nonpacket_.cmd == NonNasaCommand::CmdC0)

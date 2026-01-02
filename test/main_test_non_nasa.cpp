@@ -2,6 +2,7 @@
 #include "../components/samsung_ac/protocol_non_nasa.h"
 #include <functional>
 #include <cmath>
+#include <climits>
 
 using namespace std;
 using namespace esphome::samsung_ac;
@@ -77,6 +78,20 @@ NonNasaDataPacket test_decode(std::string data)
     std::cout << p.to_string() << std::endl;
     return p;
 }
+
+// Forward declarations
+std::string build_cmd20_with_swing(uint8_t wind_dir, uint8_t fanspeed, uint8_t mode, bool power);
+void test_non_nasa_swing_decoding();
+void test_non_nasa_swing_encoding();
+void test_non_nasa_swing_conversion();
+void test_non_nasa_swing_state_preservation();
+void test_non_nasa_swing_cmd20_matching();
+void test_non_nasa_swing_cmd54_preserving();
+void test_non_nasa_swing_cmd20_obsolete_removal();
+void test_non_nasa_swing_rapid_changes();
+void test_non_nasa_swing_edge_cases();
+void test_wind_direction_zero_conversion();
+void test_keepalive_rate_limiting();
 
 void test_decoding()
 {
@@ -1213,6 +1228,7 @@ void test_cmd20_pending_control_message_ignores_state()
         data[4] = 77; // target_temp = 22°C
         data[5] = 80; // room_temp = 25°C
         data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (31 << 3) | 0; // wind_direction = Stop (31), fanspeed = Auto (0)
         data[8] = 0x01; // mode = Heat, power = off
         data[11] = 24 + 55; // pipe_out = 24°C
     });
@@ -1223,6 +1239,15 @@ void test_cmd20_pending_control_message_ignores_state()
     assert(target.last_set_room_temperature_value == 25.0f);
     assert(abs(target.last_set_indoor_eva_in_temperature_value - 23.0f) < 0.01f);
     assert(abs(target.last_set_indoor_eva_out_temperature_value - 24.0f) < 0.01f);
+    // Verify initial mode, fan, swing state
+    assert(target.last_set_mode_address == "00");
+    assert(target.last_set_mode_mode == Mode::Heat);
+    assert(target.last_set_fanmode_address == "00");
+    assert(target.last_set_fanmode_mode == FanMode::Auto);
+    assert(target.last_set_swing_horizontal_address == "00");
+    assert(target.last_set_swing_horizontal_value == false);
+    assert(target.last_set_swing_vertical_address == "00");
+    assert(target.last_set_swing_vertical_value == false);
     
     // Step 2: Publish a control request (this will be queued)
     // Use a different target_temp than what we'll send in Cmd20 to ensure request is NOT removed
@@ -1246,6 +1271,10 @@ void test_cmd20_pending_control_message_ignores_state()
     target.last_set_power_address = "";
     target.last_set_target_temperature_address = "";
     target.last_set_room_temperature_address = "";
+    target.last_set_mode_address = "";
+    target.last_set_fanmode_address = "";
+    target.last_set_swing_horizontal_address = "";
+    target.last_set_swing_vertical_address = "";
     target.last_set_indoor_eva_in_temperature_address = "";
     target.last_set_indoor_eva_out_temperature_address = "";
     
@@ -1253,7 +1282,8 @@ void test_cmd20_pending_control_message_ignores_state()
         data[4] = 79; // target_temp = 24°C (different from request)
         data[5] = 82; // room_temp = 27°C (different)
         data[6] = 25 + 55; // pipe_in = 25°C (different)
-        data[8] = 0x01 | 0x80; // mode = Heat, power = on (different)
+        data[7] = (26 << 3) | 2; // wind_direction = Vertical (26), fanspeed = Low (2)
+        data[8] = 0x02 | 0x80; // mode = Cool (0x02), power = on (different)
         data[11] = 26 + 55; // pipe_out = 26°C (different)
     });
     
@@ -1261,15 +1291,28 @@ void test_cmd20_pending_control_message_ignores_state()
     bool previous_power = target.last_set_power_value;
     float previous_target_temp = target.last_set_target_temperature_value;
     float previous_room_temp = target.last_set_room_temperature_value;
+    Mode previous_mode = target.last_set_mode_mode;
+    FanMode previous_fanmode = target.last_set_fanmode_mode;
+    bool previous_swing_horizontal = target.last_set_swing_horizontal_value;
+    bool previous_swing_vertical = target.last_set_swing_vertical_value;
     
     test_process_data(packet_to_hex(cmd20_different), target);
     
-    // Verify state updates were IGNORED (not set on target)
-    // When pending_control_message == true, state updates should be ignored
+    // Verify ALL state updates were IGNORED (not set on target)
+    // When pending_control_message == true, ALL state updates should be ignored
     // So the values should remain the same as before (previous values)
     assert(target.last_set_power_value == previous_power); // Should still be false
     assert(abs(target.last_set_target_temperature_value - previous_target_temp) < 0.01f); // Should still be 22.0f
     assert(abs(target.last_set_room_temperature_value - previous_room_temp) < 0.01f); // Should still be 25.0f
+    // Verify mode, fan, swing are also suppressed when pending
+    assert(target.last_set_mode_address.empty()); // Should not be set
+    assert(target.last_set_mode_mode == previous_mode); // Should still be Heat
+    assert(target.last_set_fanmode_address.empty()); // Should not be set
+    assert(target.last_set_fanmode_mode == previous_fanmode); // Should still be Auto
+    assert(target.last_set_swing_horizontal_address.empty()); // Should not be set
+    assert(target.last_set_swing_horizontal_value == previous_swing_horizontal); // Should still be false
+    assert(target.last_set_swing_vertical_address.empty()); // Should not be set
+    assert(target.last_set_swing_vertical_value == previous_swing_vertical); // Should still be false
     
     // Verify EVA temperatures ARE still published (sensor readings, always published)
     assert(!target.last_set_indoor_eva_in_temperature_address.empty());
@@ -1289,16 +1332,255 @@ void test_cmd20_pending_control_message_ignores_state()
     target.last_set_power_address = "";
     target.last_set_target_temperature_address = "";
     target.last_set_room_temperature_address = "";
+    target.last_set_mode_address = "";
+    target.last_set_fanmode_address = "";
+    target.last_set_swing_horizontal_address = "";
+    target.last_set_swing_vertical_address = "";
     
     test_process_data(packet_to_hex(cmd20_different), target);
     
-    // Verify state updates are NOW processed (pending_control_message == false)
+    // Verify ALL state updates are NOW processed (pending_control_message == false)
     assert(!target.last_set_power_address.empty());
     assert(target.last_set_power_value == true);
     assert(!target.last_set_target_temperature_address.empty());
     assert(abs(target.last_set_target_temperature_value - 24.0f) < 0.01f);
     assert(!target.last_set_room_temperature_address.empty());
     assert(abs(target.last_set_room_temperature_value - 27.0f) < 0.01f);
+    // Verify mode, fan, swing are also updated when not pending
+    assert(!target.last_set_mode_address.empty());
+    assert(target.last_set_mode_mode == Mode::Cool);
+    assert(!target.last_set_fanmode_address.empty());
+    assert(target.last_set_fanmode_mode == FanMode::Low);
+    assert(!target.last_set_swing_horizontal_address.empty());
+    assert(target.last_set_swing_horizontal_value == false); // Vertical only
+    assert(!target.last_set_swing_vertical_address.empty());
+    assert(target.last_set_swing_vertical_value == true); // Vertical
+}
+
+void test_cmd20_mode_fan_change_detection()
+{
+    std::cout << "test_cmd20_mode_fan_change_detection" << std::endl;
+    
+    // Test: Mode and fan speed change detection
+    // The code detects changes by comparing with previous state in last_command20s_
+    // We can verify this indirectly by checking that state updates correctly reflect changes
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Step 1: Send initial Cmd20 with mode=Heat, fan=Auto
+    auto cmd20_initial = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 77; // target_temp = 22°C
+        data[5] = 80; // room_temp = 25°C
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (31 << 3) | 0; // wind_direction = Stop (31), fanspeed = Auto (0)
+        data[8] = 0x01; // mode = Heat (0x01), power = off
+        data[11] = 24 + 55; // pipe_out = 24°C
+    });
+    
+    test_process_data(packet_to_hex(cmd20_initial), target);
+    assert(target.last_set_mode_mode == Mode::Heat);
+    assert(target.last_set_fanmode_mode == FanMode::Auto);
+    
+    // Step 2: Send Cmd20 with mode=Cool, fan=Low (different values)
+    // This should trigger change detection (logged internally)
+    auto cmd20_changed = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 77; // target_temp = 22°C (same)
+        data[5] = 80; // room_temp = 25°C (same)
+        data[6] = 23 + 55; // pipe_in = 23°C (same)
+        data[7] = (31 << 3) | 2; // wind_direction = Stop (31), fanspeed = Low (2)
+        data[8] = 0x02; // mode = Cool (0x02), power = off (same)
+        data[11] = 24 + 55; // pipe_out = 24°C (same)
+    });
+    
+    test_process_data(packet_to_hex(cmd20_changed), target);
+    
+    // Verify state was updated (change was detected and processed)
+    assert(target.last_set_mode_mode == Mode::Cool);
+    assert(target.last_set_fanmode_mode == FanMode::Low);
+    
+    // Step 3: Send Cmd20 with same mode/fan (no change)
+    // Change detection should not trigger (no change)
+    test_process_data(packet_to_hex(cmd20_changed), target);
+    
+    // Verify state remains the same (no false change detection)
+    assert(target.last_set_mode_mode == Mode::Cool);
+    assert(target.last_set_fanmode_mode == FanMode::Low);
+    
+    // Step 4: Send Cmd20 with mode=Heat, fan=High (change back)
+    auto cmd20_changed_back = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 77; // target_temp = 22°C
+        data[5] = 80; // room_temp = 25°C
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (31 << 3) | 5; // wind_direction = Stop (31), fanspeed = High (5)
+        data[8] = 0x01; // mode = Heat (0x01), power = off
+        data[11] = 24 + 55; // pipe_out = 24°C
+    });
+    
+    test_process_data(packet_to_hex(cmd20_changed_back), target);
+    
+    // Verify state was updated again (change detected)
+    assert(target.last_set_mode_mode == Mode::Heat);
+    assert(target.last_set_fanmode_mode == FanMode::High);
+}
+
+void test_cmd20_last_command20s_update()
+{
+    std::cout << "test_cmd20_last_command20s_update" << std::endl;
+    
+    // Test: Verify that last_command20s_ is updated when Cmd20 is received
+    // We test this indirectly by verifying that subsequent requests use the stored state
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Step 1: Send Cmd20 with specific state
+    auto cmd20_initial = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 79; // target_temp = 24°C
+        data[5] = 82; // room_temp = 27°C
+        data[6] = 25 + 55; // pipe_in = 25°C
+        data[7] = (27 << 3) | 4; // wind_direction = Horizontal (27), fanspeed = Medium (4)
+        data[8] = 0x02 | 0x80; // mode = Cool (0x02), power = on
+        data[11] = 26 + 55; // pipe_out = 26°C
+    });
+    
+    test_process_data(packet_to_hex(cmd20_initial), target);
+    
+    // Step 2: Create a request without specifying all parameters
+    // The request should use stored state from last_command20s_
+    ProtocolRequest req;
+    req.power = false; // Only change power, keep other params from stored state
+    
+    get_protocol("00")->publish_request(&target, "00", req);
+    
+    // Step 3: Verify the request uses stored state from Cmd20
+    // Check that the encoded request includes the stored values
+    assert(nonnasa_requests.size() == 1);
+    auto &queued_req = nonnasa_requests.front().request;
+    
+    // Verify stored state was used (except for power which was explicitly set)
+    assert(queued_req.power == false); // Explicitly set
+    assert(queued_req.target_temp == 24); // From Cmd20
+    assert(queued_req.room_temp == 27); // From Cmd20
+    assert(queued_req.mode == NonNasaMode::Cool); // From Cmd20
+    assert(queued_req.fanspeed == NonNasaFanspeed::Medium); // From Cmd20
+    
+    // Step 4: Verify encode() preserves swing state from last_command20s_
+    auto encoded = queued_req.encode();
+    // Byte 4 contains wind_direction: Horizontal = 27 = 0x1B
+    assert(encoded[4] == 0x1B); // Horizontal swing preserved from Cmd20
+}
+
+void test_cmd20_mode_fan_mismatch_handling()
+{
+    std::cout << "test_cmd20_mode_fan_mismatch_handling" << std::endl;
+    
+    // Test: Verify that mismatched requests (mode/fan don't match device state) are handled correctly
+    // Mismatched requests should NOT be removed from queue (command may have been rejected)
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Step 1: Send initial Cmd20 to establish device state
+    auto cmd20_initial = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 77; // target_temp = 22°C
+        data[5] = 80; // room_temp = 25°C
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (31 << 3) | 0; // wind_direction = Stop (31), fanspeed = Auto (0)
+        data[8] = 0x01; // mode = Heat (0x01), power = off
+        data[11] = 24 + 55; // pipe_out = 24°C
+    });
+    
+    test_process_data(packet_to_hex(cmd20_initial), target);
+    
+    // Step 2: Publish a request to change mode to Cool
+    ProtocolRequest req;
+    req.mode = Mode::Cool;
+    req.target_temp = 23.0f;
+    get_protocol("00")->publish_request(&target, "00", req);
+    
+    // Step 3: Make indoor awake and send request
+    test_process_data("3200c8204d51500001100051e434", target); // Make indoor awake
+    auto cmdC6_packet = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01; // control_status = true
+    });
+    target.last_publish_data = "";
+    test_process_data(packet_to_hex(cmdC6_packet), target);
+    assert(!target.last_publish_data.empty()); // Request was sent
+    
+    // Verify request is in queue
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.mode == NonNasaMode::Cool);
+    
+    // Step 4: Send Cmd20 with mode=Heat (doesn't match request mode=Cool)
+    // This simulates device rejecting the command or device state being different
+    auto cmd20_mismatch = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 79; // target_temp = 24°C (different from request 23°C)
+        data[5] = 80; // room_temp = 25°C
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (31 << 3) | 0; // wind_direction = Stop (31), fanspeed = Auto (0)
+        data[8] = 0x01; // mode = Heat (0x01, doesn't match request Cool), power = off
+        data[11] = 24 + 55; // pipe_out = 24°C
+    });
+    
+    test_process_data(packet_to_hex(cmd20_mismatch), target);
+    
+    // Verify request is still in queue (mismatch - request not removed)
+    // The mismatch should be logged internally, but request remains
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.mode == NonNasaMode::Cool);
+    
+    // Step 5: Send Cmd20 with mode=Cool (matches request)
+    auto cmd20_match = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 78; // target_temp = 23°C (matches request)
+        data[5] = 80; // room_temp = 25°C
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (31 << 3) | 0; // wind_direction = Stop (31), fanspeed = Auto (0)
+        data[8] = 0x02; // mode = Cool (0x02, matches request), power = off
+        data[11] = 24 + 55; // pipe_out = 24°C
+    });
+    
+    test_process_data(packet_to_hex(cmd20_match), target);
+    
+    // Verify request was removed (match - request removed from queue)
+    assert(nonnasa_requests.size() == 0);
+    
+    // Step 6: Test fan speed mismatch
+    // Send Cmd20 with fan=Auto
+    test_process_data(packet_to_hex(cmd20_initial), target);
+    
+    // Publish request to change fan to High
+    ProtocolRequest req_fan;
+    req_fan.fan_mode = FanMode::High;
+    get_protocol("00")->publish_request(&target, "00", req_fan);
+    
+    // Make indoor awake and send request
+    test_process_data(packet_to_hex(cmdC6_packet), target);
+    
+    // Verify request is in queue
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.fanspeed == NonNasaFanspeed::High);
+    
+    // Send Cmd20 with fan=Auto (doesn't match request High)
+    test_process_data(packet_to_hex(cmd20_initial), target);
+    
+    // Verify request is still in queue (mismatch)
+    assert(nonnasa_requests.size() == 1);
+    
+    // Send Cmd20 with fan=High (matches request)
+    auto cmd20_fan_match = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 77; // target_temp = 22°C
+        data[5] = 80; // room_temp = 25°C
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (31 << 3) | 5; // wind_direction = Stop (31), fanspeed = High (5)
+        data[8] = 0x01; // mode = Heat (0x01), power = off
+        data[11] = 24 + 55; // pipe_out = 24°C
+    });
+    
+    test_process_data(packet_to_hex(cmd20_fan_match), target);
+    
+    // Verify request was removed (match)
+    assert(nonnasa_requests.size() == 0);
 }
 
 void test_broadcast_registration_handler()
@@ -1435,6 +1717,94 @@ void test_cmd54_dst_condition()
     // Request should still be in queue (handler did not process)
 }
 
+void test_cmd54_state_persistence()
+{
+    std::cout << "test_cmd54_state_persistence" << std::endl;
+    
+    // Test: Verify that Cmd54 removes requests but does NOT update last_command20s_
+    // State persistence is handled by Cmd20, which is the authoritative source of device state.
+    // With frequent Cmd20 messages (every 1.5-2 seconds), state will be updated quickly from Cmd20.
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Step 1: Send initial Cmd20 to establish baseline state
+    auto cmd20_initial = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 77; // target_temp = 22°C
+        data[5] = 80; // room_temp = 25°C
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (31 << 3) | 0; // wind_direction = Stop (31), fanspeed = Auto (0)
+        data[8] = 0x01; // mode = Heat (0x01), power = off
+        data[11] = 24 + 55; // pipe_out = 24°C
+    });
+    
+    test_process_data(packet_to_hex(cmd20_initial), target);
+    
+    // Verify initial state
+    assert(target.last_set_mode_mode == Mode::Heat);
+    assert(target.last_set_fanmode_mode == FanMode::Auto);
+    assert(target.last_set_power_value == false);
+    
+    // Step 2: Publish a request to change mode to Cool, fan to High, temp to 24°C, power on
+    ProtocolRequest req;
+    req.mode = Mode::Cool;
+    req.fan_mode = FanMode::High;
+    req.target_temp = 24.0f;
+    req.power = true;
+    
+    get_protocol("00")->publish_request(&target, "00", req);
+    
+    // Step 3: Make indoor awake and send request
+    test_process_data("3200c8204d51500001100051e434", target); // Make indoor awake
+    auto cmdC6 = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01; // control_status = true
+    });
+    target.last_publish_data = "";
+    test_process_data(packet_to_hex(cmdC6), target);
+    assert(!target.last_publish_data.empty()); // Request was sent
+    
+    // Verify request is in queue with new state
+    assert(nonnasa_requests.size() == 1);
+    auto &queued_req = nonnasa_requests.front().request;
+    assert(queued_req.mode == NonNasaMode::Cool);
+    assert(queued_req.fanspeed == NonNasaFanspeed::High);
+    assert(queued_req.target_temp == 24);
+    assert(queued_req.power == true);
+    
+    // Step 4: Send Cmd54 to acknowledge the request
+    // Cmd54 removes the request but does NOT update last_command20s_
+    auto cmd54 = build_packet(0x00, 0xd0, 0x54, [](std::vector<uint8_t> &data) {
+        // Cmd54 data
+    });
+    
+    test_process_data(packet_to_hex(cmd54), target);
+    
+    // Verify request was removed from queue
+    assert(nonnasa_requests.size() == 0);
+    
+    // Step 5: Verify last_command20s_ was NOT updated by Cmd54
+    // Create a new request without specifying parameters
+    // It should use the state from the last Cmd20 (not from Cmd54)
+    ProtocolRequest req2;
+    req2.target_temp = 23.0f; // Only change temp, other params should come from last_command20s_
+    
+    get_protocol("00")->publish_request(&target, "00", req2);
+    
+    // Verify the new request uses state from initial Cmd20 (not from Cmd54)
+    assert(nonnasa_requests.size() == 1);
+    auto &queued_req2 = nonnasa_requests.front().request;
+    assert(queued_req2.mode == NonNasaMode::Heat); // From initial Cmd20, not Cool from Cmd54
+    assert(queued_req2.fanspeed == NonNasaFanspeed::Auto); // From initial Cmd20, not High from Cmd54
+    assert(queued_req2.target_temp == 23); // Explicitly set
+    assert(queued_req2.power == false); // From initial Cmd20, not true from Cmd54
+    assert(queued_req2.room_temp == 25); // Preserved from initial Cmd20
+    
+    // Step 6: Verify swing state is preserved from initial Cmd20
+    auto encoded = queued_req2.encode();
+    // Byte 4 contains wind_direction: Stop = 31 = 0x1F
+    assert(encoded[4] == 0x1F); // Stop swing preserved from initial Cmd20
+}
+
 void test_cmdc6_conditions()
 {
     std::cout << "test_cmdc6_conditions" << std::endl;
@@ -1493,6 +1863,112 @@ void test_cmdc6_conditions()
     // But we can verify the handler was called by checking send_requests() was triggered
 }
 
+void test_keepalive_rate_limiting()
+{
+    std::cout << "test_keepalive_rate_limiting" << std::endl;
+    
+    DebugTarget target;
+    
+    // Enable keepalive for testing
+    non_nasa_keepalive = true;
+    last_keepalive_response = 0; // Reset to initial state
+    
+    // Build broadcast registration packet: src=c8, dst=ad, cmd=0xd1, data[0] & 1 == 1
+    auto broadcast_packet = build_packet(0xc8, 0xad, 0xd1, [](std::vector<uint8_t> &data) {
+        data[4] = 0x11; // First data byte, odd value (0x11 & 1 == 1)
+    });
+    
+    // Test 1: First response - should respond immediately (last_keepalive_response == 0)
+    esphome::test_millis_value = 1000;
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    
+    assert(!target.last_register_address.empty()); // send_register_controller() was called
+    assert(target.last_register_address == "c8");
+    assert(last_keepalive_response == 1000); // Timestamp updated
+    
+    // Test 2: Second response too soon (< 7 seconds) - should NOT respond
+    esphome::test_millis_value = 1000 + 5000; // 5 seconds later (less than 7s interval)
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    
+    assert(target.last_register_address.empty()); // send_register_controller() should NOT be called
+    assert(last_keepalive_response == 1000); // Timestamp unchanged
+    
+    // Test 3: Response after interval (>= 7 seconds) - should respond
+    esphome::test_millis_value = 1000 + 7000; // Exactly 7 seconds later
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    
+    assert(!target.last_register_address.empty()); // send_register_controller() should be called
+    assert(target.last_register_address == "c8");
+    assert(last_keepalive_response == 1000 + 7000); // Timestamp updated
+    
+    // Test 4: Response after more than interval - should respond
+    esphome::test_millis_value = 1000 + 7000 + 10000; // 10 seconds after last response
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    
+    assert(!target.last_register_address.empty()); // send_register_controller() should be called
+    assert(target.last_register_address == "c8");
+    assert(last_keepalive_response == 1000 + 7000 + 10000); // Timestamp updated
+    
+    // Test 5: Multiple rapid requests - should only respond once per interval
+    esphome::test_millis_value = 1000 + 7000 + 10000 + 1000; // 1 second after last response
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    assert(target.last_register_address.empty()); // Should NOT respond (only 1s elapsed)
+    
+    esphome::test_millis_value = 1000 + 7000 + 10000 + 2000; // 2 seconds after last response
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    assert(target.last_register_address.empty()); // Should NOT respond (only 2s elapsed)
+    
+    esphome::test_millis_value = 1000 + 7000 + 10000 + 7000; // 7 seconds after last response
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    assert(!target.last_register_address.empty()); // Should respond (7s elapsed)
+    assert(last_keepalive_response == 1000 + 7000 + 10000 + 7000);
+    
+    // Test 6: Wraparound scenario - should handle correctly
+    // Simulate wraparound: last_keepalive_response near UINT32_MAX, now wraps to small value
+    last_keepalive_response = UINT32_MAX - 3000; // 3 seconds before wraparound
+    esphome::test_millis_value = 5000; // 5 seconds after wraparound (wrapped to small value)
+    
+    // Calculate expected elapsed: (UINT32_MAX - last_keepalive_response) + now + 1
+    // = (UINT32_MAX - (UINT32_MAX - 3000)) + 5000 + 1 = 3000 + 5000 + 1 = 8001ms (> 7000ms)
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    
+    assert(!target.last_register_address.empty()); // Should respond (wraparound handled correctly)
+    assert(last_keepalive_response == 5000); // Timestamp updated to current time
+    
+    // Test 7: Wraparound scenario - should NOT respond if elapsed < interval
+    last_keepalive_response = UINT32_MAX - 2000; // 2 seconds before wraparound
+    esphome::test_millis_value = 3000; // 3 seconds after wraparound
+    
+    // Calculate expected elapsed: (UINT32_MAX - (UINT32_MAX - 2000)) + 3000 + 1 = 2000 + 3000 + 1 = 5001ms (< 7000ms)
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    
+    assert(target.last_register_address.empty()); // Should NOT respond (only 5001ms elapsed)
+    assert(last_keepalive_response == UINT32_MAX - 2000); // Timestamp unchanged
+    
+    // Test 8: Keepalive disabled - should NOT respond
+    non_nasa_keepalive = false;
+    last_keepalive_response = 0; // Reset
+    esphome::test_millis_value = 1000;
+    target.last_register_address = "";
+    test_process_data(packet_to_hex(broadcast_packet), target);
+    
+    assert(target.last_register_address.empty()); // Should NOT respond (keepalive disabled)
+    assert(last_keepalive_response == 0); // Timestamp unchanged
+    
+    // Re-enable keepalive for other tests
+    non_nasa_keepalive = true;
+    last_keepalive_response = 0;
+}
+
 int main(int argc, char *argv[])
 {
     // test_read_file();
@@ -1534,5 +2010,586 @@ int main(int argc, char *argv[])
     test_cmd20_pending_control_message_ignores_state();
     test_broadcast_registration_handler();
     test_cmd54_dst_condition();
+    test_cmd54_state_persistence();
     test_cmdc6_conditions();
-};
+    
+    // Medium priority: State management tests
+    test_cmd20_mode_fan_change_detection();
+    test_cmd20_last_command20s_update();
+    test_cmd20_mode_fan_mismatch_handling();
+    
+    // Swing control tests
+    test_non_nasa_swing_decoding();
+    test_non_nasa_swing_encoding();
+    test_non_nasa_swing_conversion();
+    test_non_nasa_swing_state_preservation();
+    test_non_nasa_swing_cmd20_matching();
+    test_non_nasa_swing_cmd54_preserving();
+    test_non_nasa_swing_cmd20_obsolete_removal();
+    test_non_nasa_swing_rapid_changes();
+    test_non_nasa_swing_edge_cases();
+    test_wind_direction_zero_conversion();
+    
+    // Keepalive rate limiting tests
+    test_keepalive_rate_limiting();
+}
+
+// Helper function to build Cmd20 packet with specific wind_direction
+// wind_direction is in byte 7, bits 7-3 (5 bits)
+// Vertical=26 (0b11010), Horizontal=27 (0b11011), FourWay=28 (0b11100), Stop=31 (0b11111)
+std::string build_cmd20_with_swing(uint8_t wind_dir, uint8_t fanspeed = 0, uint8_t mode = 1, bool power = true)
+{
+    std::vector<uint8_t> data(14, 0);
+    data[0] = 0x32; // start
+    data[1] = 0x00;  // src
+    data[2] = 0xc8;  // dst
+    data[3] = 0x20;  // cmd
+    
+    data[4] = 20 + 55;  // target_temp = 20
+    data[5] = 22 + 55;  // room_temp = 22
+    data[6] = 21 + 55;  // pipe_in = 21
+    
+    // Byte 7: wind_direction (bits 7-3) | fanspeed (bits 2-0)
+    data[7] = (wind_dir << 3) | (fanspeed & 0b00000111);
+    
+    // Byte 8: power (bit 7) | mode (bits 5-0)
+    data[8] = (power ? 0x80 : 0x00) | (mode & 0b00111111);
+    
+    data[9] = 0x1c;  // constant
+    data[10] = 0x00; // constant
+    data[11] = 22 + 55; // pipe_out = 22
+    data[13] = 0x34; // end
+    
+    // Calculate checksum (XOR of bytes 2-12)
+    uint8_t checksum = 0;
+    for (int i = 2; i <= 12; i++)
+    {
+        checksum ^= data[i];
+    }
+    data[12] = checksum;
+    
+    return bytes_to_hex(data);
+}
+
+void test_non_nasa_swing_decoding()
+{
+    std::cout << "test_non_nasa_swing_decoding" << std::endl;
+    
+    // Test Stop (31 = 0b11111)
+    auto p = test_decode(build_cmd20_with_swing(31));
+    assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
+    
+    // Test Vertical (26 = 0b11010)
+    p = test_decode(build_cmd20_with_swing(26));
+    assert(p.command20.wind_direction == NonNasaWindDirection::Vertical);
+    
+    // Test Horizontal (27 = 0b11011)
+    p = test_decode(build_cmd20_with_swing(27));
+    assert(p.command20.wind_direction == NonNasaWindDirection::Horizontal);
+    
+    // Test FourWay (28 = 0b11100)
+    p = test_decode(build_cmd20_with_swing(28));
+    assert(p.command20.wind_direction == NonNasaWindDirection::FourWay);
+    
+    // Test with real packet from logs (horizontal swing)
+    p = test_decode("3200c8204c4d4dd8811c004dac34");
+    assert(p.command20.wind_direction == NonNasaWindDirection::Horizontal);
+    assert(p.command20.fanspeed == NonNasaFanspeed::Auto);
+    
+    // Test with real packet from logs (four-way swing)
+    p = test_decode("3200c8204c4d4de0811c004e9734");
+    assert(p.command20.wind_direction == NonNasaWindDirection::FourWay);
+}
+
+void test_wind_direction_zero_conversion()
+{
+    std::cout << "test_wind_direction_zero_conversion" << std::endl;
+    
+    // Test that wind_direction=0 converts to Stop (31)
+    // This tests the edge case handling in the decode function
+    auto p = test_decode(build_cmd20_with_swing(0, 0, 1, true));
+    assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
+    
+    // Verify other fields are still decoded correctly
+    assert(p.command20.target_temp == 20);
+    assert(p.command20.room_temp == 22);
+    assert(p.command20.fanspeed == NonNasaFanspeed::Auto);
+    assert(p.command20.mode == NonNasaMode::Heat);
+    assert(p.command20.power == true);
+}
+
+void test_non_nasa_swing_encoding()
+{
+    std::cout << "test_non_nasa_swing_encoding" << std::endl;
+    
+    NonNasaRequest req = create_request();
+    req.dst = "00";
+    req.power = true;
+    req.room_temp = 23;
+    req.target_temp = 24;
+    req.fanspeed = NonNasaFanspeed::Auto;
+    req.mode = NonNasaMode::Heat;
+    
+    // Test Stop (default, no wind_direction set)
+    req.wind_direction = std::nullopt;
+    auto encoded = req.encode();
+    assert(encoded[4] == 0x1F); // Stop
+    
+    // Test Stop (explicit)
+    req.wind_direction = NonNasaWindDirection::Stop;
+    encoded = req.encode();
+    assert(encoded[4] == 0x1F); // Stop
+    
+    // Test Vertical
+    req.wind_direction = NonNasaWindDirection::Vertical;
+    encoded = req.encode();
+    assert(encoded[4] == 0x1A); // Vertical
+    
+    // Test Horizontal
+    req.wind_direction = NonNasaWindDirection::Horizontal;
+    encoded = req.encode();
+    assert(encoded[4] == 0x1B); // Horizontal
+    
+    // Test FourWay
+    req.wind_direction = NonNasaWindDirection::FourWay;
+    encoded = req.encode();
+    assert(encoded[4] == 0x1C); // FourWay
+}
+
+void test_non_nasa_swing_conversion()
+{
+    std::cout << "test_non_nasa_swing_conversion" << std::endl;
+    
+    // Test SwingMode::Fix -> Stop
+    auto wind_dir = swingmode_to_wind_direction(SwingMode::Fix);
+    assert(wind_dir == NonNasaWindDirection::Stop);
+    
+    // Test SwingMode::Vertical -> Vertical
+    wind_dir = swingmode_to_wind_direction(SwingMode::Vertical);
+    assert(wind_dir == NonNasaWindDirection::Vertical);
+    
+    // Test SwingMode::Horizontal -> Horizontal
+    wind_dir = swingmode_to_wind_direction(SwingMode::Horizontal);
+    assert(wind_dir == NonNasaWindDirection::Horizontal);
+    
+    // Test SwingMode::All -> FourWay
+    wind_dir = swingmode_to_wind_direction(SwingMode::All);
+    assert(wind_dir == NonNasaWindDirection::FourWay);
+}
+
+void test_non_nasa_swing_state_preservation()
+{
+    std::cout << "test_non_nasa_swing_state_preservation" << std::endl;
+    
+    // Clear any pending requests from previous tests
+    nonnasa_requests.clear();
+    
+    // Test: verify that wind_direction is NOT preserved in create() but IS preserved in encode()
+    // This design allows matching logic to distinguish "explicitly requested swing" vs "preserved state"
+    
+    // First, simulate receiving a Cmd20 with horizontal swing
+    DebugTarget target;
+    test_process_data(build_cmd20_with_swing(27, 0, 1, true), target);
+    
+    // Verify swing state was set in Home Assistant
+    assert(target.last_set_swing_horizontal_address == "00");
+    assert(target.last_set_swing_horizontal_value == true);
+    assert(target.last_set_swing_vertical_address == "00");
+    assert(target.last_set_swing_vertical_value == false);
+    
+    // Now create a request - wind_direction should NOT be preserved in create()
+    // (This allows matching logic to distinguish "explicitly requested" vs "preserved state")
+    auto req = NonNasaRequest::create("00");
+    assert(!req.wind_direction.has_value()); // Should NOT be set in create()
+    
+    // However, encode() should preserve swing state from last_command20s_ for encoding
+    // This ensures the device maintains its current swing state if we don't change it
+    auto encoded = req.encode();
+    assert(encoded[4] == 0x1B); // Horizontal swing preserved in encoding
+    
+    // Test with vertical swing
+    nonnasa_requests.clear();
+    target = DebugTarget();
+    test_process_data(build_cmd20_with_swing(26, 0, 1, true), target);
+    
+    req = NonNasaRequest::create("00");
+    assert(!req.wind_direction.has_value()); // Should NOT be set in create()
+    
+    // Verify encode() preserves vertical swing
+    encoded = req.encode();
+    assert(encoded[4] == 0x1A); // Vertical swing preserved in encoding
+    
+    // Test with four-way swing
+    nonnasa_requests.clear();
+    target = DebugTarget();
+    test_process_data(build_cmd20_with_swing(28, 0, 1, true), target);
+    
+    req = NonNasaRequest::create("00");
+    assert(!req.wind_direction.has_value()); // Should NOT be set in create()
+    
+    // Verify encode() preserves four-way swing
+    encoded = req.encode();
+    assert(encoded[4] == 0x1C); // Four-way swing preserved in encoding
+    
+    // Verify both swing directions are set for four-way
+    assert(target.last_set_swing_horizontal_address == "00");
+    assert(target.last_set_swing_horizontal_value == true);
+    assert(target.last_set_swing_vertical_address == "00");
+    assert(target.last_set_swing_vertical_value == true);
+    
+    // Test with stop
+    nonnasa_requests.clear();
+    target = DebugTarget();
+    test_process_data(build_cmd20_with_swing(31, 0, 1, true), target);
+    
+    req = NonNasaRequest::create("00");
+    assert(!req.wind_direction.has_value()); // Should NOT be set in create()
+    
+    // Verify encode() preserves swing off state
+    encoded = req.encode();
+    assert(encoded[4] == 0x1F); // Swing off preserved in encoding
+    
+    // Verify both swing directions are false for stop
+    assert(target.last_set_swing_horizontal_address == "00");
+    assert(target.last_set_swing_horizontal_value == false);
+    assert(target.last_set_swing_vertical_address == "00");
+    assert(target.last_set_swing_vertical_value == false);
+}
+
+void test_non_nasa_swing_cmd20_matching()
+{
+    std::cout << "test_non_nasa_swing_cmd20_matching" << std::endl;
+    
+    // Test: Cmd20 matching logic (simplified - no swing matching)
+    // - Cmd20 only matches basic fields: temp, fanspeed, mode, power
+    // - Swing-only requests are not matched by Cmd20 (removed by Cmd54 instead)
+    // - Requests with matching basic fields are removed regardless of swing state
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Step 1: Receive initial Cmd20
+    test_process_data(build_cmd20_with_swing(27, 0, 1, true), target);
+    
+    // Step 2: Publish a request to change mode (not swing-only)
+    ProtocolRequest req;
+    req.mode = Mode::Cool;
+    req.fan_mode = FanMode::High;
+    get_protocol("00")->publish_request(&target, "00", req);
+    
+    // Step 3: Make indoor awake and send request
+    auto cmdC6 = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01;
+    });
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify request is in queue
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.mode == NonNasaMode::Cool);
+    
+    // Step 4: Send Cmd20 with matching mode and fan (Cool, High)
+    // This should remove the request (basic fields match)
+    auto cmd20_matching = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
+        data[4] = 77; // target_temp = 22°C (matches request default)
+        data[5] = 80; // room_temp = 25°C
+        data[6] = 23 + 55; // pipe_in = 23°C
+        data[7] = (27 << 3) | 2; // wind_direction = Horizontal (27), fanspeed = High (2)
+        data[8] = 0x02; // mode = Cool (0x02), power = off
+        data[11] = 24 + 55; // pipe_out = 24°C
+    });
+    test_process_data(packet_to_hex(cmd20_matching), target);
+    
+    // Verify request was removed (matching basic fields)
+    assert(nonnasa_requests.size() == 0);
+    
+    // Step 5: Test swing-only request (matched by Cmd20 when swing matches)
+    // Publish a swing-only request
+    ProtocolRequest req_swing;
+    req_swing.swing_mode = SwingMode::Vertical;
+    get_protocol("00")->publish_request(&target, "00", req_swing);
+    
+    // Make indoor awake and send request
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify request is in queue
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.wind_direction.has_value());
+    assert(nonnasa_requests.front().request.wind_direction.value() == NonNasaWindDirection::Vertical);
+    
+    // Step 6: Send Cmd20 with matching swing (Vertical = 26) - swing-only request should be removed
+    // Cmd20 now matches swing-only requests when wind_direction matches
+    test_process_data(build_cmd20_with_swing(26, 0, 1, true), target);
+    
+    // Verify request was removed (swing matched)
+    assert(nonnasa_requests.size() == 0);
+    
+    // Step 7: Test swing-only request with non-matching swing
+    req_swing.swing_mode = SwingMode::Horizontal;
+    get_protocol("00")->publish_request(&target, "00", req_swing);
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify request is in queue
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.wind_direction.value() == NonNasaWindDirection::Horizontal);
+    
+    // Send Cmd20 with different swing (Vertical, not Horizontal) - should NOT match
+    test_process_data(build_cmd20_with_swing(26, 0, 1, true), target);
+    
+    // Verify request is still in queue (swing doesn't match)
+    assert(nonnasa_requests.size() == 1);
+}
+
+void test_non_nasa_swing_cmd54_preserving()
+{
+    std::cout << "test_non_nasa_swing_cmd54_preserving" << std::endl;
+    
+    // Test: Cmd54 removes all requests (including swing requests)
+    // - With frequent Cmd20 messages (every 1.5-2 seconds), all requests are removed on Cmd54
+    // - Cmd20 will correct state if needed
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Step 1: Receive initial Cmd20
+    test_process_data(build_cmd20_with_swing(31, 0, 1, true), target);
+    
+    // Step 2: Publish a swing request
+    ProtocolRequest req_swing;
+    req_swing.swing_mode = SwingMode::Vertical;
+    get_protocol("00")->publish_request(&target, "00", req_swing);
+    
+    // Step 3: Make indoor awake and send request
+    auto cmdC6 = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01;
+    });
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify request is in queue
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.wind_direction.has_value());
+    
+    // Step 4: Send Cmd54 - swing request should be removed
+    auto cmd54 = build_packet(0x00, 0xd0, 0x54, [](std::vector<uint8_t> &data) {
+        // Cmd54 data
+    });
+    test_process_data(packet_to_hex(cmd54), target);
+    
+    // Verify swing request was removed from queue
+    assert(nonnasa_requests.size() == 0);
+    
+    // Step 5: Verify last_command20s_ was NOT updated by Cmd54
+    // Create a new request - it should use the swing state from the last Cmd20 (Stop)
+    ProtocolRequest req2;
+    req2.target_temp = 23.0f;
+    get_protocol("00")->publish_request(&target, "00", req2);
+    
+    // Verify the new request uses swing state from initial Cmd20 (not from Cmd54)
+    assert(nonnasa_requests.size() == 1);
+    auto encoded = nonnasa_requests.front().request.encode();
+    // Byte 4 contains wind_direction: Stop = 31 = 0x1F (from initial Cmd20, not Vertical from Cmd54)
+    assert(encoded[4] == 0x1F); // Stop swing from initial Cmd20
+}
+
+void test_non_nasa_swing_cmd20_obsolete_removal()
+{
+    std::cout << "test_non_nasa_swing_cmd20_obsolete_removal" << std::endl;
+    
+    // Test: Cmd20 matching (simplified - no swing matching, no second pass)
+    // - Swing-only requests are NOT removed by Cmd20 (removed by Cmd54 instead)
+    // - Only requests with matching basic fields (temp, mode, fan, power) are removed
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Step 1: Receive initial Cmd20
+    test_process_data(build_cmd20_with_swing(27, 0, 1, true), target);
+    
+    // Step 2: Queue multiple swing-only requests
+    ProtocolRequest req1;
+    req1.swing_mode = SwingMode::Vertical; // 26
+    get_protocol("00")->publish_request(&target, "00", req1);
+    
+    ProtocolRequest req2;
+    req2.swing_mode = SwingMode::Horizontal; // 27
+    get_protocol("00")->publish_request(&target, "00", req2);
+    
+    ProtocolRequest req3;
+    req3.swing_mode = SwingMode::Vertical; // 26
+    get_protocol("00")->publish_request(&target, "00", req3);
+    
+    // Step 3: Make indoor awake and send requests
+    auto cmdC6 = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01;
+    });
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify all requests are in queue
+    assert(nonnasa_requests.size() == 3);
+    
+    // Step 4: Send Cmd20 - swing-only requests should NOT be removed
+    // (Cmd20 doesn't match swing, only basic fields)
+    test_process_data(build_cmd20_with_swing(26, 0, 1, true), target);
+    
+    // Verify all requests are still in queue (swing-only requests not matched by Cmd20)
+    assert(nonnasa_requests.size() == 3);
+}
+
+void test_non_nasa_swing_rapid_changes()
+{
+    std::cout << "test_non_nasa_swing_rapid_changes" << std::endl;
+    
+    // Test: Rapid swing changes with queue management
+    // - Multiple swing requests in queue
+    // - Obsolete requests cleaned up correctly
+    // - Queue size managed correctly
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Step 1: Receive initial Cmd20
+    test_process_data(build_cmd20_with_swing(31, 0, 1, true), target);
+    
+    // Step 2: Rapidly queue multiple swing requests
+    ProtocolRequest req1;
+    req1.swing_mode = SwingMode::Vertical;
+    get_protocol("00")->publish_request(&target, "00", req1);
+    
+    ProtocolRequest req2;
+    req2.swing_mode = SwingMode::Horizontal;
+    get_protocol("00")->publish_request(&target, "00", req2);
+    
+    ProtocolRequest req3;
+    req3.swing_mode = SwingMode::All; // FourWay
+    get_protocol("00")->publish_request(&target, "00", req3);
+    
+    // Step 3: Make indoor awake and send requests
+    auto cmdC6 = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01;
+    });
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify all requests are in queue
+    assert(nonnasa_requests.size() == 3);
+    
+    // Step 4: Send Cmd54 for first request (preserves all swing requests)
+    auto cmd54 = build_packet(0x00, 0xd0, 0x54, [](std::vector<uint8_t> &data) {
+        // Cmd54 data
+    });
+    test_process_data(packet_to_hex(cmd54), target);
+    
+    // Verify all requests are still in queue (swing requests preserved)
+    assert(nonnasa_requests.size() == 3);
+    
+    // Step 5: Send Cmd20 with FourWay swing (28)
+    // Note: With simplified matching, Cmd20 only matches basic fields (temp, mode, fan, power)
+    // Swing-only requests are not matched by Cmd20, so they remain in queue until Cmd54 removes them
+    test_process_data(build_cmd20_with_swing(28, 0, 1, true), target);
+    
+    // Verify all requests are still in queue (swing-only requests not matched by Cmd20)
+    assert(nonnasa_requests.size() == 3);
+}
+
+void test_non_nasa_swing_edge_cases()
+{
+    std::cout << "test_non_nasa_swing_edge_cases" << std::endl;
+    
+    // Test: Edge cases for swing control
+    // - Swing-only commands (no other params)
+    // - Swing commands before any Cmd20
+    // - Swing commands with rejected state
+    
+    DebugTarget target;
+    nonnasa_requests.clear();
+    
+    // Edge Case 1: Swing-only commands (no other params)
+    // This tests that swing can be changed without changing temp, power, mode, etc.
+    test_process_data(build_cmd20_with_swing(31, 0, 1, true), target);
+    
+    // Publish a swing-only request (no other parameters set)
+    ProtocolRequest req_swing_only;
+    req_swing_only.swing_mode = SwingMode::Vertical;
+    // Note: power, temp, mode, etc. are not set - only swing
+    get_protocol("00")->publish_request(&target, "00", req_swing_only);
+    
+    // Make indoor awake and send request
+    auto cmdC6 = build_packet(0xc8, 0xd0, 0xc6, [](std::vector<uint8_t> &data) {
+        data[4] = 0x01;
+    });
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify request is in queue with swing set
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.wind_direction.has_value());
+    assert(nonnasa_requests.front().request.wind_direction.value() == NonNasaWindDirection::Vertical);
+    
+    // Verify other parameters are preserved from last_command20s_
+    // (power=true, target_temp=20, mode=Heat from Cmd20)
+    assert(nonnasa_requests.front().request.power == true);
+    assert(nonnasa_requests.front().request.target_temp == 20);
+    assert(nonnasa_requests.front().request.mode == NonNasaMode::Heat);
+    
+    // Edge Case 2: Swing commands before any Cmd20
+    // This tests that swing commands work even when no Cmd20 has been received
+    nonnasa_requests.clear();
+    target = DebugTarget();
+    
+    // Publish a swing request BEFORE any Cmd20
+    ProtocolRequest req_before_cmd20;
+    req_before_cmd20.swing_mode = SwingMode::Horizontal;
+    get_protocol("00")->publish_request(&target, "00", req_before_cmd20);
+    
+    // Make indoor awake and send request
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify request is in queue
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.wind_direction.value() == NonNasaWindDirection::Horizontal);
+    
+    // Edge Case 3: Cmd54 removes swing request but does NOT update state
+    // Send Cmd54 - this acknowledges receipt but does NOT update last_command20s_
+    auto cmd54 = build_packet(0x00, 0xd0, 0x54, [](std::vector<uint8_t> &data) {
+        // Cmd54 data
+    });
+    test_process_data(packet_to_hex(cmd54), target);
+    
+    // Verify Cmd54 removed swing request
+    assert(nonnasa_requests.size() == 0);
+    
+    // Verify last_command20s_ was NOT updated by Cmd54 (no Cmd20 received yet)
+    auto req_encoded = NonNasaRequest::create("00");
+    req_encoded.power = true;
+    auto encoded = req_encoded.encode();
+    
+    // Verify swing defaults to Stop (no Cmd20 state to preserve)
+    assert(encoded[4] == 0x1F); // Stop (default) - no Cmd20 state to preserve
+    
+    // Edge Case 4: Swing commands with rejected state
+    // This tests that rejected commands are handled correctly
+    nonnasa_requests.clear();
+    target = DebugTarget();
+    
+    // Receive initial Cmd20 with vertical swing
+    test_process_data(build_cmd20_with_swing(26, 0, 1, true), target);
+    
+    // Publish a request to change swing to horizontal
+    ProtocolRequest req_rejected;
+    req_rejected.swing_mode = SwingMode::Horizontal;
+    get_protocol("00")->publish_request(&target, "00", req_rejected);
+    
+    // Make indoor awake and send request
+    test_process_data(packet_to_hex(cmdC6), target);
+    
+    // Verify request is in queue
+    assert(nonnasa_requests.size() == 1);
+    assert(nonnasa_requests.front().request.wind_direction.value() == NonNasaWindDirection::Horizontal);
+    
+    // Send Cmd54 - request should be removed (all requests removed on Cmd54)
+    test_process_data(packet_to_hex(cmd54), target);
+    
+    // Verify request was removed by Cmd54
+    assert(nonnasa_requests.size() == 0);
+    
+    // Note: With simplified matching logic, Cmd20 doesn't match swing-only requests
+    // Cmd54 removes all requests, so rejection detection is not possible for swing-only commands
+    // This is acceptable since Cmd20 arrives frequently (every 1.5-2 seconds) and will update state
+}

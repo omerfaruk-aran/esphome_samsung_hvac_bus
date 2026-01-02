@@ -194,6 +194,7 @@ namespace esphome
             NonNasaFanspeed fanspeed = NonNasaFanspeed::Auto;
             NonNasaMode mode = NonNasaMode::Heat;
             bool power = false;
+            NonNasaWindDirection wind_direction = NonNasaWindDirection::Stop;
 
             std::vector<uint8_t> encode();
             std::string to_string();
@@ -213,6 +214,9 @@ namespace esphome
         extern std::list<NonNasaRequestQueueItem> nonnasa_requests;
         extern bool controller_registered;
         extern bool indoor_unit_awake;
+
+        NonNasaWindDirection swingmode_to_wind_direction(SwingMode swing);
+        uint8_t encode_request_wind_direction(NonNasaWindDirection wind_dir);
 
         DecodeResult try_decode_non_nasa_packet(std::vector<uint8_t> &data);
         void process_non_nasa_packet(MessageTarget *target);
