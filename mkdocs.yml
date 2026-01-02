@@ -1,0 +1,60 @@
+site_name: ESPHome Samsung HVAC Wiki
+
+# Kaynak markdownlar
+docs_dir: docs_src
+
+# Çıktı (GitHub Pages için /docs kullanıyorsan bu /docs/wiki olur)
+site_dir: docs/wiki
+
+use_directory_urls: true
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+plugins:
+  - search
+
+markdown_extensions:
+  - tables
+  - fenced_code
+  - admonition
+  - toc:
+      permalink: true
+
+copyright: >
+  © 2026 ESPHome Samsung HVAC Bus — Community maintained.
+extra:
+  generator: false
+
+
+nav:
+  - Home: index.md
+
+  - Wiki:
+      - Home: wiki/index.md
+      - Project Overview:
+          - Features Overview: wiki/Features-Overview.md
+      - Configuration and Setup:
+          - Hardware Installation: wiki/Hardware-Installation.md
+          - Software Installation: wiki/Software-Installation.md
+          - Compatibility: wiki/Compatibility.md
+          - Installation Guide: wiki/Installation-Guide.md
+      - Advanced Information:
+          - Troubleshooting: wiki/Troubleshooting.md
+          - Development: wiki/Development.md
+          - NASA vs NonNASA Protocols: wiki/NASA-vs-NonNASA-Protocols.md
+          - Blueprints and Integrations: wiki/Blueprints-and-Integrations.md
+      - Community & Credits:
+          - FAQ: wiki/Frequently-Asked-Questions-(FAQ).md
+          - Credits and Contributors: wiki/Credits-and-Contributors.md
+
+  - Tools:
+      - Model Checker: tools/model-checker/index.html
+
+  - Protocol:
+      - NASA Protocol Notes: nasa/samsung_nasa_protocol.md

@@ -1,10 +1,27 @@
+# --- MkDocs ---
+.mkdocs_cache/
+.cache/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# --- Virtualenv ---
+.venv/
+venv/
+venvs/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
 *.exe
 __pycache__
 .esphome
 test.exe
 .pio/
-.venv/
-.venvs/
 .vscode/
 src/
 platformio.ini
