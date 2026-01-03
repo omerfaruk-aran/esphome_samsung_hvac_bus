@@ -17,7 +17,7 @@ If you discover a security vulnerability in the project, please follow these ste
 
 1. **Do not publicly disclose the issue** before it has been patched and reviewed. Public disclosure can put users at risk.
 
-2. **Create a new issue** on the project's GitHub repository under the [Issues tab](https://github.com/lanwin/esphome_samsung_hvac_bus/issues), with the `Security` label. Please include the following details in your report:
+2. **Create a new issue** on the project's GitHub repository under the [Issues tab](https://github.com/omerfaruk-aran/esphome_samsung_hvac_bus/issues), with the `Security` label. Please include the following details in your report:
     - Affected version(s)
     - A detailed description of the issue
     - Steps to reproduce the issue (if applicable)
@@ -33,6 +33,6 @@ If you discover a security vulnerability in the project, please follow these ste
 ## Security Updates
 
 Security updates will be made available via:
-- [GitHub Releases](https://github.com/lanwin/esphome_samsung_hvac_bus/releases)
+- [GitHub Releases](https://github.com/omerfaruk-aran/esphome_samsung_hvac_bus/releases)
 
 We recommend that all users regularly check for updates and upgrade to the latest secure version.
