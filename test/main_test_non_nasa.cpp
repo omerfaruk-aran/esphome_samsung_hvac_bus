@@ -372,12 +372,14 @@ void test_cmd8d_power_energy()
 {
     std::cout << "test_cmd8d_power_energy" << std::endl;
     
-    // Build Cmd8D packet: current=100 (raw), voltage=60 (raw), power = (100/10) * (60*2) = 10 * 120 = 1200W
-    // Raw current=100 is divided by 10 to get 10.0A (published current)
+    // Build Cmd8D packet: current=100 (raw), voltage=60 (raw)
+    // Raw current=100 is divided by 10 to get 10.0A (calculated current, before sensor filter)
     // Raw voltage=60 is multiplied by 2 to get 120.0V (published voltage)
-    // Power = published_current * published_voltage = 10.0 * 120.0 = 1200W
+    // Power calculation: (100/10) * 0.1 * (60*2) = 10.0 * 0.1 * 120 = 120W
+    // Note: Current sensor has filter multiply: 0.1, so published_current = 10.0 * 0.1 = 1.0A
+    // Published power = 120W, verification: 1.0A * 120V = 120W ✓
     auto packet = build_packet(0xc8, 0x00, 0x8d, [](std::vector<uint8_t> &data) {
-        data[8] = 100;  // raw current (will be / 10 = 10.0A) (will be / 10 = 10.0A)
+        data[8] = 100;  // raw current (will be / 10 = 10.0A, then * 0.1 = 1.0A after sensor filter)
         data[10] = 60;  // raw voltage (will be * 2 = 120V)
     });
     
@@ -387,11 +389,11 @@ void test_cmd8d_power_energy()
     
     assert(target.last_register_address == "c8");
     assert(target.last_set_outdoor_current_address == "c8");
-    assert(target.last_set_outdoor_current_value == 10.0f); // 100 / 10 = 10.0A
+    assert(target.last_set_outdoor_current_value == 10.0f); // 100 / 10 = 10.0A (before sensor filter)
     assert(target.last_set_outdoor_voltage_address == "c8");
     assert(target.last_set_outdoor_voltage_value == 120.0f); // 60 * 2
     assert(target.last_set_outdoor_instantaneous_power_address == "c8");
-    assert(std::abs(target.last_set_outdoor_instantaneous_power_value - 1200.0f) < 0.01f); // 10.0 * 120.0 = 1200W
+    assert(std::abs(target.last_set_outdoor_instantaneous_power_value - 120.0f) < 0.01f); // 10.0 * 0.1 * 120.0 = 120W
     
     // First update - no energy calculated yet
     assert(target.last_set_outdoor_cumulative_energy_address == "c8");
@@ -407,12 +409,12 @@ void test_cmd8d_power_energy()
     esphome::test_millis_value = 1000 + 3600000; // 1 hour = 3600000 ms
     test_process_data(packet_to_hex(packet), target);
     
-    // Energy should be approximately 1200W * 1 hour = 1.2 kWh = 1200 Wh
-    // Using trapezoidal rule: average_power = (1200 + 1200) / 2 = 1200W
-    // Energy = 1200W * 1 hour = 1200 Wh = 1.2 kWh
-    // Published in Wh: 1.2 kWh * 1000 = 1200 Wh
-    assert(target.last_set_outdoor_cumulative_energy_value > 1100.0f);
-    assert(target.last_set_outdoor_cumulative_energy_value < 1300.0f);
+    // Energy should be approximately 120W * 1 hour = 0.12 kWh = 120 Wh
+    // Using trapezoidal rule: average_power = (120 + 120) / 2 = 120W
+    // Energy = 120W * 1 hour = 120 Wh = 0.12 kWh
+    // Published in Wh: 0.12 kWh * 1000 = 120 Wh
+    assert(target.last_set_outdoor_cumulative_energy_value > 110.0f);
+    assert(target.last_set_outdoor_cumulative_energy_value < 130.0f);
 }
 
 void test_cmd20_eva_temperatures()
@@ -623,7 +625,7 @@ void test_cmdf3_decoded_but_not_processed()
     assert(std::abs(decoded_packet.commandF3.inverter_total_capacity_requirement_kw - 5.0f) < 0.01f);
     assert(std::abs(decoded_packet.commandF3.inverter_current_a - 2.5f) < 0.01f);
     assert(std::abs(decoded_packet.commandF3.inverter_voltage_v - 172.0f) < 0.01f);
-    assert(std::abs(decoded_packet.commandF3.inverter_power_w - 430.0f) < 0.01f); // 2.5 * 172 = 430
+    assert(std::abs(decoded_packet.commandF3.inverter_power_w - 43.0f) < 0.01f); // 2.5 * 0.1 * 172 = 43W
 }
 
 void test_cmdc1_decoded_but_not_processed()

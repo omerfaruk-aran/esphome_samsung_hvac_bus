@@ -338,25 +338,25 @@ namespace esphome
 
             case NonNasaCommand::Cmd8D:
                 // Cmd8D from outdoor unit - contains power/energy data
-                // Format: current raw value = data[8], voltage = data[10] * 2, power = (current / 10) * voltage
+                // Format: current raw value = data[8], voltage = data[10] * 2
                 //
                 // Power calculation consistency explanation:
                 // The current sensor has a filter (multiply: 0.1) that will apply to the published current value.
                 // To maintain the fundamental relationship: published_power = published_current × published_voltage,
-                // we calculate power as (raw_current / 10) × raw_voltage. This ensures that when the sensor
-                // filter applies the 0.1 multiplier to the current value, the published power will correctly
-                // equal published_current × published_voltage.
+                // we must apply the same 0.1 multiplier to the power calculation.
                 //
-                // Example: raw_current=100, raw_voltage=240
-                //   - Published current = 100 / 10 = 10A
-                //   - Published voltage = 240V
-                //   - Calculated power = (100 / 10) × 240 = 2400W
-                //   - Published power = 2400W
-                //   - Verification: 10A × 240V = 2400W ✓
+                // Example: raw_current=100, raw_voltage=120 (raw)
+                //   - Calculated current = 100 / 10 = 10A
+                //   - Published current = 10 * 0.1 = 1A (after filter)
+                //   - Calculated voltage = 120 * 2 = 240V
+                //   - Published voltage = 240V (no filter)
+                //   - Calculated power = (100 / 10) * 0.1 * (120 * 2) = 1 * 240 = 240W
+                //   - Published power = 240W
+                //   - Verification: 1A × 240V = 240W ✓
                 //
                 command8D.inverter_current_a = (float)data[8] / 10;  // Current in Amps (raw value / 10)
                 command8D.inverter_voltage_v = (float)data[10] * 2;    // Voltage in Volts (raw value * 2)
-                command8D.inverter_power_w = command8D.inverter_current_a * command8D.inverter_voltage_v; // Power in Watts
+                command8D.inverter_power_w = command8D.inverter_current_a * 0.1f * command8D.inverter_voltage_v; // Power in Watts
                 return {DecodeResultType::Processed, 14};
 
             case NonNasaCommand::CmdF0:
@@ -384,7 +384,7 @@ namespace esphome
                 commandF3.inverter_total_capacity_requirement_kw = (float)data[5] / 10;
                 commandF3.inverter_current_a = (float)data[8] / 10;
                 commandF3.inverter_voltage_v = (float)data[9] * 2;
-                commandF3.inverter_power_w = commandF3.inverter_current_a * commandF3.inverter_voltage_v;
+                commandF3.inverter_power_w = commandF3.inverter_current_a * 0.1f * commandF3.inverter_voltage_v;
                 return {DecodeResultType::Processed, 14};
 
             default:
