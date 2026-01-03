@@ -893,7 +893,10 @@ namespace esphome
                 {
                     const uint32_t now = millis();
                     // rate limit
-                    if (now - last_keepalive_sent_ms_ >= KEEPALIVE_MIN_INTERVAL_MS)
+                    // Wrap-safe elapsed time (unsigned subtraction works across millis() rollover)
+                    const uint32_t elapsed_ms = now - last_keepalive_sent_ms_;
+
+                    if (elapsed_ms >= KEEPALIVE_MIN_INTERVAL_MS)
                     {
                         pending_keepalive_ = true;
                         pending_keepalive_due_ms_ = now + KEEPALIVE_DELAY_MS;
