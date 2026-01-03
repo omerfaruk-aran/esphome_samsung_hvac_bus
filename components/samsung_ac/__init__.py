@@ -150,8 +150,11 @@ def custom_sensor_schema(
     device_class=cv.UNDEFINED,
     state_class=cv.UNDEFINED,
     entity_category=cv.UNDEFINED,
-    raw_filters=[],
+    raw_filters=None,
 ):
+    if raw_filters is None:
+        raw_filters = []
+
     schema = sensor.sensor_schema(
         unit_of_measurement=unit_of_measurement,
         icon=icon,
@@ -557,22 +560,6 @@ async def to_code(config):
             config[CONF_DEBUG_MQTT_PASSWORD],
         )
     )
-
-    if CONF_DEBUG_LOG_MESSAGES in config:
-        cg.add(var.set_debug_log_messages(config[CONF_DEBUG_LOG_MESSAGES]))
-
-    if CONF_DEBUG_LOG_MESSAGES_RAW in config:
-        cg.add(var.set_debug_log_messages_raw(config[CONF_DEBUG_LOG_MESSAGES_RAW]))
-
-    if CONF_NON_NASA_KEEPALIVE in config:
-        cg.add(var.set_non_nasa_keepalive(config[CONF_NON_NASA_KEEPALIVE]))
-
-    if CONF_DEBUG_LOG_UNDEFINED_MESSAGES in config:
-        cg.add(
-            var.set_debug_log_undefined_messages(
-                config[CONF_DEBUG_LOG_UNDEFINED_MESSAGES]
-            )
-        )
 
     # Mapping of config keys to their corresponding methods
     config_actions = {

@@ -52,8 +52,8 @@ external_components:
 # Configuration of AC component
 samsung_ac:
 
-  # For NonNASA devices the following option can be enabled to prevent the device from sleeping when idle. This allows
-  # values like internal and external temperature to continue to be tracked when the device isn't in use.
+  # non_nasa_keepalive: Prevents some Non-NASA units from sleeping when idle.
+  # This increases bus traffic slightly; disable if you don't need idle telemetry.
   non_nasa_keepalive: true
   
   # When enabled (set to true), this option will log the messages associated with undefined codes on the device. This is useful for debugging and identifying any unexpected or unknown codes that the device may receive during operation.

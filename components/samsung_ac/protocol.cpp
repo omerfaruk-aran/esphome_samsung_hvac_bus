@@ -8,6 +8,20 @@ namespace esphome
 {
     namespace samsung_ac
     {
+        static bool looks_like_non_nasa_frame(const std::vector<uint8_t> &data)
+        {
+            if (data.size() < 14)
+                return false;
+            if (data[0] != 0x32)
+                return false;
+            if (data[13] != 0x34)
+                return false;
+            uint8_t crc = data[1];
+            for (int i = 2; i < 12; i++)
+                crc ^= data[i];
+            return crc == data[12];
+        }
+
         bool non_nasa_keepalive = false;
 
         ProtocolProcessing protocol_processing = ProtocolProcessing::Auto;
@@ -34,22 +48,18 @@ namespace esphome
             if (*data.begin() != 0x32)
                 return {DecodeResultType::Discard, skip_data(data, 0)};
 
-            // --- AUTO fast-dispatch: prevent NASA decoder from eating Non-NASA streams ---
             if (protocol_processing == ProtocolProcessing::Auto)
             {
-                if (data.size() < 2)
-                    return {DecodeResultType::Fill, 0};
-
-                // If second byte is too large to be NASA size_hi, treat as Non-NASA stream
-                if (data[1] > 0x05)
+                // Strong signature check instead of heuristic on data[1]
+                if (looks_like_non_nasa_frame(data))
                 {
                     auto r = try_decode_non_nasa_packet(data);
                     if (r.type == DecodeResultType::Processed)
                     {
                         protocol_processing = ProtocolProcessing::NonNASA;
                         process_non_nasa_packet(target);
+                        return r;
                     }
-                    return r; // Fill/Discard/Processed as-is
                 }
             }
 
