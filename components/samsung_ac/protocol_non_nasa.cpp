@@ -15,6 +15,12 @@ namespace esphome
 {
     namespace samsung_ac
     {
+        static bool pending_keepalive_ = false;
+        static uint32_t pending_keepalive_due_ms_ = 0;
+        static uint32_t last_keepalive_sent_ms_ = 0;
+        constexpr uint32_t KEEPALIVE_DELAY_MS = 30;
+        constexpr uint32_t KEEPALIVE_MIN_INTERVAL_MS = 5000;
+
         // Track cumulative energy calculation per device address
         // Note: Energy tracker persists across device reconnections. This is intentional to maintain
         // cumulative energy across device restarts. The tracker is keyed by device address, so if
@@ -24,9 +30,9 @@ namespace esphome
         struct CumulativeEnergyTracker
         {
             double accumulated_energy_kwh = 0.0; // Accumulated energy in kWh (double for precision)
-            uint32_t last_update_time_ms = 0;   // Last time power was updated (milliseconds)
+            uint32_t last_update_time_ms = 0;    // Last time power was updated (milliseconds)
             float last_power_w = 0.0f;           // Last power value in Watts
-            bool has_previous_update = false;   // Track if we've had at least one update (handles millis()=0 edge case)
+            bool has_previous_update = false;    // Track if we've had at least one update (handles millis()=0 edge case)
         };
 
         std::map<std::string, CumulativeEnergyTracker> cumulative_energy_trackers_;
@@ -38,8 +44,8 @@ namespace esphome
         // MAX_DELTA_MS: Maximum time delta between energy updates (1 hour)
         //   - Caps maximum delta to avoid huge increments from stale data
         //   - Prevents unrealistic energy calculations from long gaps
-        constexpr uint32_t MIN_DELTA_MS = 100;        // Minimum 100ms between energy updates
-        constexpr uint32_t MAX_DELTA_MS = 3600000;     // Maximum 1 hour (3600000 ms) between updates
+        constexpr uint32_t MIN_DELTA_MS = 100;     // Minimum 100ms between energy updates
+        constexpr uint32_t MAX_DELTA_MS = 3600000; // Maximum 1 hour (3600000 ms) between updates
 
         // Helper function to update cumulative energy tracker
         // This function handles all edge cases: wraparound, first update, time delta validation, and energy calculation
@@ -99,7 +105,7 @@ namespace esphome
             // Energy in kWh = (Average_Power (W) × Time (hours)) / 1000
             double average_power_w = (static_cast<double>(tracker.last_power_w) + static_cast<double>(current_power_w)) / 2.0;
             double time_hours = static_cast<double>(delta_ms) / 3600000.0; // Convert ms to hours
-            double energy_kwh = (average_power_w * time_hours) / 1000.0;    // Convert W×h to kWh
+            double energy_kwh = (average_power_w * time_hours) / 1000.0;   // Convert W×h to kWh
 
             // Accumulate energy
             tracker.accumulated_energy_kwh += energy_kwh;
@@ -354,8 +360,8 @@ namespace esphome
                 //   - Published power = 240W
                 //   - Verification: 1A × 240V = 240W ✓
                 //
-                command8D.inverter_current_a = (float)data[8] / 10;  // Current in Amps (raw value / 10)
-                command8D.inverter_voltage_v = (float)data[10] * 2;    // Voltage in Volts (raw value * 2)
+                command8D.inverter_current_a = (float)data[8] / 10;                                              // Current in Amps (raw value / 10)
+                command8D.inverter_voltage_v = (float)data[10] * 2;                                              // Voltage in Volts (raw value * 2)
                 command8D.inverter_power_w = command8D.inverter_current_a * 0.1f * command8D.inverter_voltage_v; // Power in Watts
                 return {DecodeResultType::Processed, 14};
 
@@ -746,7 +752,7 @@ namespace esphome
                 size_t after_size = nonnasa_requests.size();
                 if (before_size != after_size)
                 {
-                    LOGD("Cmd20: Removed %zu matching request(s) for %s (backup ack)", 
+                    LOGD("Cmd20: Removed %zu matching request(s) for %s (backup ack)",
                          before_size - after_size, nonpacket_.src.c_str());
                 }
 
@@ -791,12 +797,12 @@ namespace esphome
                     // TODO
                     target->set_altmode(nonpacket_.src, 0);
                     // Cmd20 swing decode: converting wind_direction to vertical/horizontal booleans
-                    target->set_swing_horizontal(nonpacket_.src, 
-                        (nonpacket_.command20.wind_direction == NonNasaWindDirection::Horizontal) ||
-                        (nonpacket_.command20.wind_direction == NonNasaWindDirection::FourWay));
-                    target->set_swing_vertical(nonpacket_.src, 
-                        (nonpacket_.command20.wind_direction == NonNasaWindDirection::Vertical) ||
-                        (nonpacket_.command20.wind_direction == NonNasaWindDirection::FourWay));
+                    target->set_swing_horizontal(nonpacket_.src,
+                                                 (nonpacket_.command20.wind_direction == NonNasaWindDirection::Horizontal) ||
+                                                     (nonpacket_.command20.wind_direction == NonNasaWindDirection::FourWay));
+                    target->set_swing_vertical(nonpacket_.src,
+                                               (nonpacket_.command20.wind_direction == NonNasaWindDirection::Vertical) ||
+                                                   (nonpacket_.command20.wind_direction == NonNasaWindDirection::FourWay));
                 }
             }
             else if (nonpacket_.cmd == NonNasaCommand::CmdC0)
@@ -820,13 +826,13 @@ namespace esphome
                 target->set_outdoor_instantaneous_power(nonpacket_.src, nonpacket_.command8D.inverter_power_w);
                 target->set_outdoor_current(nonpacket_.src, nonpacket_.command8D.inverter_current_a);
                 target->set_outdoor_voltage(nonpacket_.src, nonpacket_.command8D.inverter_voltage_v);
-                
+
                 // Calculate cumulative energy by integrating power over time using trapezoidal rule
                 // The helper function handles all edge cases: wraparound, first update, time delta validation
                 CumulativeEnergyTracker &tracker = cumulative_energy_trackers_[nonpacket_.src];
                 const uint32_t now = millis();
                 update_cumulative_energy_tracker(tracker, nonpacket_.command8D.inverter_power_w, now);
-                
+
                 // Publish cumulative energy
                 // Sensor has filter multiply: 0.001 and unit is kWh
                 // NASA protocol publishes raw value in Wh, filter converts to kWh
@@ -885,14 +891,38 @@ namespace esphome
                 // It's unknown why the first data byte must be odd.
                 if (non_nasa_keepalive)
                 {
-                    delay(30);
-                    send_register_controller(target);
+                    const uint32_t now = millis();
+                    // rate limit
+                    // Wrap-safe elapsed time (unsigned subtraction works across millis() rollover)
+                    const uint32_t elapsed_ms = now - last_keepalive_sent_ms_;
+
+                    if (elapsed_ms >= KEEPALIVE_MIN_INTERVAL_MS)
+                    {
+                        pending_keepalive_ = true;
+                        pending_keepalive_due_ms_ = now + KEEPALIVE_DELAY_MS;
+                    }
                 }
             }
         }
 
         void NonNasaProtocol::protocol_update(MessageTarget *target)
         {
+            // non-blocking keepalive send (scheduled from broadcast request)
+            if (non_nasa_keepalive && pending_keepalive_)
+            {
+                const uint32_t now = millis();
+                if ((int32_t)(now - pending_keepalive_due_ms_) >= 0)
+                {
+                    send_register_controller(target);
+                    last_keepalive_sent_ms_ = now;
+                    pending_keepalive_ = false;
+                }
+            }
+            else if (!non_nasa_keepalive)
+            {
+                pending_keepalive_ = false;
+            }
+
             // If we're not currently registered, keep sending a registration request until it has
             // been confirmed by the outdoor unit.
             if (!controller_registered)
