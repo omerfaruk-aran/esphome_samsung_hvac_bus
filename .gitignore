@@ -1,6 +1,7 @@
 # --- MkDocs ---
 .mkdocs_cache/
 .cache/
+/scripts/
 
 # --- Python ---
 __pycache__/
@@ -17,7 +18,6 @@ venvs/
 .DS_Store
 Thumbs.db
 
-scripts/
 *.exe
 __pycache__
 .esphome
