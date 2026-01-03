@@ -130,13 +130,82 @@ namespace esphome
             return sum;
         }
 
+        std::string temperature_unit_to_string(TemperatureUnit unit)
+        {
+            switch (unit)
+            {
+            case TemperatureUnit::Celsius:    return "°C";
+            case TemperatureUnit::Fahrenheit: return "°F";
+            default:                          return "°C";
+            }
+        }
+
+        Temperature Temperature::decode(uint8_t data)
+        {
+            bool is_fahrenheit = (data >> 7) & 1;
+            if (is_fahrenheit)
+                return { TemperatureUnit::Fahrenheit, static_cast<uint8_t>(data - 128) };
+            else
+                return { TemperatureUnit::Celsius, static_cast<uint8_t>(data - 55) };
+        }
+
+        uint8_t Temperature::encode()
+        {
+            switch (unit)
+            {
+            case TemperatureUnit::Celsius:    return temperature;
+            case TemperatureUnit::Fahrenheit: return temperature - 59;
+            default:                          return temperature;
+            }
+        }
+
+        std::string Temperature::to_string()
+        {
+            std::string str;
+            str += std::to_string(temperature);
+            str += temperature_unit_to_string(unit);
+            return str;
+        }
+
+        float Temperature::to_celsius()
+        {
+            switch (unit)
+            {
+            case TemperatureUnit::Celsius:    return temperature;
+            case TemperatureUnit::Fahrenheit: return ((temperature - 32) * 5.0) / 9.0;
+            default:                          return temperature;
+            }
+        }
+
+        void Temperature::set_from_celsius(float celsius)
+        {
+            switch (unit)
+            {
+            case TemperatureUnit::Celsius:
+            {
+                temperature = celsius;
+                break;
+            }
+            case TemperatureUnit::Fahrenheit:
+            {
+                temperature = (uint8_t)std::round((celsius * (9.0 / 5.0) ) + 32);
+                break;
+            }
+            default:
+            {
+                temperature = celsius;
+                break;
+            }
+            }
+        }
+
         std::string NonNasaCommand20::to_string()
         {
             std::string str;
-            str += "target_temp:" + std::to_string(target_temp) + "; ";
-            str += "room_temp:" + std::to_string(room_temp) + "; ";
-            str += "pipe_in:" + std::to_string(pipe_in) + "; ";
-            str += "pipe_out:" + std::to_string(pipe_out) + "; ";
+            str += "target_temp:" + target_temp.to_string() + "; ";
+            str += "room_temp:" + room_temp.to_string() + "; ";
+            str += "pipe_in:" + pipe_in.to_string() + "; ";
+            str += "pipe_out:" + pipe_out.to_string() + "; ";
             str += "power:" + std::to_string(power ? 1 : 0) + "; ";
             str += "wind_direction:" + std::to_string((uint8_t)wind_direction) + "; ";
             str += "fanspeed:" + std::to_string((uint8_t)fanspeed) + "; ";
@@ -152,16 +221,16 @@ namespace esphome
             str += "ou_hot_gas_bypass:" + std::to_string(outdoor_unit_hot_gas_bypass ? 1 : 0) + "; ";
             str += "ou_compressor:" + std::to_string(outdoor_unit_compressor ? 1 : 0) + "; ";
             str += "ou_ac_fan:" + std::to_string(outdoor_unit_ac_fan ? 1 : 0) + "; ";
-            str += "ou_outdoor_temp[°C]:" + std::to_string(outdoor_unit_outdoor_temp_c) + "; ";
-            str += "ou_discharge_temp[°C]:" + std::to_string(outdoor_unit_discharge_temp_c) + "; ";
-            str += "ou_condenser_mid_temp[°C]:" + std::to_string(outdoor_unit_condenser_mid_temp_c);
+            str += "ou_outdoor_temp:" + outdoor_unit_outdoor_temp.to_string() + "; ";
+            str += "ou_discharge_temp:" + outdoor_unit_discharge_temp.to_string() + "; ";
+            str += "ou_condenser_mid_temp:" + outdoor_unit_condenser_mid_temp.to_string();
             return str;
         }
 
         std::string NonNasaCommandC1::to_string()
         {
             std::string str;
-            str += "ou_sump_temp[°C]:" + std::to_string(outdoor_unit_sump_temp_c);
+            str += "ou_sump_temp:" + outdoor_unit_sump_temp.to_string();
             return str;
         }
 
@@ -309,14 +378,14 @@ namespace esphome
             switch (cmd)
             {
             case NonNasaCommand::Cmd20:
-                command20.target_temp = data[4] - 55;
-                command20.room_temp = data[5] - 55;
-                command20.pipe_in = data[6] - 55;
+                command20.target_temp = Temperature::decode(data[4]);
+                command20.room_temp = Temperature::decode(data[5]);
+                command20.pipe_in = Temperature::decode(data[6]);
                 command20.wind_direction = (NonNasaWindDirection)((data[7]) >> 3);
                 command20.fanspeed = (NonNasaFanspeed)((data[7] & 0b00000111));
                 command20.mode = (NonNasaMode)(data[8] & 0b00111111);
                 command20.power = data[8] & 0b10000000;
-                command20.pipe_out = data[11] - 55;
+                command20.pipe_out = Temperature::decode(data[11]);
 
                 if (command20.wind_direction == (NonNasaWindDirection)0)
                     command20.wind_direction = NonNasaWindDirection::Stop;
@@ -329,13 +398,13 @@ namespace esphome
                 commandC0.outdoor_unit_hot_gas_bypass = data[6] & 0b00100000;
                 commandC0.outdoor_unit_compressor = data[6] & 0b00000100;
                 commandC0.outdoor_unit_ac_fan = data[7] & 0b00000011;
-                commandC0.outdoor_unit_outdoor_temp_c = data[8] - 55;
-                commandC0.outdoor_unit_discharge_temp_c = data[10] - 55;
-                commandC0.outdoor_unit_condenser_mid_temp_c = data[11] - 55;
+                commandC0.outdoor_unit_outdoor_temp = Temperature::decode(data[8]);
+                commandC0.outdoor_unit_discharge_temp = Temperature::decode(data[10]);
+                commandC0.outdoor_unit_condenser_mid_temp = Temperature::decode(data[11]);
                 return {DecodeResultType::Processed, 14};
 
             case NonNasaCommand::CmdC1:
-                commandC1.outdoor_unit_sump_temp_c = data[8] - 55;
+                commandC1.outdoor_unit_sump_temp = Temperature::decode(data[8]);
                 return {DecodeResultType::Processed, 14};
 
             case NonNasaCommand::CmdC6:
@@ -504,9 +573,8 @@ namespace esphome
             bool individual = false;
 
             data[4] = encode_request_wind_direction(wind_direction);
-            if (room_temp > 0)
-                data[5] = room_temp;
-            data[6] = (target_temp & 31U) | encode_request_fanspeed(fanspeed);
+            data[5] = room_temp.encode();
+            data[6] = (target_temp.encode() & 31U) | encode_request_fanspeed(fanspeed);
             data[7] = (uint8_t)encode_request_mode(mode);
             data[8] = !power ? (uint8_t)0xC0 : (uint8_t)0xF0;
             data[8] |= (individual ? 6U : 4U);
@@ -585,7 +653,7 @@ namespace esphome
                 req.power = request.power.value();
 
             if (request.target_temp)
-                req.target_temp = request.target_temp.value();
+                req.target_temp.set_from_celsius(request.target_temp.value());
 
             if (request.fan_mode)
                 req.fanspeed = fanmode_to_nonnasa_fanspeed(request.fan_mode.value());
@@ -737,10 +805,10 @@ namespace esphome
                     // signature: same fields -> same signature
                     // Using a small packed int is enough for change detection
                     uint32_t sig = 0;
-                    sig ^= ((uint32_t)(nonpacket_.command20.target_temp & 0x7F));
-                    sig ^= ((uint32_t)(nonpacket_.command20.room_temp & 0x7F)) << 7;
-                    sig ^= ((uint32_t)(nonpacket_.command20.pipe_in & 0x7F)) << 14;
-                    sig ^= ((uint32_t)(nonpacket_.command20.pipe_out & 0x7F)) << 21;
+                    sig ^= ((uint32_t)(nonpacket_.command20.target_temp.temperature & 0x7F));
+                    sig ^= ((uint32_t)(nonpacket_.command20.room_temp.temperature & 0x7F)) << 7;
+                    sig ^= ((uint32_t)(nonpacket_.command20.pipe_in.temperature & 0x7F)) << 14;
+                    sig ^= ((uint32_t)(nonpacket_.command20.pipe_out.temperature & 0x7F)) << 21;
                     sig ^= ((uint32_t)(nonpacket_.command20.power ? 1 : 0)) << 28;
                     sig ^= ((uint32_t)((uint8_t)nonpacket_.command20.mode & 0x0F)) << 29;
                     sig ^= ((uint32_t)((uint8_t)nonpacket_.command20.fanspeed)) * 2654435761u;
@@ -764,7 +832,8 @@ namespace esphome
                 nonnasa_requests.remove_if([&](const NonNasaRequestQueueItem &item)
                                            { return item.time_sent > 0 &&
                                                     nonpacket_.src == item.request.dst &&
-                                                    item.request.target_temp == nonpacket_.command20.target_temp &&
+                                                    item.request.target_temp.unit == nonpacket_.command20.target_temp.unit &&
+                                                    item.request.target_temp.temperature == nonpacket_.command20.target_temp.temperature &&
                                                     item.request.fanspeed == nonpacket_.command20.fanspeed &&
                                                     item.request.mode == nonpacket_.command20.mode &&
                                                     item.request.power == nonpacket_.command20.power &&
@@ -793,20 +862,20 @@ namespace esphome
                 // These are sensor readings and should always be published, regardless of pending control messages
                 // Compare to CmdC0 and Cmd8D handlers which explicitly do not check for pending control messages
                 // Cast to int8_t first to preserve sign (uint8_t wraps negative values), then to float
-                float pipe_in_temp = static_cast<float>(static_cast<int8_t>(nonpacket_.command20.pipe_in));
-                float pipe_out_temp = static_cast<float>(static_cast<int8_t>(nonpacket_.command20.pipe_out));
+                float pipe_in_temp = nonpacket_.command20.pipe_in.to_celsius();
+                float pipe_out_temp = nonpacket_.command20.pipe_out.to_celsius();
                 target->set_indoor_eva_in_temperature(nonpacket_.src, pipe_in_temp);
                 target->set_indoor_eva_out_temperature(nonpacket_.src, pipe_out_temp);
 
                 if (!pending_control_message)
                 {
                     last_command20s_[nonpacket_.src] = nonpacket_.command20;
-                    target->set_target_temperature(nonpacket_.src, nonpacket_.command20.target_temp);
+                    target->set_target_temperature(nonpacket_.src, nonpacket_.command20.target_temp.to_celsius());
                     // TODO
                     target->set_water_outlet_target(nonpacket_.src, false);
                     // TODO
                     target->set_target_water_temperature(nonpacket_.src, false);
-                    target->set_room_temperature(nonpacket_.src, nonpacket_.command20.room_temp);
+                    target->set_room_temperature(nonpacket_.src, nonpacket_.command20.room_temp.to_celsius());
                     target->set_power(nonpacket_.src, nonpacket_.command20.power);
                     // TODO
                     target->set_water_heater_power(nonpacket_.src, false);
@@ -833,7 +902,7 @@ namespace esphome
                 // outdoor unit (typically "c8"), while control messages are sent to indoor units.
                 // Outdoor temperature updates are independent status data and should always be processed.
                 // Cast to int8_t first to preserve sign (uint8_t wraps negative values), then to float
-                float temp = static_cast<float>(static_cast<int8_t>(nonpacket_.commandC0.outdoor_unit_outdoor_temp_c));
+                float temp = static_cast<float>(static_cast<int8_t>(nonpacket_.commandC0.outdoor_unit_outdoor_temp.to_celsius()));
                 target->set_outdoor_temperature(nonpacket_.src, temp);
             }
             else if (nonpacket_.cmd == NonNasaCommand::Cmd8D)
