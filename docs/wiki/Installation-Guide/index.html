@@ -9,21 +9,25 @@
       
       
       
+        <link rel="prev" href="../Compatibility/">
+      
+      
+        <link rel="next" href="../Troubleshooting/">
       
       
         
       
       
-      <link rel="icon" href="/assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>ESPHome Samsung HVAC Wiki</title>
+        <title>Installation Guide - ESPHome Samsung HVAC Wiki</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -42,7 +46,7 @@
       
     
     
-    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -59,6 +63,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#step-1-prerequisites-and-compatibility" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -71,7 +80,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="ESPHome Samsung HVAC Wiki" class="md-header__button md-logo" aria-label="ESPHome Samsung HVAC Wiki" data-md-component="logo">
+    <a href=".." title="ESPHome Samsung HVAC Wiki" class="md-header__button md-logo" aria-label="ESPHome Samsung HVAC Wiki" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -91,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Installation Guide
             
           </span>
         </div>
@@ -171,7 +180,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="ESPHome Samsung HVAC Wiki" class="md-nav__button md-logo" aria-label="ESPHome Samsung HVAC Wiki" data-md-component="logo">
+    <a href=".." title="ESPHome Samsung HVAC Wiki" class="md-nav__button md-logo" aria-label="ESPHome Samsung HVAC Wiki" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -189,7 +198,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -268,7 +277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Features-Overview/" class="md-nav__link">
+      <a href="../Features-Overview/" class="md-nav__link">
         
   
   
@@ -300,8 +309,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -312,11 +323,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -337,7 +348,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -355,7 +366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Hardware-Installation/" class="md-nav__link">
+      <a href="../Hardware-Installation/" class="md-nav__link">
         
   
   
@@ -383,7 +394,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Software-Installation/" class="md-nav__link">
+      <a href="../Software-Installation/" class="md-nav__link">
         
   
   
@@ -411,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Compatibility/" class="md-nav__link">
+      <a href="../Compatibility/" class="md-nav__link">
         
   
   
@@ -436,10 +447,35 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/Installation-Guide/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation Guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -455,6 +491,140 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-prerequisites-and-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Prerequisites and Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-hardware-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Hardware Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-software-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Software Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Software Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-new-esphome-device" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a New ESPHome Device
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-and-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy and Boot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-the-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check the Log
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identify-indoor-device-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identify Indoor Device Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-your-yaml-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update Your YAML File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remove-unneeded-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remove Unneeded Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -526,7 +696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Troubleshooting/" class="md-nav__link">
+      <a href="../Troubleshooting/" class="md-nav__link">
         
   
   
@@ -554,7 +724,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Development/" class="md-nav__link">
+      <a href="../Development/" class="md-nav__link">
         
   
   
@@ -582,7 +752,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/NASA-vs-NonNASA-Protocols/" class="md-nav__link">
+      <a href="../NASA-vs-NonNASA-Protocols/" class="md-nav__link">
         
   
   
@@ -610,7 +780,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Blueprints-and-Integrations/" class="md-nav__link">
+      <a href="../Blueprints-and-Integrations/" class="md-nav__link">
         
   
   
@@ -697,7 +867,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Frequently-Asked-Questions-%28FAQ%29/" class="md-nav__link">
+      <a href="../Frequently-Asked-Questions-%28FAQ%29/" class="md-nav__link">
         
   
   
@@ -725,7 +895,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Credits-and-Contributors/" class="md-nav__link">
+      <a href="../Credits-and-Contributors/" class="md-nav__link">
         
   
   
@@ -812,7 +982,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/model-checker/" class="md-nav__link">
+      <a href="../model-checker/" class="md-nav__link">
         
   
   
@@ -899,7 +1069,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/nasa/samsung_nasa_protocol/" class="md-nav__link">
+      <a href="../nasa/samsung_nasa_protocol/" class="md-nav__link">
         
   
   
@@ -940,8 +1110,76 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+
+  <h1>Installation Guide</h1>
+
+<p>Welcome to the <strong>ESPHome Samsung HVAC Integration</strong> installation guide! This guide will help you set up and configure your system smoothly.</p>
+<h2 id="step-1-prerequisites-and-compatibility">Step 1: Prerequisites and Compatibility<a class="headerlink" href="#step-1-prerequisites-and-compatibility" title="Permanent link">&para;</a></h2>
+<p>Before you start, make sure that your Samsung HVAC unit is compatible with this integration. To verify compatibility, you can refer to the <a href="../Compatibility/">Compatibility</a> page which lists the supported models and additional details.</p>
+<h2 id="step-2-hardware-installation">Step 2: Hardware Installation<a class="headerlink" href="#step-2-hardware-installation" title="Permanent link">&para;</a></h2>
+<p>To establish communication between your ESPHome device and Samsung HVAC unit, follow the hardware setup guidelines provided in the <a href="../Hardware-Installation/">Hardware Installation</a> page. Here, you will find detailed instructions on using the recommended <strong>M5STACK ATOM Lite + M5STACK RS-485 kit</strong> and wiring diagrams for a successful setup.</p>
+<h2 id="step-3-software-installation">Step 3: Software Installation<a class="headerlink" href="#step-3-software-installation" title="Permanent link">&para;</a></h2>
+<h3 id="create-a-new-esphome-device">Create a New ESPHome Device<a class="headerlink" href="#create-a-new-esphome-device" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Create a new ESPHome device:</strong><br />
+   Use the Home Assistant ESPHome interface or command line tool to create a new device.<br />
+   Make sure to use the <a href="https://github.com/omerfaruk-aran/esphome_samsung_hvac_bus/blob/main/example.yaml">example YAML configuration</a> as your starting point.<br />
+   Copy essential sections like <code>api</code> and <code>ota</code> into your new configuration file. </li>
+</ol>
+<h3 id="deploy-and-boot">Deploy and Boot<a class="headerlink" href="#deploy-and-boot" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Deploy the configured firmware to your ESP device:</strong><br />
+   Once the firmware is deployed, power on your ESP device and ensure it’s ready to connect.</li>
+</ol>
+<h3 id="check-the-log">Check the Log<a class="headerlink" href="#check-the-log" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Monitor the ESPHome logs:</strong><br />
+   Keep an eye on the device logs in the ESPHome dashboard or via the command line tool. You should see yellow log entries indicating successful reception of data packets.<br />
+   If you only see a message like <code>[samsung_ac] ... update</code> every 30 seconds, there could be a connection issue that needs addressing.</li>
+</ol>
+<h3 id="identify-indoor-device-addresses">Identify Indoor Device Addresses<a class="headerlink" href="#identify-indoor-device-addresses" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Identify the indoor device addresses:</strong><br />
+   Look for purple log messages showing discovered devices like <code>" indoor: 20.00.00, 20.00.01"</code> or <code>" indoor: 00, 01"</code>.<br />
+   These addresses identify your indoor units. If you don’t see them, refer to the <a href="../Troubleshooting/">Troubleshooting</a> section for assistance.</li>
+</ol>
+<h3 id="update-your-yaml-file">Update Your YAML File<a class="headerlink" href="#update-your-yaml-file" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Copy and update the discovered addresses:</strong><br />
+   Once you’ve identified the indoor units, add their addresses to your ESPHome YAML configuration file.<br />
+   Create sections for each indoor unit with meaningful names and customize the properties to fit your setup.</li>
+</ol>
+<h3 id="remove-unneeded-properties">Remove Unneeded Properties<a class="headerlink" href="#remove-unneeded-properties" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Clean up your configuration:</strong><br />
+   Review your YAML configuration and remove unnecessary properties.<br />
+   This will simplify your setup and ensure only relevant settings are included.</li>
+</ol>
+<hr />
+<h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../Compatibility/">Compatibility</a>: Check supported models and get more details on compatibility.</li>
+<li><a href="../Blueprints-and-Integrations/">Blueprints</a>: Enhance your Home Assistant setup with additional Blueprints.</li>
+<li><a href="../Troubleshooting/">Troubleshooting</a>: Get help with common issues or configuration challenges.</li>
+<li><a href="../Frequently-Asked-Questions-%28FAQ%29/">FAQ</a>: Check out common questions and answers.</li>
+</ul>
+<p>By following these steps, you will be ready to use the <strong>ESPHome Samsung HVAC Integration</strong> effectively. 🚀</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -984,10 +1222,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/", "features": ["navigation.instant", "navigation.sections", "toc.integrate", "navigation.top"], "search": "/assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.sections", "toc.integrate", "navigation.top"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

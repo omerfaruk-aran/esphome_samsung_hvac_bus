@@ -1,6 +1,7 @@
 # Model Checker
 
-This is the Samsung HVAC Model Checker tool.
+<div style="width:100%; height: calc(100vh - 220px);">
+  <iframe src="/tools/model-checker/" style="width:100%; height:100%; border:0;"></iframe>
+</div>
 
-- Open: [Model Checker](../tools/model-checker/index.html)
-
+[Open full screen](/tools/model-checker/)

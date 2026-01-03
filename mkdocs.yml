@@ -1,7 +1,7 @@
 site_name: ESPHome Samsung HVAC Wiki
 
 # Kaynak markdownlar
-docs_dir: docs_src
+docs_dir: docs_src/wiki
 
 # Çıktı (GitHub Pages için /docs kullanıyorsan bu /docs/wiki olur)
 site_dir: docs/wiki
@@ -35,26 +35,27 @@ extra:
 nav:
   - Home: index.md
 
-  - Wiki:
-      - Home: wiki/index.md
-      - Project Overview:
-          - Features Overview: wiki/Features-Overview.md
-      - Configuration and Setup:
-          - Hardware Installation: wiki/Hardware-Installation.md
-          - Software Installation: wiki/Software-Installation.md
-          - Compatibility: wiki/Compatibility.md
-          - Installation Guide: wiki/Installation-Guide.md
-      - Advanced Information:
-          - Troubleshooting: wiki/Troubleshooting.md
-          - Development: wiki/Development.md
-          - NASA vs NonNASA Protocols: wiki/NASA-vs-NonNASA-Protocols.md
-          - Blueprints and Integrations: wiki/Blueprints-and-Integrations.md
-      - Community & Credits:
-          - FAQ: wiki/Frequently-Asked-Questions-(FAQ).md
-          - Credits and Contributors: wiki/Credits-and-Contributors.md
+  - Project Overview:
+      - Features Overview: Features-Overview.md
+
+  - Configuration and Setup:
+      - Hardware Installation: Hardware-Installation.md
+      - Software Installation: Software-Installation.md
+      - Compatibility: Compatibility.md
+      - Installation Guide: Installation-Guide.md
+
+  - Advanced Information:
+      - Troubleshooting: Troubleshooting.md
+      - Development: Development.md
+      - NASA vs NonNASA Protocols: NASA-vs-NonNASA-Protocols.md
+      - Blueprints and Integrations: Blueprints-and-Integrations.md
+
+  - Community & Credits:
+      - FAQ: Frequently-Asked-Questions-(FAQ).md
+      - Credits and Contributors: Credits-and-Contributors.md
 
   - Tools:
-      - Model Checker: tools/model-checker/index.html
+    - Model Checker: model-checker.md
 
   - Protocol:
       - NASA Protocol Notes: nasa/samsung_nasa_protocol.md
