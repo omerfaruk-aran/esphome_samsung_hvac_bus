@@ -17,6 +17,7 @@ venvs/
 .DS_Store
 Thumbs.db
 
+scripts/
 *.exe
 __pycache__
 .esphome
