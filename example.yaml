@@ -66,10 +66,12 @@ samsung_ac:
   # see https://microcontrollerslab.com/rs485-serial-communication-esp32-esp8266-tutorial/ for wiring
   #flow_control_pin: GPIO4
 
-  # Capabilities configure the features that all devices of your AC system have (all parts of this section are optional). 
-  # All capabilities are off by default, you need to enable only those your devices have.
-  # You can override or configure them also on a per-device basis (look below for that).
-  capabilities: 
+  # Capabilities: Define which features your AC system supports.
+  # - fan_modes is enabled by default (fan speed controls will be shown in HA)
+  # - vertical_swing and horizontal_swing are disabled by default
+  # You can set these globally here, or override per indoor unit under `devices:`
+  capabilities:
+    fan_modes: true
     vertical_swing: true
     horizontal_swing: true
     # Presets define special AC modes like Windfree, Eco, and so on. 
@@ -177,4 +179,5 @@ samsung_ac:
         name: "Hotwater Mode"
       outdoor_temperature: # Should be used with outdoor device address
         name: "Outdoor temperature"
+
 

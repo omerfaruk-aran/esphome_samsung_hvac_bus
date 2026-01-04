@@ -84,6 +84,7 @@ CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
 CONF_MAP_AUTO_TO_HEAT_COOL = "map_auto_to_heat_cool"
 
 CONF_CAPABILITIES = "capabilities"
+CONF_CAPABILITIES_FAN_MODES = "fan_modes"
 CONF_CAPABILITIES_HORIZONTAL_SWING = "horizontal_swing"
 CONF_CAPABILITIES_VERTICAL_SWING = "vertical_swing"
 
@@ -120,6 +121,7 @@ PRESETS = {
 
 CAPABILITIES_SCHEMA = cv.Schema(
     {
+        cv.Optional(CONF_CAPABILITIES_FAN_MODES, default=True): cv.boolean,
         cv.Optional(CONF_CAPABILITIES_HORIZONTAL_SWING, default=False): cv.boolean,
         cv.Optional(CONF_CAPABILITIES_VERTICAL_SWING, default=False): cv.boolean,
         cv.Optional(CONF_PRESETS): cv.Schema(
@@ -365,6 +367,10 @@ async def to_code(config):
         # setup capabilities
         capabilities = device.get(CONF_CAPABILITIES, config.get(CONF_CAPABILITIES, {}))
 
+        cg.add(var_dev.set_supports_fan_modes(
+            capabilities.get(CONF_CAPABILITIES_FAN_MODES, True)
+        ))
+
         if CONF_CAPABILITIES_VERTICAL_SWING in capabilities:
             cg.add(
                 var_dev.set_supports_vertical_swing(
@@ -580,5 +586,3 @@ async def to_code(config):
 
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
-
-
