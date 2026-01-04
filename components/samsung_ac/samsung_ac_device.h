@@ -27,11 +27,15 @@ namespace esphome
       void control(const climate::ClimateCall &call);
       void apply_fanmode_from_device(FanMode value);
       void apply_altmode_from_device(const AltModeDesc &mode);
+      
+      void set_map_auto_to_heat_cool(bool value) { map_auto_to_heat_cool_ = value; }
+      bool get_map_auto_to_heat_cool() const { return map_auto_to_heat_cool_; }
 
       Samsung_AC_Device *device;
 
     protected:
       void set_alt_mode_by_name(ProtocolRequest &request, const AltModeName &name);
+      bool map_auto_to_heat_cool_{false};
     };
 
     class Samsung_AC_Number : public number::Number
@@ -103,6 +107,13 @@ namespace esphome
         this->address = address;
         this->target = target;
         this->protocol = get_protocol(address);
+      }
+
+      void set_map_auto_to_heat_cool(bool value)
+      {
+        map_auto_to_heat_cool_ = value;
+        if (climate != nullptr)
+          climate->set_map_auto_to_heat_cool(value);
       }
 
       std::string address;
@@ -310,6 +321,7 @@ namespace esphome
       {
         climate = value;
         climate->device = this;
+        climate->set_map_auto_to_heat_cool(map_auto_to_heat_cool_);
       }
 
       void update_target_temperature(float value)
@@ -478,6 +490,7 @@ namespace esphome
       }
 
     protected:
+      bool map_auto_to_heat_cool_{false};
       bool supports_horizontal_swing_{false};
       bool supports_vertical_swing_{false};
       std::vector<AltModeDesc> alt_modes;
@@ -503,7 +516,12 @@ namespace esphome
         {
           auto opt = mode_to_climatemode(_cur_mode.value());
           if (opt.has_value())
-            climate->mode = opt.value();
+          {
+            if (climate->get_map_auto_to_heat_cool() && _cur_mode.value() == Mode::Auto)
+              climate->mode = climate::ClimateMode::CLIMATE_MODE_HEAT_COOL;
+            else
+              climate->mode = opt.value();
+          }
         }
 
         climate->publish_state();
@@ -511,3 +529,5 @@ namespace esphome
     };
   } // namespace samsung_ac
 } // namespace esphome
+
+

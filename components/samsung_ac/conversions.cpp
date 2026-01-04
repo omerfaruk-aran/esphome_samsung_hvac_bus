@@ -73,7 +73,7 @@ namespace esphome
       switch (mode)
       {
       case Mode::Auto:
-        return climate::ClimateMode::CLIMATE_MODE_AUTO;
+        return climate::ClimateMode::CLIMATE_MODE_HEAT_COOL;
       case Mode::Cool:
         return climate::ClimateMode::CLIMATE_MODE_COOL;
       case Mode::Dry:
@@ -99,7 +99,7 @@ namespace esphome
         return Mode::Fan;
       case climate::ClimateMode::CLIMATE_MODE_DRY:
         return Mode::Dry;
-      case climate::ClimateMode::CLIMATE_MODE_AUTO:
+      case climate::ClimateMode::CLIMATE_MODE_HEAT_COOL:
         return Mode::Auto;
       default:
         return Mode::Unknown;

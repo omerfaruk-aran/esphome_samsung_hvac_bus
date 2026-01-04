@@ -81,7 +81,7 @@ CONF_DEVICE_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM = "outdoor_instantaneous_power"
 CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = "outdoor_cumulative_energy"
 CONF_DEVICE_OUT_SENSOR_CT1 = "outdoor_current"
 CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
-
+CONF_MAP_AUTO_TO_HEAT_COOL = "map_auto_to_heat_cool"
 
 CONF_CAPABILITIES = "capabilities"
 CONF_CAPABILITIES_HORIZONTAL_SWING = "horizontal_swing"
@@ -245,6 +245,7 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_MODE): SELECT_MODE_SCHEMA,
         cv.Optional(CONF_DEVICE_WATER_HEATER_MODE): SELECT_WATER_HEATER_MODE_SCHEMA,
         cv.Optional(CONF_DEVICE_CLIMATE): CLIMATE_SCHEMA,
+        cv.Optional(CONF_MAP_AUTO_TO_HEAT_COOL, default=False): cv.boolean,
         cv.Optional(CONF_DEVICE_CUSTOM, default=[]): cv.ensure_list(
             CUSTOM_SENSOR_SCHEMA
         ),
@@ -526,6 +527,9 @@ async def to_code(config):
             await climate.register_climate(var_cli, conf)
             cg.add(var_dev.set_climate(var_cli))
 
+            # Optional UI mapping: expose Samsung Auto as HA Heat/Cool
+            cg.add(var_dev.set_map_auto_to_heat_cool(device.get(CONF_MAP_AUTO_TO_HEAT_COOL, False)))
+    
         if CONF_DEVICE_CUSTOM in device:
             for cust_sens in device[CONF_DEVICE_CUSTOM]:
                 sens = await sensor.new_sensor(cust_sens)
@@ -576,3 +580,5 @@ async def to_code(config):
 
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
+
+
