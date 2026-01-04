@@ -84,6 +84,7 @@ CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
 
 
 CONF_CAPABILITIES = "capabilities"
+CONF_CAPABILITIES_FAN_MODES = "fan_modes"
 CONF_CAPABILITIES_HORIZONTAL_SWING = "horizontal_swing"
 CONF_CAPABILITIES_VERTICAL_SWING = "vertical_swing"
 
@@ -120,6 +121,7 @@ PRESETS = {
 
 CAPABILITIES_SCHEMA = cv.Schema(
     {
+        cv.Optional(CONF_CAPABILITIES_FAN_MODES, default=True): cv.boolean,
         cv.Optional(CONF_CAPABILITIES_HORIZONTAL_SWING, default=False): cv.boolean,
         cv.Optional(CONF_CAPABILITIES_VERTICAL_SWING, default=False): cv.boolean,
         cv.Optional(CONF_PRESETS): cv.Schema(
@@ -363,6 +365,13 @@ async def to_code(config):
 
         # setup capabilities
         capabilities = device.get(CONF_CAPABILITIES, config.get(CONF_CAPABILITIES, {}))
+
+        if CONF_CAPABILITIES_FAN_MODES in capabilities:
+            cg.add(
+                var_dev.set_supports_fan_modes(
+                    capabilities[CONF_CAPABILITIES_FAN_MODES]
+                )
+            )
 
         if CONF_CAPABILITIES_VERTICAL_SWING in capabilities:
             cg.add(

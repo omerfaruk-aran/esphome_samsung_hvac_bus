@@ -431,6 +431,11 @@ namespace esphome
         protocol->publish_request(target, address, request);
       }
 
+      bool supports_fan_modes()
+      {
+        return supports_fan_modes_;
+      }
+
       bool supports_horizontal_swing()
       {
         return supports_horizontal_swing_;
@@ -439,6 +444,11 @@ namespace esphome
       bool supports_vertical_swing()
       {
         return supports_vertical_swing_;
+      }
+
+      void set_supports_fan_modes(bool value)
+      {
+        supports_fan_modes_ = value;
       }
 
       void set_supports_horizontal_swing(bool value)
@@ -478,6 +488,7 @@ namespace esphome
       }
 
     protected:
+      bool supports_fan_modes_{false};
       bool supports_horizontal_swing_{false};
       bool supports_vertical_swing_{false};
       std::vector<AltModeDesc> alt_modes;

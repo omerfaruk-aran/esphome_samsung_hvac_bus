@@ -67,9 +67,10 @@ samsung_ac:
   #flow_control_pin: GPIO4
 
   # Capabilities configure the features that all devices of your AC system have (all parts of this section are optional). 
-  # All capabilities are off by default, you need to enable only those your devices have.
+  # Fan mode is on by default, horizontal and vertical swing are off by default.
   # You can override or configure them also on a per-device basis (look below for that).
-  capabilities: 
+  capabilities:
+    fan_modes: true
     vertical_swing: true
     horizontal_swing: true
     # Presets define special AC modes like Windfree, Eco, and so on. 
