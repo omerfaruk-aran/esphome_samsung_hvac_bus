@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor, switch, select, number, climate
+from esphome.components import uart, sensor, switch, select, number, climate, text_sensor
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_TEMPERATURE,
@@ -20,6 +20,7 @@ from esphome.const import (
     CONF_DEVICE_CLASS,
     CONF_FILTERS,
     CONF_FLOW_CONTROL_PIN,
+    ENTITY_CATEGORY_DIAGNOSTIC,
 )
 from esphome.core import CORE, Lambda
 from esphome.cpp_helpers import gpio_pin_expression
@@ -27,7 +28,7 @@ from esphome import pins
 
 CODEOWNERS = ["matthias882", "lanwin", "omerfaruk-aran"]
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor", "switch", "select", "number", "climate"]
+AUTO_LOAD = ["sensor", "switch", "select", "number", "climate", "text_sensor"]
 MULTI_CONF = False
 
 CONF_SAMSUNG_AC_ID = "samsung_ac_id"
@@ -82,6 +83,7 @@ CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = "outdoor_cumulative_energy"
 CONF_DEVICE_OUT_SENSOR_CT1 = "outdoor_current"
 CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
 CONF_MAP_AUTO_TO_HEAT_COOL = "map_auto_to_heat_cool"
+CONF_DEBUG_LOG_MESSAGES_ON_CHANGE = "debug_log_messages_on_change"
 
 CONF_CAPABILITIES = "capabilities"
 CONF_CAPABILITIES_FAN_MODES = "fan_modes"
@@ -92,6 +94,9 @@ CONF_PRESETS = "presets"
 CONF_PRESET_NAME = "name"
 CONF_PRESET_ENABLED = "enabled"
 CONF_PRESET_VALUE = "value"
+
+CONF_DEVICE_OUT_OPERATION_ODU_MODE_TEXT = "outdoor_operation_odu_mode"
+CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT = "outdoor_operation_heatcool"
 
 
 def preset_entry(name: str, value: int, displayName: str):
@@ -303,6 +308,15 @@ DEVICE_SCHEMA = cv.Schema(
                 cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x24FC): cv.hex_int,
             }
         ),
+        cv.Optional(CONF_DEVICE_OUT_OPERATION_ODU_MODE_TEXT): text_sensor.text_sensor_schema(
+            icon="mdi:fan",
+            entity_category="diagnostic",
+        ),
+        cv.Optional(CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT): text_sensor.text_sensor_schema(
+            icon="mdi:thermometer",
+            entity_category="diagnostic",
+        ),
+
     }
 )
 
@@ -341,6 +355,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_NON_NASA_KEEPALIVE, default=False): cv.boolean,
             cv.Optional(CONF_DEBUG_LOG_UNDEFINED_MESSAGES, default=False): cv.boolean,
             cv.Optional(CONF_CAPABILITIES): CAPABILITIES_SCHEMA,
+            cv.Optional(CONF_DEBUG_LOG_MESSAGES_ON_CHANGE, default=False): cv.boolean,
             cv.Required(CONF_DEVICES): cv.ensure_list(DEVICE_SCHEMA),
         }
     )
@@ -412,10 +427,10 @@ async def to_code(config):
                     var_dev.add_alt_mode(
                         preset_conf.get(
                             CONF_PRESET_NAME, preset_info["displayName"]
-                        ),  # Kullanıcı tarafından sağlanan adı kullan
+                        ),
                         preset_conf.get(
                             CONF_PRESET_VALUE, preset_info["value"]
-                        ),  # Kullanıcı tarafından sağlanan değeri kullan
+                        ),
                     )
                 )
 
@@ -472,6 +487,15 @@ async def to_code(config):
                 sensor.new_sensor,
                 var_dev.set_outdoor_voltage_sensor,
             ),
+            CONF_DEVICE_OUT_OPERATION_ODU_MODE_TEXT: (
+                text_sensor.new_text_sensor,
+                var_dev.set_outdoor_operation_odu_mode_text_sensor,
+            ),
+            CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT: (
+                text_sensor.new_text_sensor,
+                var_dev.set_outdoor_operation_heatcool_text_sensor,
+            ),
+
         }
 
         # Iterate over the actions
@@ -577,6 +601,7 @@ async def to_code(config):
         CONF_DEBUG_LOG_MESSAGES_RAW: var.set_debug_log_messages_raw,
         CONF_NON_NASA_KEEPALIVE: var.set_non_nasa_keepalive,
         CONF_DEBUG_LOG_UNDEFINED_MESSAGES: var.set_debug_log_undefined_messages,
+        CONF_DEBUG_LOG_MESSAGES_ON_CHANGE: var.set_debug_log_messages_on_change,
     }
 
     # Iterate over the actions

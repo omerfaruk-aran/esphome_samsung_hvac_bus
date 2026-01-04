@@ -55,6 +55,11 @@ samsung_ac:
   # non_nasa_keepalive: Prevents some Non-NASA units from sleeping when idle.
   # This increases bus traffic slightly; disable if you don't need idle telemetry.
   non_nasa_keepalive: true
+
+  # Enable 'debug_log_messages_on_change' to log sensor data changes within 120 seconds
+  # When set to true, this option logs the sensor data only when the value changes within a 120-second interval,
+  # reducing redundant log messages and focusing on real-time data changes.
+  debug_log_messages_on_change: true  # Enable log messages on change within 120 seconds
   
   # When enabled (set to true), this option will log the messages associated with undefined codes on the device. This is useful for debugging and identifying any unexpected or unknown codes that the device may receive during operation.
   debug_log_undefined_messages: false
@@ -149,7 +154,15 @@ samsung_ac:
       # you can automatically send detailed error messages to your mobile devices based on the captured error codes.
       error_code:
         name: error_code
-        
+
+       # Outdoor operation mode text sensor
+      outdoor_operation_odu_mode:
+        name: "ODU Mode"  # Displays the operational mode of the outdoor unit
+
+      # Outdoor operation heat/cool mode text sensor
+      outdoor_operation_heatcool:
+        name: "ODU Heat/Cool"  # Displays whether the outdoor unit is in heating or cooling mode
+
       # This sensor measures the instantaneous power consumption of the outdoor unit in Watts.
       # The captured value represents the current power draw of the outdoor HVAC components, helping track energy usage patterns.
       outdoor_instantaneous_power:

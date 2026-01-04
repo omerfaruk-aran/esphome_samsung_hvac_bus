@@ -732,13 +732,33 @@ namespace esphome
                 // packet, so as a backup approach check if the state of the device matches that of the
                 // sent control packet. This also serves as a backup approach if for some reason a device
                 // doesn't send control_acknowledgement messages at all.
-                LOGD("Cmd20 received: src=%s, wind_direction=%d, target_temp=%d, power=%d, mode=%d, fanspeed=%d",
-                     nonpacket_.src.c_str(),
-                     (uint8_t)nonpacket_.command20.wind_direction,
-                     nonpacket_.command20.target_temp,
-                     nonpacket_.command20.power,
-                     (uint8_t)nonpacket_.command20.mode,
-                     (uint8_t)nonpacket_.command20.fanspeed);
+                if (debug_log_messages)
+                {
+                    // signature: same fields -> same signature
+                    // Using a small packed int is enough for change detection
+                    uint32_t sig = 0;
+                    sig ^= ((uint32_t)(nonpacket_.command20.target_temp & 0x7F));
+                    sig ^= ((uint32_t)(nonpacket_.command20.room_temp & 0x7F)) << 7;
+                    sig ^= ((uint32_t)(nonpacket_.command20.pipe_in & 0x7F)) << 14;
+                    sig ^= ((uint32_t)(nonpacket_.command20.pipe_out & 0x7F)) << 21;
+                    sig ^= ((uint32_t)(nonpacket_.command20.power ? 1 : 0)) << 28;
+                    sig ^= ((uint32_t)((uint8_t)nonpacket_.command20.mode & 0x0F)) << 29;
+                    sig ^= ((uint32_t)((uint8_t)nonpacket_.command20.fanspeed)) * 2654435761u;
+                    sig ^= ((uint32_t)((uint8_t)nonpacket_.command20.wind_direction)) * 2246822519u;
+
+                    if (!debug_log_messages_on_change ||
+                        log_should_print(log_dedup_key(nonpacket_.src, "nonnasa", 0x0020), (double)sig, 0.0, 0))
+                    {
+
+                        LOGI("Cmd20 received: src=%s, wind_direction=%d, target_temp=%d, power=%d, mode=%d, fanspeed=%d",
+                             nonpacket_.src.c_str(),
+                             (uint8_t)nonpacket_.command20.wind_direction,
+                             nonpacket_.command20.target_temp,
+                             nonpacket_.command20.power,
+                             (uint8_t)nonpacket_.command20.mode,
+                             (uint8_t)nonpacket_.command20.fanspeed);
+                    }
+                }
 
                 size_t before_size = nonnasa_requests.size();
                 nonnasa_requests.remove_if([&](const NonNasaRequestQueueItem &item)
