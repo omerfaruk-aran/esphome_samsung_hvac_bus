@@ -366,12 +366,9 @@ async def to_code(config):
         # setup capabilities
         capabilities = device.get(CONF_CAPABILITIES, config.get(CONF_CAPABILITIES, {}))
 
-        if CONF_CAPABILITIES_FAN_MODES in capabilities:
-            cg.add(
-                var_dev.set_supports_fan_modes(
-                    capabilities[CONF_CAPABILITIES_FAN_MODES]
-                )
-            )
+        cg.add(var_dev.set_supports_fan_modes(
+            capabilities.get(CONF_CAPABILITIES_FAN_MODES, True)
+        ))
 
         if CONF_CAPABILITIES_VERTICAL_SWING in capabilities:
             cg.add(
@@ -585,3 +582,4 @@ async def to_code(config):
 
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
+
