@@ -81,7 +81,7 @@ CONF_DEVICE_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM = "outdoor_instantaneous_power"
 CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = "outdoor_cumulative_energy"
 CONF_DEVICE_OUT_SENSOR_CT1 = "outdoor_current"
 CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
-
+CONF_MAP_AUTO_TO_HEAT_COOL = "map_auto_to_heat_cool"
 
 CONF_CAPABILITIES = "capabilities"
 CONF_CAPABILITIES_HORIZONTAL_SWING = "horizontal_swing"
@@ -320,7 +320,7 @@ CONF_DEBUG_LOG_MESSAGES = "debug_log_messages"
 CONF_DEBUG_LOG_MESSAGES_RAW = "debug_log_messages_raw"
 
 CONF_NON_NASA_KEEPALIVE = "non_nasa_keepalive"
-CONF_MAP_AUTO_TO_HEAT_COOL = "map_auto_to_heat_cool"
+
 CONF_DEBUG_LOG_UNDEFINED_MESSAGES = "debug_log_undefined_messages"
 
 
@@ -580,4 +580,5 @@ async def to_code(config):
 
     await cg.register_component(var, config)
     await uart.register_uart_device(var, config)
+
 
