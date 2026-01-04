@@ -85,6 +85,8 @@ namespace esphome
         debug_mqtt_password = password;
       }
 
+      void set_debug_log_messages_on_change(bool v) { debug_log_messages_on_change = v; }
+
       void set_debug_log_messages(bool value)
       {
         debug_log_messages = value;
@@ -245,6 +247,18 @@ namespace esphome
       void set_outdoor_voltage(const std::string &address, float value)
       {
         update_device_sensor(address, &Samsung_AC_Device::outdoor_voltage, value);
+      }
+
+      void set_outdoor_operation_odu_mode_text_sensor(const std::string &address, int value)
+      {
+          execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                           { dev->update_enum_text(0x8001, value); });
+      }
+
+      void set_outdoor_operation_heatcool_text_sensor(const std::string &address, int value)
+      {
+       execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                           { dev->update_enum_text(0x8003, value); });
       }
 
     protected:
