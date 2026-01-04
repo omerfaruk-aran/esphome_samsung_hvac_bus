@@ -97,6 +97,9 @@ samsung_ac:
       # Each property below is optional (climate, room_temperature etc.) - you can delete those which you dont need.
       # For the names we suggest to choose a combination of room name and the thing it controls. 
 
+      # Optional: show Samsung Auto as HA Heat/Cool (allows setting target temp in HA UI)
+      map_auto_to_heat_cool: false
+
       # Configures/overrides the capabilites for this devices. 
       # Look above for all options.
       capabilities:
@@ -175,3 +178,4 @@ samsung_ac:
         name: "Hotwater Mode"
       outdoor_temperature: # Should be used with outdoor device address
         name: "Outdoor temperature"
+
