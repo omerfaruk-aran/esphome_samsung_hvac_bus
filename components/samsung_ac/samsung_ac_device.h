@@ -6,6 +6,7 @@
 #include "esphome/core/helpers.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/select/select.h"
 #include "esphome/components/number/number.h"
 #include "esphome/components/climate/climate.h"
@@ -27,7 +28,7 @@ namespace esphome
       void control(const climate::ClimateCall &call);
       void apply_fanmode_from_device(FanMode value);
       void apply_altmode_from_device(const AltModeDesc &mode);
-      
+
       void set_map_auto_to_heat_cool(bool value) { map_auto_to_heat_cool_ = value; }
       bool get_map_auto_to_heat_cool() const { return map_auto_to_heat_cool_; }
 
@@ -126,6 +127,9 @@ namespace esphome
       sensor::Sensor *outdoor_cumulative_energy{nullptr};
       sensor::Sensor *outdoor_current{nullptr};
       sensor::Sensor *outdoor_voltage{nullptr};
+      text_sensor::TextSensor *outdoor_operation_odu_mode_text{nullptr};
+      text_sensor::TextSensor *outdoor_operation_heatcool_text{nullptr};
+
       Samsung_AC_Number *target_temperature{nullptr};
       Samsung_AC_Number *water_outlet_target{nullptr};
       Samsung_AC_Number *target_water_temperature{nullptr};
@@ -417,7 +421,7 @@ namespace esphome
           }
 
           climate->apply_altmode_from_device(*mode);
-          
+
           climate->publish_state();
         }
       }
@@ -498,11 +502,182 @@ namespace esphome
           protocol->protocol_update(target);
         }
       }
+      void set_outdoor_operation_odu_mode_text_sensor(text_sensor::TextSensor *sensor)
+      {
+        outdoor_operation_odu_mode_text = sensor;
+      }
+
+      void set_outdoor_operation_heatcool_text_sensor(text_sensor::TextSensor *sensor)
+      {
+        outdoor_operation_heatcool_text = sensor;
+      }
+      void update_enum_text(uint16_t message_number, int value)
+      {
+        // 0x8003 -> ENUM_out_operation_heatcool
+        if (message_number == 0x8003)
+        {
+          if (outdoor_operation_heatcool_text != nullptr)
+          {
+            std::string s;
+            switch (value)
+            {
+            case 0:
+              s = "Undefined";
+              break;
+            case 1:
+              s = "Cool";
+              break;
+            case 2:
+              s = "Heat";
+              break;
+            case 3:
+              s = "CoolMain";
+              break;
+            case 4:
+              s = "HeatMain";
+              break;
+            default:
+              s = std::string("Unknown(") + std::to_string(value) + ")";
+              break;
+            }
+            outdoor_operation_heatcool_text->publish_state(s);
+          }
+          return;
+        }
+
+        // 0x8001 -> ENUM_out_operation_odu_mode
+        if (message_number == 0x8001)
+        {
+          if (outdoor_operation_odu_mode_text != nullptr)
+          {
+            std::string s;
+            switch (value)
+            {
+            case 0:
+              s = "OP_STOP";
+              break;
+            case 1:
+              s = "OP_SAFETY";
+              break;
+            case 2:
+              s = "OP_NORMAL";
+              break;
+            case 3:
+              s = "OP_BALANCE";
+              break;
+            case 4:
+              s = "OP_RECOVERY";
+              break;
+            case 5:
+              s = "OP_DEICE";
+              break;
+            case 6:
+              s = "OP_COMPDOWN";
+              break;
+            case 7:
+              s = "OP_PROHIBIT";
+              break;
+            case 8:
+              s = "OP_LINEJIG";
+              break;
+            case 9:
+              s = "OP_PCBJIG";
+              break;
+            case 10:
+              s = "OP_TEST";
+              break;
+            case 11:
+              s = "OP_CHARGE";
+              break;
+            case 12:
+              s = "OP_PUMPDOWN";
+              break;
+            case 13:
+              s = "OP_PUMPOUT";
+              break;
+            case 14:
+              s = "OP_VACCUM";
+              break;
+            case 15:
+              s = "OP_CALORYJIG";
+              break;
+            case 16:
+              s = "OP_PUMPDOWNSTOP";
+              break;
+            case 17:
+              s = "OP_SUBSTOP";
+              break;
+            case 18:
+              s = "OP_CHECKPIPE";
+              break;
+            case 19:
+              s = "OP_CHECKREF";
+              break;
+            case 20:
+              s = "OP_FPTJIG";
+              break;
+            case 21:
+              s = "OP_NONSTOP_HEAT_COOL_CHANGE";
+              break;
+            case 22:
+              s = "OP_AUTO_INSPECT";
+              break;
+            case 23:
+              s = "OP_ELECTRIC_DISCHARGE";
+              break;
+            case 24:
+              s = "OP_SPLIT_DEICE";
+              break;
+            case 25:
+              s = "OP_INVETER_CHECK";
+              break;
+            case 26:
+              s = "OP_NONSTOP_DEICE";
+              break;
+            case 27:
+              s = "OP_REM_TEST";
+              break;
+            case 28:
+              s = "OP_RATING";
+              break;
+            case 29:
+              s = "OP_PC_TEST";
+              break;
+            case 30:
+              s = "OP_PUMPDOWN_THERMOOFF";
+              break;
+            case 31:
+              s = "OP_3PHASE_TEST";
+              break;
+            case 32:
+              s = "OP_SMARTINSTALL_TEST";
+              break;
+            case 33:
+              s = "OP_DEICE_PERFORMANCE_TEST";
+              break;
+            case 34:
+              s = "OP_INVERTER_FAN_PBA_CHECK";
+              break;
+            case 35:
+              s = "OP_AUTO_PIPE_PAIRING";
+              break;
+            case 36:
+              s = "OP_AUTO_CHARGE";
+              break;
+            default:
+              s = std::string("Unknown(") + std::to_string(value) + ")";
+              break;
+            }
+            outdoor_operation_odu_mode_text->publish_state(s);
+          }
+          return;
+        }
+      }
 
     protected:
       bool supports_fan_modes_{true};
       bool map_auto_to_heat_cool_{false};
-      
+
       bool supports_horizontal_swing_{false};
       bool supports_vertical_swing_{false};
       std::vector<AltModeDesc> alt_modes;
