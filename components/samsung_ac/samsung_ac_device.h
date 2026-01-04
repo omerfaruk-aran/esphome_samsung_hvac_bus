@@ -488,7 +488,7 @@ namespace esphome
       }
 
     protected:
-      bool supports_fan_modes_{false};
+      bool supports_fan_modes_{true};
       bool supports_horizontal_swing_{false};
       bool supports_vertical_swing_{false};
       std::vector<AltModeDesc> alt_modes;
@@ -522,3 +522,4 @@ namespace esphome
     };
   } // namespace samsung_ac
 } // namespace esphome
+
