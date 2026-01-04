@@ -207,7 +207,6 @@ def error_code_sensor_schema(message: int):
         entity_category="diagnostic",
     )
 
-
 DEVICE_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_DEVICE_ID): cv.declare_id(Samsung_AC_Device),
@@ -242,9 +241,13 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_TARGET_TEMPERATURE): NUMBER_SCHEMA,
         cv.Optional(CONF_DEVICE_WATER_OUTLET_TARGET): NUMBER_SCHEMA,
         cv.Optional(CONF_DEVICE_WATER_TARGET_TEMPERATURE): NUMBER_SCHEMA,
-        cv.Optional(CONF_DEVICE_POWER): switch.switch_schema(Samsung_AC_Switch),
+        cv.Optional(CONF_DEVICE_POWER): switch.switch_schema(
+            Samsung_AC_Switch,
+            icon="mdi:power"
+        ),
         cv.Optional(CONF_DEVICE_AUTOMATIC_CLEANING): switch.switch_schema(
-            Samsung_AC_Switch
+            Samsung_AC_Switch,
+            icon="mdi:broom"
         ),
         cv.Optional(CONF_DEVICE_WATER_HEATER_POWER): switch.switch_schema(
             Samsung_AC_Switch
