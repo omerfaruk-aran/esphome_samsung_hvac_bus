@@ -37,12 +37,30 @@ namespace esphome
             Stop = 31
         };
 
+        enum class TemperatureUnit : uint8_t
+        {
+            Celsius,
+            Fahrenheit
+        };
+
+        struct Temperature
+        {
+            TemperatureUnit unit;
+            uint8_t temperature;
+
+            static Temperature decode(uint8_t data);
+            uint8_t encode();
+            std::string to_string();
+            float to_celsius();
+            void set_from_celsius(float celsius);
+        };
+
         struct NonNasaCommand20 // from indoor units
         {
-            uint8_t target_temp = 0;
-            uint8_t room_temp = 0;
-            uint8_t pipe_in = 0;
-            uint8_t pipe_out = 0;
+            Temperature target_temp = { TemperatureUnit::Celsius, 0 };
+            Temperature room_temp = { TemperatureUnit::Celsius, 0 };
+            Temperature pipe_in = { TemperatureUnit::Celsius, 0 };
+            Temperature pipe_out = { TemperatureUnit::Celsius, 0 };
 
             NonNasaFanspeed fanspeed = NonNasaFanspeed::Auto;
             NonNasaMode mode = NonNasaMode::Heat;
@@ -60,16 +78,16 @@ namespace esphome
             bool outdoor_unit_hot_gas_bypass = false;
             bool outdoor_unit_compressor = false;
             bool outdoor_unit_ac_fan = false;
-            uint8_t outdoor_unit_outdoor_temp_c = 0;
-            uint8_t outdoor_unit_discharge_temp_c = 0;
-            uint8_t outdoor_unit_condenser_mid_temp_c = 0;
+            Temperature outdoor_unit_outdoor_temp = { TemperatureUnit::Celsius, 0 };
+            Temperature outdoor_unit_discharge_temp = { TemperatureUnit::Celsius, 0 };
+            Temperature outdoor_unit_condenser_mid_temp = { TemperatureUnit::Celsius, 0 };
 
             std::string to_string();
         };
 
         struct NonNasaCommandC1 // from outdoor unit
         {
-            uint8_t outdoor_unit_sump_temp_c = 0;
+            Temperature outdoor_unit_sump_temp = { TemperatureUnit::Celsius, 0 };
 
             std::string to_string();
         };
@@ -189,8 +207,8 @@ namespace esphome
         {
             std::string dst;
 
-            uint8_t room_temp = 0;
-            uint8_t target_temp = 0;
+            Temperature target_temp = { TemperatureUnit::Celsius, 0 };
+            Temperature room_temp = { TemperatureUnit::Celsius, 0 };
             NonNasaFanspeed fanspeed = NonNasaFanspeed::Auto;
             NonNasaMode mode = NonNasaMode::Heat;
             bool power = false;
