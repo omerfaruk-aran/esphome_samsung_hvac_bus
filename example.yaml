@@ -56,6 +56,13 @@ samsung_ac:
   # This increases bus traffic slightly; disable if you don't need idle telemetry.
   non_nasa_keepalive: true
 
+  # (Non-NASA only) Optional TX delay before sending frames (in milliseconds).
+  # Use this if you see unstable communication (missed responses / collisions) on the bus.
+  # 0 = no delay (send immediately). Recommended tuning range: 10–50 ms; 30 ms is a safe starting point.
+  # Note: Setting this too high can make commands/keepalives feel slower.
+  non_nasa_tx_delay_ms: 30
+
+
   # Enable 'debug_log_messages_on_change' to log sensor data changes within 120 seconds
   # When set to true, this option logs the sensor data only when the value changes within a 120-second interval,
   # reducing redundant log messages and focusing on real-time data changes.

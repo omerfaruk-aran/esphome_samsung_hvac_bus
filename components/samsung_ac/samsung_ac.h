@@ -101,6 +101,12 @@ namespace esphome
       {
         non_nasa_keepalive = value;
       }
+
+      void set_non_nasa_tx_delay_ms(uint16_t value)
+      {
+        non_nasa_tx_delay_ms = value;
+      }
+
       void set_debug_log_undefined_messages(bool value)
       {
         debug_log_undefined_messages = value;
@@ -251,14 +257,14 @@ namespace esphome
 
       void set_outdoor_operation_odu_mode_text_sensor(const std::string &address, int value)
       {
-          execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
-                           { dev->update_enum_text(0x8001, value); });
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_enum_text(0x8001, value); });
       }
 
       void set_outdoor_operation_heatcool_text_sensor(const std::string &address, int value)
       {
-       execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
-                           { dev->update_enum_text(0x8003, value); });
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_enum_text(0x8003, value); });
       }
 
     protected:
