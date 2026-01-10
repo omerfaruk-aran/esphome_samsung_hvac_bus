@@ -23,6 +23,7 @@ namespace esphome
         }
 
         bool non_nasa_keepalive = false;
+        uint16_t non_nasa_tx_delay_ms = 0;
 
         ProtocolProcessing protocol_processing = ProtocolProcessing::Auto;
 

@@ -141,9 +141,9 @@ namespace esphome
       if (write_data())
         return;
 
-      // Allow device protocols to perform recurring tasks when idle (at most every 200ms)
+      // Allow device protocols to perform recurring tasks when idle (at most every 20ms)
       const uint32_t now = millis();
-      if (now - last_protocol_update_ >= 200)
+      if (now - last_protocol_update_ >= 20)
       {
         last_protocol_update_ = now;
         for (const auto &pair : devices_)

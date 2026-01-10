@@ -21,6 +21,10 @@ namespace esphome
         constexpr uint32_t KEEPALIVE_DELAY_MS = 30;
         constexpr uint32_t KEEPALIVE_MIN_INTERVAL_MS = 5000;
 
+        // Non-NASA control TX scheduling (turnaround delay)
+        static bool pending_control_tx_ = false;
+        static uint32_t pending_control_tx_due_ms_ = 0;
+
         // Track cumulative energy calculation per device address
         // Note: Energy tracker persists across device reconnections. This is intentional to maintain
         // cumulative energy across device restarts. The tracker is keyed by device address, so if
@@ -890,7 +894,19 @@ namespace esphome
                     {
                         // We know the outdoor unit is awake due to this request_control message, so we only
                         // need to check that the indoor unit is awake.
-                        send_requests(target);
+                        // send_requests(target);
+
+                        // Schedule TX instead of immediate send (avoid sending inside RX decode path)
+                        const uint32_t now = millis();
+                        const uint32_t delay = non_nasa_tx_delay_ms; // configurable (default 0)
+                        const uint32_t due = now + delay;
+
+                        // If already pending, keep the earliest due time
+                        if (!pending_control_tx_ || (int32_t)(due - pending_control_tx_due_ms_) < 0)
+                        {
+                            pending_control_tx_ = true;
+                            pending_control_tx_due_ms_ = due;
+                        }
                     }
                 }
             }
@@ -941,6 +957,21 @@ namespace esphome
             else if (!non_nasa_keepalive)
             {
                 pending_keepalive_ = false;
+            }
+
+            // Non-NASA scheduled control TX
+            if (pending_control_tx_)
+            {
+                const uint32_t now = millis();
+                if ((int32_t)(now - pending_control_tx_due_ms_) >= 0)
+                {
+                    // Only send if indoor is awake; CmdC6 already implies outdoor is awake
+                    if (indoor_unit_awake)
+                    {
+                        send_requests(target);
+                    }
+                    pending_control_tx_ = false;
+                }
             }
 
             // If we're not currently registered, keep sending a registration request until it has
