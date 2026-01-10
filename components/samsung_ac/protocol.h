@@ -9,6 +9,7 @@ namespace esphome
     namespace samsung_ac
     {
         extern bool non_nasa_keepalive;
+        extern uint16_t non_nasa_tx_delay_ms;
 
         enum class DecodeResultType
         {
