@@ -889,6 +889,20 @@ namespace esphome
                 target->set_error_code(source, code);
                 break;
             }
+
+            case MessageNumber::VAR_out_load_fanrpm1:
+            {
+                // Value is also available via custom sensor mapping (config side).
+                double rpm_raw = static_cast<double>(message.value);
+                LOG_MESSAGE(VAR_out_load_fanrpm1, rpm_raw, source, dest);
+                break;
+            }
+            case MessageNumber::VAR_out_load_fanrpm2:
+            {
+                double rpm_raw = static_cast<double>(message.value);
+                LOG_MESSAGE(VAR_out_load_fanrpm2, rpm_raw, source, dest);
+                break;
+            }
             case MessageNumber::ENUM_out_operation_odu_mode:
             {
                 int code = static_cast<int>(message.value);

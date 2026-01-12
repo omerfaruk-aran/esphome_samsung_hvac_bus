@@ -104,6 +104,9 @@ namespace esphome
 
             VAR_out_error_code = 0x8235,
 
+            VAR_out_load_fanrpm1 = 0x823D,
+            VAR_out_load_fanrpm2 = 0x823E,
+
             // Power/Energy (existing)
             LVAR_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = 0x8413,
             LVAR_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM = 0x8414,

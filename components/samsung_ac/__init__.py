@@ -98,7 +98,8 @@ CONF_PRESET_VALUE = "value"
 
 CONF_DEVICE_OUT_OPERATION_ODU_MODE_TEXT = "outdoor_operation_odu_mode"
 CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT = "outdoor_operation_heatcool"
-
+CONF_DEVICE_OUT_FAN1_RPM = "outdoor_fan1_rpm"
+CONF_DEVICE_OUT_FAN2_RPM = "outdoor_fan2_rpm"
 
 def preset_entry(name: str, value: int, displayName: str):
     return (
@@ -206,6 +207,19 @@ def error_code_sensor_schema(message: int):
         accuracy_decimals=0,
         icon="mdi:alert",
         entity_category="diagnostic",
+    )
+
+
+def rpm_sensor_schema(message: int, *, div_10: bool = False):
+    # If NASA table says Div=10 -> default multiply 0.1
+    raw_filters = [{"multiply": 0.1}] if div_10 else []
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement="rpm",
+        accuracy_decimals=1 if div_10 else 0,
+        icon="mdi:fan",
+        state_class=STATE_CLASS_MEASUREMENT,
+        raw_filters=raw_filters,
     )
 
 DEVICE_SCHEMA = cv.Schema(
@@ -320,6 +334,8 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:thermometer",
             entity_category="diagnostic",
         ),
+        cv.Optional(CONF_DEVICE_OUT_FAN1_RPM): rpm_sensor_schema(0x823D),
+        cv.Optional(CONF_DEVICE_OUT_FAN2_RPM): rpm_sensor_schema(0x823E),
 
     }
 )
@@ -327,6 +343,8 @@ DEVICE_SCHEMA = cv.Schema(
 CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_WATER_TEMPERATURE,
     CONF_DEVICE_ROOM_HUMIDITY,
+    CONF_DEVICE_OUT_FAN1_RPM,
+    CONF_DEVICE_OUT_FAN2_RPM,
 ]
 
 CONF_DEVICES = "devices"
