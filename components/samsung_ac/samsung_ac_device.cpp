@@ -126,7 +126,8 @@ namespace esphome
       // {
       //   request.fan_mode = customfanmode_to_fanmode(custom_fan);
       // }
-      else if (!custom_fan.empty()) {
+      else if (!custom_fan.empty()) 
+      {
         request.fan_mode = customfanmode_to_fanmode(custom_fan.c_str());
       }
      
@@ -211,5 +212,6 @@ namespace esphome
 
   } // namespace samsung_ac
 } // namespace esphome
+
 
 
