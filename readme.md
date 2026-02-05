@@ -1,3 +1,6 @@
+# This repo is outdated and doesn't work. I moved to https://github.com/Beormund/esphome-samsung-nasa 
+
+
 # ESPHome Samsung AC
 
 This project offers a [ESPHome](https://esphome.io/index.html) component for integrating Samsung air conditioners into your home automation system. It provides the ability to monitor and control your AC units effortlessly. 
