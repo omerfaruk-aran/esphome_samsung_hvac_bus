@@ -1,6 +1,14 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import uart, sensor, switch, select, number, climate
+from esphome.components import (
+    uart,
+    sensor,
+    switch,
+    select,
+    number,
+    climate,
+    text_sensor,
+)
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_TEMPERATURE,
@@ -246,11 +254,15 @@ def custom_sensor_schema(
         accuracy_decimals=accuracy_decimals,
         device_class=device_class,
         state_class=state_class,
-        entity_category=entity_category
-    ).extend({
-        cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
-        cv.Optional(CONF_DEVICE_CUSTOM_RAW_FILTERS, default=raw_filters): sensor.validate_filters,
-    })
+        entity_category=entity_category,
+    ).extend(
+        {
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
+            cv.Optional(
+                CONF_DEVICE_CUSTOM_RAW_FILTERS, default=raw_filters
+            ): sensor.validate_filters,
+        }
+    )
 
     return schema
 
@@ -319,9 +331,11 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_TARGET_TEMPERATURE): NUMBER_SCHEMA,
         cv.Optional(CONF_DEVICE_WATER_OUTLET_TARGET): NUMBER_SCHEMA,
         cv.Optional(CONF_DEVICE_WATER_TARGET_TEMPERATURE): NUMBER_SCHEMA,
-        cv.Optional(CONF_DEVICE_POWER): switch.switch_schema(Samsung_AC_Switch),
+        cv.Optional(CONF_DEVICE_POWER): switch.switch_schema(
+            Samsung_AC_Switch, icon="mdi:power"
+        ),
         cv.Optional(CONF_DEVICE_AUTOMATIC_CLEANING): switch.switch_schema(
-            Samsung_AC_Switch
+            Samsung_AC_Switch, icon="mdi:broom"
         ),
         cv.Optional(CONF_DEVICE_WATER_HEATER_POWER): switch.switch_schema(
             Samsung_AC_Switch
@@ -574,20 +588,32 @@ DEVICE_SCHEMA = cv.Schema(
         ).extend({
             cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8416): cv.hex_int,
         }),
-        cv.Optional(CONF_DEVICE_OPERATION_MODE): sensor.sensor_schema( 
-            unit_of_measurement="", 
-            accuracy_decimals=0, 
-            icon="mdi:state-machine", 
-        ).extend({ 
-            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x4001): cv.hex_int, 
-        }), 
-        cv.Optional(CONF_DEVICE_OUTDOOR_OPERATION_MODE): sensor.sensor_schema( 
-            unit_of_measurement="", 
-            accuracy_decimals=0, 
-            icon="mdi:state-machine", 
-        ).extend({ 
-            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8001): cv.hex_int, 
-        }),         
+        cv.Optional(CONF_DEVICE_OPERATION_MODE): sensor.sensor_schema(
+            unit_of_measurement="",
+            accuracy_decimals=0,
+            icon="mdi:state-machine",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x4001): cv.hex_int,
+        }),
+        cv.Optional(CONF_DEVICE_OUTDOOR_OPERATION_MODE): sensor.sensor_schema(
+            unit_of_measurement="",
+            accuracy_decimals=0,
+            icon="mdi:state-machine",
+        ).extend({
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8001): cv.hex_int,
+        }),
+        cv.Optional(
+            CONF_DEVICE_OUT_OPERATION_ODU_MODE_TEXT
+        ): text_sensor.text_sensor_schema(
+            icon="mdi:fan",
+            entity_category="diagnostic",
+        ),
+        cv.Optional(
+            CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT
+        ): text_sensor.text_sensor_schema(
+            icon="mdi:thermometer",
+            entity_category="diagnostic",
+        ),
     }
 )
 
@@ -676,6 +702,9 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_DEBUG_LOG_MESSAGES, default=False): cv.boolean,
             cv.Optional(CONF_DEBUG_LOG_MESSAGES_RAW, default=False): cv.boolean,
             cv.Optional(CONF_NON_NASA_KEEPALIVE, default=False): cv.boolean,
+            cv.Optional(CONF_NON_NASA_TX_DELAY_MS, default=0): cv.int_range(
+                min=0, max=1000
+            ),
             cv.Optional(CONF_DEBUG_LOG_UNDEFINED_MESSAGES, default=False): cv.boolean,
             cv.Optional(CONF_CAPABILITIES): CAPABILITIES_SCHEMA,
             cv.Required(CONF_DEVICES): cv.ensure_list(DEVICE_SCHEMA),
@@ -699,6 +728,13 @@ async def to_code(config):
 
         # setup capabilities
         capabilities = device.get(CONF_CAPABILITIES, config.get(CONF_CAPABILITIES, {}))
+
+        cg.add(
+            var_dev.set_supports_fan_modes(
+                capabilities.get(CONF_CAPABILITIES_FAN_MODES, True)
+            )
+        )
+
 
         if CONF_CAPABILITIES_VERTICAL_SWING in capabilities:
             cg.add(
@@ -739,12 +775,8 @@ async def to_code(config):
 
                 cg.add(
                     var_dev.add_alt_mode(
-                        preset_conf.get(
-                            CONF_PRESET_NAME, preset_info["displayName"]
-                        ),  # Kullanıcı tarafından sağlanan adı kullan
-                        preset_conf.get(
-                            CONF_PRESET_VALUE, preset_info["value"]
-                        ),  # Kullanıcı tarafından sağlanan değeri kullan
+                        preset_conf.get(CONF_PRESET_NAME, preset_info["displayName"]),
+                        preset_conf.get(CONF_PRESET_VALUE, preset_info["value"]),
                     )
                 )
 
@@ -811,6 +843,14 @@ async def to_code(config):
             CONF_DEVICE_WATTMETER_TOTAL_PRODUCED: (sensor.new_sensor, var_dev.set_wattmeter_total_produced_sensor),
             CONF_DEVICE_WATTMETER_ACTUAL_PRODUCED: (sensor.new_sensor, var_dev.set_wattmeter_actual_produced_sensor),
             CONF_DEVICE_CAPACITY_REQUEST: (sensor.new_sensor, var_dev.set_capacity_request_sensor),
+            CONF_DEVICE_OUT_OPERATION_ODU_MODE_TEXT: (
+                text_sensor.new_text_sensor,
+                var_dev.set_outdoor_operation_odu_mode_text_sensor,
+            ),
+            CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT: (
+                text_sensor.new_text_sensor,
+                var_dev.set_outdoor_operation_heatcool_text_sensor,
+            ),
         }
 
         # Add new protocol message sensors to device_actions
@@ -896,6 +936,14 @@ async def to_code(config):
             await climate.register_climate(var_cli, conf)
             cg.add(var_dev.set_climate(var_cli))
 
+            # Optional UI mapping: expose Samsung Auto as HA Heat/Cool
+            cg.add(
+                var_dev.set_map_auto_to_heat_cool(
+                    device.get(CONF_MAP_AUTO_TO_HEAT_COOL, False)
+                )
+            )
+
+
         if CONF_DEVICE_CUSTOM in device:
             for cust_sens in device[CONF_DEVICE_CUSTOM]:
                 sens = await sensor.new_sensor(cust_sens)
@@ -921,6 +969,24 @@ async def to_code(config):
                 )
 
         cg.add(var.register_device(var_dev))
+
+    # If debug MQTT is enabled on ESP32, we need ESP-IDF's built-in mqtt component.
+    # ESPHome may exclude it by default to reduce compile time, so re-enable it only when needed.
+    if CORE.is_esp32 and config[CONF_DEBUG_MQTT_HOST]:
+        cg.add_define("SAMSUNG_AC_DEBUG_MQTT")
+        try:
+            from esphome.components.esp32 import include_builtin_idf_component
+
+            include_builtin_idf_component("mqtt")
+        except Exception:
+            try:
+                from esphome.components.esp32 import include_idf_component
+
+                include_idf_component("mqtt")
+            except Exception:
+                from esphome.components.esp32 import add_idf_component
+
+                add_idf_component("mqtt")
 
     cg.add(
         var.set_debug_mqtt(
