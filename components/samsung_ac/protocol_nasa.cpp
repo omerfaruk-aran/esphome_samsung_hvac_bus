@@ -1180,7 +1180,7 @@ namespace esphome
             }
             case MessageNumber::Total_Energy_Consumption:
             {
-                double energy = (double)message.value / 1000.0; // Convert to kWh
+                double energy = (double)message.value; // Value is already in kWh (daily generation counter)
                 LOG_MESSAGE(Total_Energy_Consumption, energy, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Total_Energy_Consumption, energy);
                 break;
@@ -1343,13 +1343,8 @@ namespace esphome
             }
             case MessageNumber::LVAR_in_water_heater_hours:
             {
-                double hours = (double)message.value; // Already in hours
-                // Validate hours (0-100000 hours reasonable - about 11 years max)
-                if (!is_valid_value(hours, 0.0, 100000.0))
-                {
-                    target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_water_heater_hours, get_not_available());
-                    break;
-                }
+                double hours = (double)message.value; // Already in hours (indoor) or Wh (outdoor energy)
+                // Skip validation to allow both water heater hours (indoor) and energy counters (outdoor)
                 LOG_MESSAGE(LVAR_in_water_heater_hours, hours, source, dest);
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_water_heater_hours, hours);
                 break;
