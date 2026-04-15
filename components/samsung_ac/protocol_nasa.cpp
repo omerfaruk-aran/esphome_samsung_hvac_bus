@@ -757,7 +757,7 @@ namespace esphome
             {
                 sensor_value = get_not_available();
             }
-            target->set_custom_sensor(source, (uint16_t)message.messageNumber, sensor_value);
+            bool sensor_published = false;
 
             switch (message.messageNumber)
             {
@@ -782,10 +782,12 @@ namespace esphome
                 {
                     LOG_MESSAGE(VAR_in_temp_water_outlet_target_f, temp, source, dest);
                     target->set_water_outlet_target(source, temp);
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_outlet_target_f, temp);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_outlet_target_f, get_not_available());
                 }
                 break;
@@ -797,10 +799,12 @@ namespace esphome
                 {
                     LOG_MESSAGE(VAR_in_temp_water_heater_target_f, temp, source, dest);
                     target->set_target_water_temperature(source, temp);
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_heater_target_f, temp);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_heater_target_f, get_not_available());
                 }
                 break;
@@ -815,6 +819,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_operation_power, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_in_operation_power = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_power(source, message.value != 0);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_operation_power, message.value);
                 break;
             }
@@ -824,6 +829,7 @@ namespace esphome
                 ESP_LOGD(TAG, "[%s->%s] ENUM_in_operation_automatic_cleaning = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_automatic_cleaning(source, message.value != 0);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_operation_automatic_cleaning, message.value);
                 break;
             }
@@ -833,6 +839,7 @@ namespace esphome
                 ESP_LOGD(TAG, "[%s->%s] ENUM_in_water_heater_power = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_water_heater_power(source, message.value != 0);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_water_heater_power, message.value);
                 break;
             }
@@ -842,6 +849,7 @@ namespace esphome
                 ESP_LOGD(TAG, "[%s->%s] ENUM_in_operation_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_mode(source, operation_mode_to_mode(message.value));
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_operation_mode, message.value);
                 break;
             }
@@ -851,6 +859,7 @@ namespace esphome
                 ESP_LOGD(TAG, "[%s->%s] ENUM_in_water_heater_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 target->set_water_heater_mode(source, water_heater_mode_to_waterheatermode(message.value));
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_water_heater_mode, message.value);
                 return;
             }
@@ -871,6 +880,7 @@ namespace esphome
                     mode = FanMode::Turbo;
                 target->set_fanmode(source, mode);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_fan_mode, message.value);
                 break;
             }
@@ -896,15 +906,18 @@ namespace esphome
                 double temp = (double)message.value / 10.0;
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x4236, get_not_available());
                 }
                 else if (is_valid_temperature(temp))
                 {
                     LOG_MESSAGE(VAR_in_temp_water_heating_loop, temp, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x4236, temp);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x4236, get_not_available());
                 }
                 break;
@@ -914,15 +927,18 @@ namespace esphome
                 double temp = (double)message.value / 10.0;
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_tank_f, get_not_available());
                 }
                 else if (is_valid_temperature(temp))
                 {
                     LOG_MESSAGE(VAR_in_temp_water_tank_f, temp, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_tank_f, temp);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_temp_water_tank_f, get_not_available());
                 }
                 break;
@@ -934,10 +950,12 @@ namespace esphome
                 {
                     LOG_MESSAGE(VAR_out_pipe_temp, temp, source, dest);
                     target->set_outdoor_temperature(source, temp);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8204, temp);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8204, get_not_available());
                 }
                 break;
@@ -989,10 +1007,12 @@ namespace esphome
             }
             case MessageNumber::VAR_out_operation_mode:
                 LOG_MESSAGE(VAR_out_operation_mode, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_operation_mode, message.value);
                 break;
             case MessageNumber::VAR_out_operation_state:
                 LOG_MESSAGE(VAR_out_operation_state, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_operation_state, message.value);
                 break;
             case MessageNumber::ENUM_out_operation_mode:
@@ -1000,6 +1020,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_operation_mode, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_operation_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_operation_mode, message.value);
                 break;
             }
@@ -1008,15 +1029,18 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_heat_cool_mode, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_heat_cool_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_heat_cool_mode, message.value);
                 break;
             }
             case MessageNumber::VAR_out_compressor_freq:
                 LOG_MESSAGE(VAR_out_compressor_freq, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_compressor_freq, message.value);
                 break;
             case MessageNumber::VAR_out_fan_speed:
                 LOG_MESSAGE(VAR_out_fan_speed, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_speed, message.value);
                 break;
             case MessageNumber::ENUM_out_fan_mode:
@@ -1024,6 +1048,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_fan_mode, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_fan_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_fan_mode, message.value);
                 break;
             }
@@ -1032,6 +1057,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_compressor_state, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_compressor_state = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_compressor_state, message.value);
                 break;
             }
@@ -1040,6 +1066,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_defrost_mode, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_defrost_mode = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_defrost_mode, message.value);
                 break;
             }
@@ -1048,6 +1075,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_4way_valve, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_4way_valve = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_4way_valve, message.value);
                 break;
             }
@@ -1055,6 +1083,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_discharge_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_discharge_temp, temp);
                 break;
             }
@@ -1062,6 +1091,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_suction_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_suction_temp, temp);
                 break;
             }
@@ -1069,6 +1099,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_ambient_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_ambient_temp, temp);
                 break;
             }
@@ -1076,7 +1107,9 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_condenser_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_condenser_temp, temp);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_condenser_outlet_temp, temp);
                 break;
             }
@@ -1084,6 +1117,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_evaporator_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_evaporator_temp, temp);
                 break;
             }
@@ -1091,6 +1125,7 @@ namespace esphome
             {
                 double current = (double)message.value / 10.0; // Convert to Amperes
                 LOG_MESSAGE(Compressor_Current, current, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Current, current);
                 break;
             }
@@ -1098,6 +1133,7 @@ namespace esphome
             {
                 double power = (double)message.value; // Already in Watts
                 LOG_MESSAGE(Compressor_Power, power, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Power, power);
                 break;
             }
@@ -1105,6 +1141,7 @@ namespace esphome
             {
                 float freq = message.value;
                 ESP_LOGD(TAG, "Fan/Compressor frequency: %.1f Hz", freq);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Fan_Compressor_Frequency, freq);
                 break;
             }
@@ -1112,6 +1149,7 @@ namespace esphome
             {
                 double power = (double)message.value; // Already in Watts
                 LOG_MESSAGE(VAR_out_fan_power, power, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x8227, power);
                 break;
             }
@@ -1119,6 +1157,7 @@ namespace esphome
             {
                 double power = (double)message.value; // Already in Watts
                 LOG_MESSAGE(Fan_Power, power, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Fan_Power, power);
                 break;
             }
@@ -1126,6 +1165,7 @@ namespace esphome
             {
                 double power = (double)message.value; // Already in Watts
                 LOG_MESSAGE(VAR_out_total_power, power, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_total_power, power);
                 break;
             }
@@ -1133,6 +1173,7 @@ namespace esphome
             {
                 double current = (double)message.value / 10.0; // Convert to Amperes
                 LOG_MESSAGE(Phase_Current, current, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Phase_Current, current);
                 break;
             }
@@ -1140,6 +1181,7 @@ namespace esphome
             {
                 double voltage = (double)message.value; // Already in Volts
                 LOG_MESSAGE(Phase_Voltage, voltage, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Phase_Voltage, voltage);
                 break;
             }
@@ -1147,6 +1189,7 @@ namespace esphome
             {
                 double power = (double)message.value; // Already in Watts
                 LOG_MESSAGE(Phase_Power, power, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Phase_Power, power);
                 break;
             }
@@ -1156,10 +1199,12 @@ namespace esphome
                 if (is_valid_value(pf, 0.0, 1.0))
                 {
                     LOG_MESSAGE(Power_Factor, pf, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::Power_Factor, pf);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::Power_Factor, get_not_available());
                 }
                 break;
@@ -1168,6 +1213,7 @@ namespace esphome
             {
                 double efficiency = (double)message.value / 100.0; // Convert to percentage
                 LOG_MESSAGE(System_Efficiency, efficiency, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::System_Efficiency, efficiency);
                 break;
             }
@@ -1175,6 +1221,7 @@ namespace esphome
             {
                 double capacity = (double)message.value / 10.0; // Convert to kW
                 LOG_MESSAGE(System_Capacity, capacity, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::System_Capacity, capacity);
                 break;
             }
@@ -1182,6 +1229,7 @@ namespace esphome
             {
                 double energy = (double)message.value; // Value is already in kWh (daily generation counter)
                 LOG_MESSAGE(Total_Energy_Consumption, energy, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Total_Energy_Consumption, energy);
                 break;
             }
@@ -1189,6 +1237,7 @@ namespace esphome
             {
                 double hours = (double)message.value; // Already in hours
                 LOG_MESSAGE(Operation_Hours, hours, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Operation_Hours, hours);
                 break;
             }
@@ -1196,6 +1245,7 @@ namespace esphome
             {
                 double hours = (double)message.value; // Already in hours
                 LOG_MESSAGE(VAR_out_operation_hours_alt, hours, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x8287, hours);
                 break;
             }
@@ -1203,6 +1253,7 @@ namespace esphome
             {
                 double hours = (double)message.value; // Already in hours
                 LOG_MESSAGE(Compressor_Hours, hours, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Compressor_Hours, hours);
                 break;
             }
@@ -1210,6 +1261,7 @@ namespace esphome
             {
                 double hours = (double)message.value; // Already in hours
                 LOG_MESSAGE(Fan_Hours, hours, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::Fan_Hours, hours);
                 break;
             }
@@ -1217,6 +1269,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0; // Convert to Celsius
                 LOG_MESSAGE(VAR_in_pipe_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_pipe_temp, temp);
                 break;
             }
@@ -1224,17 +1277,20 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0; // Convert to Celsius
                 LOG_MESSAGE(VAR_in_ambient_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_ambient_temp, temp);
                 break;
             }
             case MessageNumber::VAR_in_operation_state:
                 LOG_MESSAGE(VAR_in_operation_state, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_operation_state, message.value);
                 break;
             case MessageNumber::VAR_in_water_flow:
             {
                 double flow = (double)message.value / 10.0; // Convert to L/min
                 LOG_MESSAGE(VAR_in_water_flow, flow, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_flow, flow);
                 break;
             }
@@ -1242,6 +1298,7 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pressure, get_not_available());
                     break;
                 }
@@ -1249,10 +1306,12 @@ namespace esphome
                 // Validate pressure (0-50 bar reasonable for HVAC systems)
                 if (!is_valid_value(pressure, 0.0, 50.0))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pressure, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_water_pressure, pressure, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_pressure, pressure);
                 break;
             }
@@ -1260,10 +1319,12 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_valve, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_water_valve, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_valve, message.value);
                 break;
             }
@@ -1273,10 +1334,12 @@ namespace esphome
                 // Validate power (0-50000W reasonable for indoor units)
                 if (!is_valid_value(power, 0.0, 50000.0))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_power_consumption, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_power_consumption, power, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_power_consumption, power);
                 break;
             }
@@ -1284,6 +1347,7 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_level, get_not_available());
                     break;
                 }
@@ -1291,10 +1355,12 @@ namespace esphome
                 // Validate percentage (0-100%)
                 if (!is_valid_percentage(level))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_level, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_water_level, level, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_level, level);
                 break;
             }
@@ -1302,6 +1368,7 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_quality, get_not_available());
                     break;
                 }
@@ -1309,21 +1376,25 @@ namespace esphome
                 // Validate quality (0-100% reasonable)
                 if (!is_valid_percentage(quality))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_quality, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_water_quality, quality, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_quality, quality);
                 break;
             }
             case MessageNumber::VAR_in_water_heater:
                 LOG_MESSAGE(VAR_in_water_heater, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_heater, message.value);
                 break;
             case MessageNumber::VAR_in_water_flow_rate:
             {
                 double flow = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_in_water_flow_rate, flow, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_flow_rate, flow);
                 break;
             }
@@ -1331,6 +1402,7 @@ namespace esphome
             {
                 double energy = (double)message.value / 1000.0; // Convert to kWh
                 LOG_MESSAGE(LVAR_in_energy_total, energy, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_energy_total, energy);
                 break;
             }
@@ -1338,6 +1410,7 @@ namespace esphome
             {
                 double hours = (double)message.value; // Already in hours
                 LOG_MESSAGE(LVAR_in_operation_hours, hours, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_operation_hours, hours);
                 break;
             }
@@ -1346,6 +1419,7 @@ namespace esphome
                 double hours = (double)message.value; // Already in hours (indoor) or Wh (outdoor energy)
                 // Skip validation to allow both water heater hours (indoor) and energy counters (outdoor)
                 LOG_MESSAGE(LVAR_in_water_heater_hours, hours, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_in_water_heater_hours, hours);
                 break;
             }
@@ -1365,6 +1439,7 @@ namespace esphome
                 {
                     LOG_MESSAGE(Unknown_VAR, message.value, source, dest);
                 }
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
                 break;
             }
@@ -1376,6 +1451,7 @@ namespace esphome
                 {
                     LOG_MESSAGE(Unknown_ENUM, message.value, source, dest);
                 }
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)message.messageNumber, message.value);
                 break;
             }
@@ -1385,10 +1461,12 @@ namespace esphome
                 if (is_valid_value(energy, 0.0, 1000000.0))
                 {
                     ESP_LOGD(TAG, "Energy Actual: %.3f kWh", energy);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8426, energy);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8426, get_not_available());
                 }
                 break;
@@ -1399,10 +1477,12 @@ namespace esphome
                 if (is_valid_value(energy, 0.0, 1000000.0))
                 {
                     ESP_LOGD(TAG, "Energy Total: %.3f kWh", energy);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8404, energy);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8404, get_not_available());
                 }
                 break;
@@ -1411,6 +1491,7 @@ namespace esphome
             {
                 double energy = message.value / 1000.0;
                 ESP_LOGD(TAG, "Wattmeter Total Produced: %.3f kWh", energy);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_OUT_CONTROL_WATTMETER_TOTAL_PRODUCED, energy);
                 break;
             }
@@ -1420,10 +1501,12 @@ namespace esphome
                 if (is_valid_value(voltage, 0.0, 500.0))
                 {
                     LOG_MESSAGE(LVAR_NM_OUT_SENSOR_VOLTAGE, voltage, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x24FC, voltage);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x24FC, get_not_available());
                 }
                 break;
@@ -1432,6 +1515,7 @@ namespace esphome
             {
                 double pressure = (double)message.value / 10.0; // Convert to bar
                 LOG_MESSAGE(VAR_out_high_pressure, pressure, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_high_pressure, pressure);
                 break;
             }
@@ -1439,6 +1523,7 @@ namespace esphome
             {
                 double pressure = (double)message.value / 10.0; // Convert to bar
                 LOG_MESSAGE(VAR_out_low_pressure, pressure, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_low_pressure, pressure);
                 break;
             }
@@ -1446,6 +1531,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_heat_exchanger_outlet, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_heat_exchanger_outlet, temp);
                 break;
             }
@@ -1453,6 +1539,7 @@ namespace esphome
             {
                 double temp = (double)message.value; // Already in Celsius
                 LOG_MESSAGE(VAR_out_ipm_temperature, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_ipm_temperature, temp);
                 break;
             }
@@ -1460,6 +1547,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0; // Convert to Celsius
                 LOG_MESSAGE(VAR_out_compressor_top_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_compressor_top_temp, temp);
                 break;
             }
@@ -1467,6 +1555,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0; // Convert to Celsius
                 LOG_MESSAGE(VAR_out_high_side_sat_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_high_side_sat_temp, temp);
                 break;
             }
@@ -1474,6 +1563,7 @@ namespace esphome
             {
                 double temp = (double)message.value / 10.0; // Convert to Celsius
                 LOG_MESSAGE(VAR_out_low_side_sat_temp, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_low_side_sat_temp, temp);
                 break;
             }
@@ -1481,6 +1571,7 @@ namespace esphome
             {
                 double power = (double)message.value; // Already in Watts
                 LOG_MESSAGE(VAR_out_power, power, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_power, power);
                 break;
             }
@@ -1490,10 +1581,12 @@ namespace esphome
                 if (is_valid_value(power, 0.0, 100000.0))
                 {
                     LOG_MESSAGE(VAR_out_power_22fc_unknown, power, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x22FC, power);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x22FC, get_not_available());
                 }
                 break;
@@ -1504,10 +1597,12 @@ namespace esphome
                 if (is_valid_value(power, 0.0, 100000.0))
                 {
                     LOG_MESSAGE(VAR_out_power_824c_unknown, power, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x824C, power);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x824C, get_not_available());
                 }
                 break;
@@ -1517,6 +1612,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_backup_heater_status, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_in_backup_heater_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_backup_heater_status, message.value);
                 break;
             }
@@ -1525,6 +1621,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_booster_heater_status, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_in_booster_heater_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_booster_heater_status, message.value);
                 break;
             }
@@ -1533,6 +1630,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_in_3way_valve_position, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_in_3way_valve_position = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_in_3way_valve_position, message.value);
                 break;
             }
@@ -1540,6 +1638,7 @@ namespace esphome
             {
                 double percent = (double)message.value; // Already in percent (0-100)
                 LOG_MESSAGE(VAR_in_circulation_pump_speed, percent, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_circulation_pump_speed, percent);
                 break;
             }
@@ -1550,6 +1649,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_compressor_running_status, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_compressor_running_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_compressor_running_status, message.value);
                 break;
             }
@@ -1558,6 +1658,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_hot_gas_valve_status, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_hot_gas_valve_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_hot_gas_valve_status, message.value);
                 break;
             }
@@ -1566,6 +1667,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_liquid_line_valve_status, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_liquid_line_valve_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_liquid_line_valve_status, message.value);
                 break;
             }
@@ -1574,6 +1676,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_4way_reversing_valve_status, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_4way_reversing_valve_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_4way_reversing_valve_status, message.value);
                 break;
             }
@@ -1582,6 +1685,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_evi_bypass_valve_status, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_evi_bypass_valve_status = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_evi_bypass_valve_status, message.value);
                 break;
             }
@@ -1590,6 +1694,7 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_base_pan_heater, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_base_pan_heater = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_base_pan_heater, message.value);
                 break;
             }
@@ -1598,21 +1703,25 @@ namespace esphome
                 std::string display_str = enum_value_to_display_string(MessageNumber::ENUM_out_phe_heater, message.value);
                 ESP_LOGD(TAG, "[%s->%s] ENUM_out_phe_heater = %s (%d)", source.c_str(), dest.c_str(), display_str.c_str(), message.value);
                 
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::ENUM_out_phe_heater, message.value);
                 break;
             }
             case MessageNumber::VAR_out_fan_step:
                 LOG_MESSAGE(VAR_out_fan_step, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_fan_step, message.value);
                 break;
             case MessageNumber::VAR_out_eev_steps:
                 LOG_MESSAGE(VAR_out_eev_steps, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_eev_steps, message.value);
                 break;
             case MessageNumber::VAR_out_dc_link_voltage:
             {
                 double voltage = (double)message.value / 10.0;
                 LOG_MESSAGE(VAR_out_dc_link_voltage, voltage, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_out_dc_link_voltage, voltage);
                 break;
             }
@@ -1622,6 +1731,7 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_room_setpoint, get_not_available());
                     break;
                 }
@@ -1629,10 +1739,12 @@ namespace esphome
                 // Validate temperature
                 if (!is_valid_temperature(temp))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_room_setpoint, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_zone2_room_setpoint, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_room_setpoint, temp);
                 break;
             }
@@ -1640,6 +1752,7 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_water_setpoint, get_not_available());
                     break;
                 }
@@ -1647,10 +1760,12 @@ namespace esphome
                 // Validate temperature
                 if (!is_valid_temperature(temp))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_water_setpoint, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_zone2_water_setpoint, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_zone2_water_setpoint, temp);
                 break;
             }
@@ -1658,6 +1773,7 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone1, get_not_available());
                     break;
                 }
@@ -1665,10 +1781,12 @@ namespace esphome
                 // Validate temperature
                 if (!is_valid_temperature(temp))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone1, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_water_outlet_zone1, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone1, temp);
                 break;
             }
@@ -1676,6 +1794,7 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone2, get_not_available());
                     break;
                 }
@@ -1683,21 +1802,25 @@ namespace esphome
                 // Validate temperature
                 if (!is_valid_temperature(temp))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone2, get_not_available());
                     break;
                 }
                 LOG_MESSAGE(VAR_in_water_outlet_zone2, temp, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_water_outlet_zone2, temp);
                 break;
             }
             case MessageNumber::VAR_in_flow_rate_control:
                 LOG_MESSAGE(VAR_in_flow_rate_control, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::VAR_in_flow_rate_control, message.value);
                 break;
 
             // --- New Energy Messages from Reference Tables ---
             case MessageNumber::LVAR_out_wattmeter_total_sum:
                 LOG_MESSAGE(LVAR_out_wattmeter_total_sum, message.value, source, dest);
+                sensor_published = true;
                 target->set_custom_sensor(source, (uint16_t)MessageNumber::LVAR_out_wattmeter_total_sum, message.value);
                 break;
 
@@ -1706,10 +1829,12 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x0202, get_not_available());
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x0202, (float)message.value);
                 }
                 break;
@@ -1719,10 +1844,12 @@ namespace esphome
                 double value = (double)message.value;
                 if (is_valid_value(value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x0410, value);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x0410, get_not_available());
                 }
                 break;
@@ -1733,10 +1860,12 @@ namespace esphome
                 if (is_valid_value(current, 0.0, 100.0))
                 {
                     LOG_MESSAGE(VAR_out_compressor_current, current, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8217, current);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8217, get_not_available());
                 }
                 break;
@@ -1747,10 +1876,12 @@ namespace esphome
                 if (is_valid_value(pressure, 0.0, 50.0))
                 {
                     LOG_MESSAGE(VAR_out_system_pressure, pressure, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8224, pressure);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8224, get_not_available());
                 }
                 break;
@@ -1761,16 +1892,19 @@ namespace esphome
                 if (is_valid_value(current, 0.0, 100.0))
                 {
                     LOG_MESSAGE(VAR_out_fan_current, current, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8225, current);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8225, get_not_available());
                 }
                 break;
             }
             case MessageNumber::VAR_out_unknown_8245:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x8245, (float)message.value);
                 break;
             }
@@ -1780,10 +1914,12 @@ namespace esphome
                 if (is_valid_value(speed, 0.0, 10000.0))
                 {
                     LOG_MESSAGE(VAR_out_compressor_speed, speed, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x82E0, speed);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x82E0, get_not_available());
                 }
                 break;
@@ -1794,51 +1930,61 @@ namespace esphome
                 if (is_valid_value(rpm, 0.0, 10000.0))
                 {
                     LOG_MESSAGE(VAR_out_fan_speed_rpm, rpm, source, dest);
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x82E3, rpm);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x82E3, get_not_available());
                 }
                 break;
             }
             case MessageNumber::VAR_out_unknown_829A:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x829A, (float)message.value);
                 break;
             }
             case MessageNumber::ENUM_unknown_803F:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x803F, (float)message.value);
                 break;
             }
             case MessageNumber::VAR_out_unknown_822E:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x822E, (float)message.value);
                 break;
             }
             case MessageNumber::VAR_out_unknown_8278:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x8278, (float)message.value);
                 break;
             }
             case MessageNumber::VAR_out_unknown_82FC:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x82FC, (float)message.value);
                 break;
             }
             case MessageNumber::VAR_out_unknown_823F:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x823F, (float)message.value);
                 break;
             }
             case MessageNumber::VAR_out_unknown_8231:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x8231, (float)message.value);
                 break;
             }
             case MessageNumber::VAR_out_unknown_8234:
             {
+                sensor_published = true;
                 target->set_custom_sensor(source, 0x8234, (float)message.value);
                 break;
             }
@@ -1846,10 +1992,12 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x825A, get_not_available());
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x825A, (float)message.value);
                 }
                 break;
@@ -1858,10 +2006,12 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x825B, get_not_available());
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x825B, (float)message.value);
                 }
                 break;
@@ -1870,10 +2020,12 @@ namespace esphome
             {
                 if (is_error_value(message.value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x825D, get_not_available());
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x825D, (float)message.value);
                 }
                 break;
@@ -1883,10 +2035,12 @@ namespace esphome
                 double value = (double)message.value / 10.0;
                 if (is_valid_value(value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x827A, value);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x827A, get_not_available());
                 }
                 break;
@@ -1896,10 +2050,12 @@ namespace esphome
                 double value = (double)message.value;
                 if (is_valid_value(value))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x041B, value);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x041B, get_not_available());
                 }
                 break;
@@ -1909,10 +2065,12 @@ namespace esphome
                 double energy = (double)message.value / 1000.0;
                 if (is_valid_value(energy, 0.0, 10000000.0))
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8414, energy);
                 }
                 else
                 {
+                    sensor_published = true;
                     target->set_custom_sensor(source, 0x8414, get_not_available());
                 }
                 break;
@@ -1948,10 +2106,12 @@ namespace esphome
                     if (is_valid_value(value, 0.0, 1000000.0))
                     {
                         LOG_MESSAGE(total_produced_energy, value, source, dest);
+                        sensor_published = true;
                         target->set_custom_sensor(source, 0x8427, value);
                     }
                     else
                     {
+                        sensor_published = true;
                         target->set_custom_sensor(source, 0x8427, get_not_available());
                     }
                     break;
@@ -1961,10 +2121,12 @@ namespace esphome
                     if (is_valid_value(value, 0.0, 1000000.0))
                     {
                         LOG_MESSAGE(actual_produced_energy, value, source, dest);
+                        sensor_published = true;
                         target->set_custom_sensor(source, 0x8426, value);
                     }
                     else
                     {
+                        sensor_published = true;
                         target->set_custom_sensor(source, 0x8426, get_not_available());
                     }
                     break; 
@@ -1974,10 +2136,12 @@ namespace esphome
                     if (is_valid_value(value, 0.0, 1000000.0))
                     {
                         LOG_MESSAGE(NASA_OUTDOOR_CONTROL_WATTMETER_TOTAL_SUM, value, source, dest);
+                        sensor_published = true;
                         target->set_custom_sensor(source, 0x8415, value);
                     }
                     else
                     {
+                        sensor_published = true;
                         target->set_custom_sensor(source, 0x8415, get_not_available());
                     }
                     break;
@@ -1987,10 +2151,12 @@ namespace esphome
                     if (is_valid_value(value, 0.0, 1000000.0))
                     {
                         LOG_MESSAGE(NASA_OUTDOOR_CONTROL_WATTMETER_TOTAL_SUM_ACCUM, value, source, dest);
+                        sensor_published = true;
                         target->set_custom_sensor(source, 0x8416, value);
                     }
                     else
                     {
+                        sensor_published = true;
                         target->set_custom_sensor(source, 0x8416, get_not_available());
                     }
                     break;
@@ -2004,6 +2170,10 @@ namespace esphome
                 }
                 break;
             }
+            }
+            if (!sensor_published)
+            {
+                target->set_custom_sensor(source, (uint16_t)message.messageNumber, sensor_value);
             }
         }
 
@@ -2473,6 +2643,7 @@ namespace esphome
                 }
                 break;
             }
+
         }
 
         void NasaProtocol::protocol_update(MessageTarget *target)
