@@ -1047,7 +1047,13 @@ namespace esphome
             // been confirmed by the outdoor unit.
             if (!controller_registered)
             {
-                send_register_controller(target);
+                static uint32_t last_reg_attempt = 0;
+                const uint32_t now = millis();
+                if (now - last_reg_attempt > 10000) // wait 10.000 ms (10 seconds)
+                {
+                    send_register_controller(target);
+                    last_reg_attempt = now;
+                }
             }
 
             // If we have *any* messages in the queue for longer than 15s, assume failure and
