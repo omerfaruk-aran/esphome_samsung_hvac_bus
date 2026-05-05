@@ -242,6 +242,12 @@ namespace esphome
     void Samsung_AC::after_write()
     {
       if (this->flow_control_pin_ != nullptr) {
+        // At 9600 baud, flush() drains the TX FIFO but the UART shift register still
+        // has up to ~1.15ms of bits in flight. Pulling DE/RE low before the last byte
+        // finishes transmitting corrupts the trailing bits on the RS-485 bus and can
+        // cause CRC errors at the receiver, eventually crashing the outdoor unit.
+        // 3ms is a safe margin (≈ 2.5 byte-times at 9600 baud) with negligible bus impact.
+        delayMicroseconds(3000);
         LOGD("switching flow_control_pin to read");
         this->flow_control_pin_->digital_write(false);
       }
