@@ -1031,14 +1031,18 @@ namespace esphome
 
         void NonNasaProtocol::protocol_update(MessageTarget *target)
         {
-            // non-blocking keepalive send (scheduled from broadcast request)
+            // non-blocking keepalive send (scheduled from broadcast request).
+            // Uses try_send_register_controller() to enforce the shared 10-second rate limit
+            // so the keepalive cannot fire back-to-back with an initial registration or wake-up send.
             if (non_nasa_keepalive && pending_keepalive_)
             {
                 const uint32_t now = millis();
                 if ((int32_t)(now - pending_keepalive_due_ms_) >= 0)
                 {
-                    send_register_controller(target);
-                    last_keepalive_sent_ms_ = now;
+                    if (try_send_register_controller(target))
+                    {
+                        last_keepalive_sent_ms_ = now;
+                    }
                     pending_keepalive_ = false;
                 }
             }
