@@ -25,6 +25,8 @@ namespace esphome
         static bool pending_control_tx_ = false;
         static uint32_t pending_control_tx_due_ms_ = 0;
 
+        void send_register_controller(MessageTarget *target);
+
         // Registration rate-limiting: shared by initial registration and the wake-up path.
         // Both paths must respect the same 10-second minimum interval to avoid spamming
         // the RS-485 bus with D1 registration packets, which overwhelms the outdoor unit
