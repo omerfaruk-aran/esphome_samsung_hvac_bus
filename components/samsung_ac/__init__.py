@@ -3,6 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import (
     uart,
     sensor,
+    binary_sensor,
     switch,
     select,
     number,
@@ -36,7 +37,7 @@ from esphome import pins
 
 CODEOWNERS = ["matthias882", "lanwin", "omerfaruk-aran"]
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor", "switch", "select", "number", "climate", "text_sensor"]
+AUTO_LOAD = ["sensor", "binary_sensor", "switch", "select", "number", "climate", "text_sensor"]
 MULTI_CONF = False
 
 CONF_SAMSUNG_AC_ID = "samsung_ac_id"
@@ -85,6 +86,7 @@ CONF_DEVICE_ROOM_HUMIDITY = "room_humidity"
 CONF_DEVICE_CUSTOM = "custom_sensor"
 CONF_DEVICE_CUSTOM_MESSAGE = "message"
 CONF_DEVICE_CUSTOM_RAW_FILTERS = "raw_filters"
+CONF_DEVICE_CUSTOM_TYPE = "type"
 CONF_DEVICE_ERROR_CODE = "error_code"
 CONF_DEVICE_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM = "outdoor_instantaneous_power"
 CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = "outdoor_cumulative_energy"
@@ -151,12 +153,30 @@ CAPABILITIES_SCHEMA = cv.Schema(
     }
 )
 
-CUSTOM_SENSOR_SCHEMA = sensor.sensor_schema().extend(
+CUSTOM_NUMERIC_SENSOR_SCHEMA = sensor.sensor_schema().extend(
     {
         cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int,
+        cv.Optional(CONF_DEVICE_CUSTOM_TYPE, default="sensor"): cv.one_of(
+            "sensor",
+            lower=True,
+        ),
     }
 )
 
+CUSTOM_BINARY_SENSOR_SCHEMA = binary_sensor.binary_sensor_schema().extend(
+    {
+        cv.Required(CONF_DEVICE_CUSTOM_MESSAGE): cv.hex_int,
+        cv.Required(CONF_DEVICE_CUSTOM_TYPE): cv.one_of(
+            "binary",
+            lower=True,
+        ),
+    }
+)
+
+CUSTOM_SENSOR_SCHEMA = cv.Any(
+    CUSTOM_NUMERIC_SENSOR_SCHEMA,
+    CUSTOM_BINARY_SENSOR_SCHEMA,
+)
 
 def custom_sensor_schema(
     message: int,
@@ -584,12 +604,22 @@ async def to_code(config):
 
         if CONF_DEVICE_CUSTOM in device:
             for cust_sens in device[CONF_DEVICE_CUSTOM]:
-                sens = await sensor.new_sensor(cust_sens)
-                cg.add(
-                    var_dev.add_custom_sensor(
-                        cust_sens[CONF_DEVICE_CUSTOM_MESSAGE], sens
+                custom_type = cust_sens.get(CONF_DEVICE_CUSTOM_TYPE, "sensor")
+
+                if custom_type == "binary":
+                    sens = await binary_sensor.new_binary_sensor(cust_sens)
+                    cg.add(
+                        var_dev.add_custom_binary_sensor(
+                            cust_sens[CONF_DEVICE_CUSTOM_MESSAGE], sens
+                        )
                     )
-                )
+                else:
+                    sens = await sensor.new_sensor(cust_sens)
+                    cg.add(
+                        var_dev.add_custom_sensor(
+                            cust_sens[CONF_DEVICE_CUSTOM_MESSAGE], sens
+                        )
+                    )
 
         for key in CUSTOM_SENSOR_KEYS:
             if key in device:
