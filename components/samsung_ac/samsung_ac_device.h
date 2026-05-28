@@ -6,6 +6,7 @@
 #include "esphome/core/helpers.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/select/select.h"
 #include "esphome/components/number/number.h"
@@ -140,6 +141,7 @@ namespace esphome
       Samsung_AC_Water_Heater_Mode_Select *waterheatermode{nullptr};
       Samsung_AC_Climate *climate{nullptr};
       std::map<uint16_t, sensor::Sensor *> custom_sensor_map;
+      std::map<uint16_t, binary_sensor::BinarySensor *> custom_binary_sensor_map;
       float room_temperature_offset{0};
 
       template <typename SwingType>
@@ -210,6 +212,12 @@ namespace esphome
         {
           it->second->publish_state(value);
         }
+
+        auto binary_it = custom_binary_sensor_map.find(message_number);
+        if (binary_it != custom_binary_sensor_map.end())
+        {
+          binary_it->second->publish_state(value != 0);
+        }
       }
 
       void set_room_temperature_sensor(sensor::Sensor *sensor)
@@ -231,6 +239,11 @@ namespace esphome
       void add_custom_sensor(int message_number, sensor::Sensor *sensor)
       {
         custom_sensor_map[(uint16_t)message_number] = sensor;
+      }
+
+      void add_custom_binary_sensor(int message_number, binary_sensor::BinarySensor *sensor)
+      {
+        custom_binary_sensor_map[(uint16_t)message_number] = sensor;
       }
 
       void set_power_switch(Samsung_AC_Switch *switch_)
