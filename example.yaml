@@ -113,7 +113,7 @@ samsung_ac:
       # Optional: show Samsung Auto as HA Heat/Cool (allows setting target temp in HA UI)
       map_auto_to_heat_cool: false
 
-      # Configures/overrides the capabilites for this devices. 
+      # Configures/overrides the capabilities for this device.      
       # Look above for all options.
       capabilities:
         horizontal_swing: false # This device have no h swing. 
@@ -154,6 +154,29 @@ samsung_ac:
       room_humidity:
         name: "Kitchen humidity"
       
+      # Only supported on NASA-based heat pumps
+      water_temperature:
+        name: "Warm water"
+      water_target_temperature:
+        name: "Hot Water Target Temperature"
+      water_heater_mode:
+        name: "Hotwater Mode"
+      
+      # Custom sensors can be used to expose additional Samsung bus messages.
+      # Use debug_log_messages or debug MQTT output to identify the message number you want.
+      # By default, custom_sensor creates a numeric sensor.
+      custom_sensor:
+        - name: "Kitchen custom value"
+          message: 0x1234
+
+        # Set type: binary to expose a bus message as a binary_sensor.
+        # Binary custom sensors are off when the decoded value is 0 and on for any non-zero value.
+        - name: "Kitchen custom binary flag"
+          message: 0x4087
+          type: binary
+          device_class: heat
+          entity_category: diagnostic
+      
     - address: "10.00.00" # Outdoor device address as the following components are dependent on an outdoor unit.
       # This sensor captures and monitors specific error codes returned by the HVAC system.
       # When an error occurs, the sensor detects the error code and updates its value accordingly.
@@ -189,14 +212,7 @@ samsung_ac:
       # Consistent voltage readings indicate stable power delivery, while deviations can help detect electrical issues in the system.
       outdoor_voltage:
         name: "Outdoor Voltage"
-
-      # Only supported on NASA based heatpumps
-      water_temperature:
-        name: "Warm water"
-      water_target_temperature:
-        name: "Hot Water Target Temperature"
-      water_heater_mode:
-        name: "Hotwater Mode"
+        
       outdoor_temperature: # Should be used with outdoor device address
         name: "Outdoor temperature"
 
