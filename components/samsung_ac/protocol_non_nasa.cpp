@@ -36,10 +36,13 @@ namespace esphome
 
         // Rate-limited wrapper around send_register_controller().
         // Returns true if a packet was actually sent, false if still within the quiet period.
+        // last_reg_attempt_ms_ == 0 means "never sent"; the first attempt is always allowed
+        // through immediately. Subsequent attempts are rate-limited to REG_MIN_INTERVAL_MS.
         static bool try_send_register_controller(MessageTarget *target)
         {
             const uint32_t now = millis();
-            if (now - last_reg_attempt_ms_ < REG_MIN_INTERVAL_MS)
+            if (last_reg_attempt_ms_ != 0 &&
+                now - last_reg_attempt_ms_ < REG_MIN_INTERVAL_MS)
                 return false;
             last_reg_attempt_ms_ = now;
             send_register_controller(target);
