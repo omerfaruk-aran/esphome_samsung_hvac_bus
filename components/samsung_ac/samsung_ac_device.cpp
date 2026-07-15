@@ -34,7 +34,7 @@ namespace esphome
                                         climate::CLIMATE_FAN_AUTO});
 
         static const char *CUSTOM_FAN_MODES[] = {"Turbo"};
-        traits.set_supported_custom_fan_modes(CUSTOM_FAN_MODES);
+        this->set_supported_custom_fan_modes(CUSTOM_FAN_MODES);
       }
 
       {
@@ -58,7 +58,7 @@ namespace esphome
 
           if (!custom_presets.empty())
           {
-            traits.set_supported_custom_presets(custom_presets);
+            this->set_supported_custom_presets(custom_presets);
           }
         }
       }
@@ -200,7 +200,3 @@ namespace esphome
 
   } // namespace samsung_ac
 } // namespace esphome
-
-
-
-
