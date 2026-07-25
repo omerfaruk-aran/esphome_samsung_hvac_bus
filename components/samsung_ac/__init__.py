@@ -63,7 +63,12 @@ SELECT_WATER_HEATER_MODE_SCHEMA = select.select_schema(
 )
 
 NUMBER_SCHEMA = number.number_schema(Samsung_AC_Number).extend(
-    {cv.GenerateID(): cv.declare_id(Samsung_AC_Number)}
+    {
+        cv.GenerateID(): cv.declare_id(Samsung_AC_Number),
+        cv.Optional(CONF_STEP): cv.float_,
+        cv.Optional(CONF_MIN_VALUE): cv.float_,
+        cv.Optional(CONF_MAX_VALUE): cv.float_,
+    }
 )
 
 CLIMATE_SCHEMA = climate.climate_schema(Samsung_AC_Climate)
