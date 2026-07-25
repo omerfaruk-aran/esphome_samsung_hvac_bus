@@ -110,6 +110,19 @@ CONF_PRESET_VALUE = "value"
 CONF_DEVICE_OUT_OPERATION_ODU_MODE_TEXT = "outdoor_operation_odu_mode"
 CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT = "outdoor_operation_heatcool"
 
+CONF_DEVICE_PM10 = "pm10"
+CONF_DEVICE_PM25 = "pm25"
+CONF_DEVICE_PM1_0 = "pm1_0"
+CONF_DEVICE_INDOOR_CAPACITY_REQUEST = "indoor_capacity_request"
+CONF_DEVICE_INDOOR_REAL_MODE_TEXT = "indoor_real_mode"
+CONF_DEVICE_INDOOR_REAL_FAN_SPEED_TEXT = "indoor_real_fan_speed"
+CONF_DEVICE_INDOOR_REAL_ALT_MODE_TEXT = "indoor_real_alt_mode"
+CONF_DEVICE_OUT_4WAY_VALVE_TEXT = "outdoor_4way_valve"
+CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP = "outdoor_compressor_top_temperature"
+CONF_DEVICE_OUT_PIPE_OUT1_TEMP = "outdoor_pipe_out1_temperature"
+CONF_DEVICE_OUT_PIPE_OUT2_TEMP = "outdoor_pipe_out2_temperature"
+CONF_DEVICE_OUT_PIPE_IN3_TEMP = "outdoor_pipe_in3_temperature"
+
 
 def preset_entry(name: str, value: int, displayName: str):
     return (
@@ -244,6 +257,46 @@ def error_code_sensor_schema(message: int):
     )
 
 
+def dust_sensor_schema(message: int, device_class=cv.UNDEFINED):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement="µg/m³",
+        accuracy_decimals=0,
+        device_class=device_class,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:blur",
+        raw_filters=[{"filter_out": 65535}],
+    )
+
+
+def capacity_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement="%",
+        accuracy_decimals=0,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:gauge",
+        raw_filters=[{"filter_out": 65535}],
+    )
+
+
+def outdoor_temp_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement=UNIT_CELSIUS,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:thermometer",
+        raw_filters=[
+            {"filter_out": 32767},
+            {"filter_out": 65535},
+            {"lambda": Lambda("return (int16_t)x;")},
+            {"multiply": 0.1},
+        ],
+    )
+
+
 DEVICE_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_DEVICE_ID): cv.declare_id(Samsung_AC_Device),
@@ -358,11 +411,51 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:thermometer",
             entity_category="diagnostic",
         ),
+        cv.Optional(CONF_DEVICE_PM10): dust_sensor_schema(0x42D1, device_class="pm10"),
+        cv.Optional(CONF_DEVICE_PM25): dust_sensor_schema(0x42D2, device_class="pm25"),
+        cv.Optional(CONF_DEVICE_PM1_0): dust_sensor_schema(0x42D3),
+        cv.Optional(CONF_DEVICE_INDOOR_CAPACITY_REQUEST): capacity_sensor_schema(0x4211),
+        cv.Optional(CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP): outdoor_temp_sensor_schema(0x8280),
+        cv.Optional(CONF_DEVICE_OUT_PIPE_OUT1_TEMP): outdoor_temp_sensor_schema(0x8264),
+        cv.Optional(CONF_DEVICE_OUT_PIPE_OUT2_TEMP): outdoor_temp_sensor_schema(0x8265),
+        cv.Optional(CONF_DEVICE_OUT_PIPE_IN3_TEMP): outdoor_temp_sensor_schema(0x8261),
+        cv.Optional(
+            CONF_DEVICE_INDOOR_REAL_MODE_TEXT
+        ): text_sensor.text_sensor_schema(
+            icon="mdi:state-machine",
+            entity_category="diagnostic",
+        ),
+        cv.Optional(
+            CONF_DEVICE_INDOOR_REAL_FAN_SPEED_TEXT
+        ): text_sensor.text_sensor_schema(
+            icon="mdi:fan-clock",
+            entity_category="diagnostic",
+        ),
+        cv.Optional(
+            CONF_DEVICE_INDOOR_REAL_ALT_MODE_TEXT
+        ): text_sensor.text_sensor_schema(
+            icon="mdi:cog",
+            entity_category="diagnostic",
+        ),
+        cv.Optional(
+            CONF_DEVICE_OUT_4WAY_VALVE_TEXT
+        ): text_sensor.text_sensor_schema(
+            icon="mdi:valve",
+            entity_category="diagnostic",
+        ),
     }
 )
 
 CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_WATER_TEMPERATURE,
+    CONF_DEVICE_PM10,
+    CONF_DEVICE_PM25,
+    CONF_DEVICE_PM1_0,
+    CONF_DEVICE_INDOOR_CAPACITY_REQUEST,
+    CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP,
+    CONF_DEVICE_OUT_PIPE_OUT1_TEMP,
+    CONF_DEVICE_OUT_PIPE_OUT2_TEMP,
+    CONF_DEVICE_OUT_PIPE_IN3_TEMP,
 ]
 
 CONF_DEVICES = "devices"
@@ -544,6 +637,22 @@ async def to_code(config):
             CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT: (
                 text_sensor.new_text_sensor,
                 var_dev.set_outdoor_operation_heatcool_text_sensor,
+            ),
+            CONF_DEVICE_INDOOR_REAL_MODE_TEXT: (
+                text_sensor.new_text_sensor,
+                var_dev.set_indoor_real_mode_text_sensor,
+            ),
+            CONF_DEVICE_INDOOR_REAL_FAN_SPEED_TEXT: (
+                text_sensor.new_text_sensor,
+                var_dev.set_indoor_real_fan_speed_text_sensor,
+            ),
+            CONF_DEVICE_INDOOR_REAL_ALT_MODE_TEXT: (
+                text_sensor.new_text_sensor,
+                var_dev.set_indoor_real_alt_mode_text_sensor,
+            ),
+            CONF_DEVICE_OUT_4WAY_VALVE_TEXT: (
+                text_sensor.new_text_sensor,
+                var_dev.set_outdoor_4way_valve_text_sensor,
             ),
         }
 

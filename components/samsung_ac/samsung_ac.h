@@ -273,6 +273,30 @@ namespace esphome
                                  { dev->update_enum_text(0x8003, value); });
       }
 
+      void set_indoor_real_mode_text_sensor(const std::string &address, int value)
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_enum_text(0x4002, value); });
+      }
+
+      void set_indoor_real_fan_speed_text_sensor(const std::string &address, int value)
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_enum_text(0x4007, value); });
+      }
+
+      void set_indoor_real_alt_mode_text_sensor(const std::string &address, int value)
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_enum_text(0x4060, value); });
+      }
+
+      void set_outdoor_4way_valve_text_sensor(const std::string &address, int value)
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_enum_text(0x801A, value); });
+      }
+
     protected:
       Samsung_AC_Device *find_device(const std::string &address)
       {

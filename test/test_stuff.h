@@ -255,6 +255,10 @@ public:
 
     void set_outdoor_operation_odu_mode_text_sensor(const std::string &address, int value) override {}
     void set_outdoor_operation_heatcool_text_sensor(const std::string &address, int value) override {}
+    void set_indoor_real_mode_text_sensor(const std::string &address, int value) override {}
+    void set_indoor_real_fan_speed_text_sensor(const std::string &address, int value) override {}
+    void set_indoor_real_alt_mode_text_sensor(const std::string &address, int value) override {}
+    void set_outdoor_4way_valve_text_sensor(const std::string &address, int value) override {}
 
         void assert_only_address(const std::string address)
         {

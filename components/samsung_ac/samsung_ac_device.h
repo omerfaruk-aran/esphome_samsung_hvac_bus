@@ -131,6 +131,10 @@ namespace esphome
       sensor::Sensor *outdoor_voltage{nullptr};
       text_sensor::TextSensor *outdoor_operation_odu_mode_text{nullptr};
       text_sensor::TextSensor *outdoor_operation_heatcool_text{nullptr};
+      text_sensor::TextSensor *indoor_real_mode_text{nullptr};
+      text_sensor::TextSensor *indoor_real_fan_speed_text{nullptr};
+      text_sensor::TextSensor *indoor_real_alt_mode_text{nullptr};
+      text_sensor::TextSensor *outdoor_4way_valve_text{nullptr};
 
       Samsung_AC_Number *target_temperature{nullptr};
       Samsung_AC_Number *water_outlet_target{nullptr};
@@ -552,6 +556,22 @@ namespace esphome
       {
         outdoor_operation_heatcool_text = sensor;
       }
+      void set_indoor_real_mode_text_sensor(text_sensor::TextSensor *sensor)
+      {
+        indoor_real_mode_text = sensor;
+      }
+      void set_indoor_real_fan_speed_text_sensor(text_sensor::TextSensor *sensor)
+      {
+        indoor_real_fan_speed_text = sensor;
+      }
+      void set_indoor_real_alt_mode_text_sensor(text_sensor::TextSensor *sensor)
+      {
+        indoor_real_alt_mode_text = sensor;
+      }
+      void set_outdoor_4way_valve_text_sensor(text_sensor::TextSensor *sensor)
+      {
+        outdoor_4way_valve_text = sensor;
+      }
       void update_enum_text(uint16_t message_number, int value)
       {
         // 0x8003 -> ENUM_out_operation_heatcool
@@ -710,6 +730,82 @@ namespace esphome
               break;
             }
             outdoor_operation_odu_mode_text->publish_state(s);
+          }
+          return;
+        }
+
+        // 0x4002 -> ENUM_in_operation_mode_real
+        if (message_number == 0x4002)
+        {
+          if (indoor_real_mode_text != nullptr)
+          {
+            std::string s;
+            switch (value)
+            {
+            case 0: s = "Auto"; break;
+            case 1: s = "Cool"; break;
+            case 2: s = "Dry"; break;
+            case 3: s = "Fan"; break;
+            case 4: s = "Heat"; break;
+            case 254: case 255: s = "Off"; break;
+            default: s = std::string("Mode ") + std::to_string(value); break;
+            }
+            indoor_real_mode_text->publish_state(s);
+          }
+          return;
+        }
+
+        // 0x4007 -> ENUM_in_fan_speed_real
+        if (message_number == 0x4007)
+        {
+          if (indoor_real_fan_speed_text != nullptr)
+          {
+            std::string s;
+            switch (value)
+            {
+            case 0: s = "Auto"; break;
+            case 1: s = "Low"; break;
+            case 2: s = "Mid"; break;
+            case 3: s = "High"; break;
+            case 4: s = "Turbo"; break;
+            case 9: s = "Windfree"; break;
+            case 254: case 255: s = "Off"; break;
+            default: s = std::string("Speed ") + std::to_string(value); break;
+            }
+            indoor_real_fan_speed_text->publish_state(s);
+          }
+          return;
+        }
+
+        // 0x4060 -> ENUM_in_alt_mode_real
+        if (message_number == 0x4060)
+        {
+          if (indoor_real_alt_mode_text != nullptr)
+          {
+            std::string s;
+            switch (value)
+            {
+            case 0: s = "Normal"; break;
+            case 1: s = "Sleep"; break;
+            case 2: s = "Quiet"; break;
+            case 3: s = "Fast"; break;
+            case 6: s = "Longreach"; break;
+            case 9: s = "Windfree"; break;
+            case 254: case 255: s = "Off"; break;
+            default: s = std::string("AltMode ") + std::to_string(value); break;
+            }
+            indoor_real_alt_mode_text->publish_state(s);
+          }
+          return;
+        }
+
+        // 0x801A -> ENUM_out_load_4way
+        if (message_number == 0x801A)
+        {
+          if (outdoor_4way_valve_text != nullptr)
+          {
+            std::string s = (value == 1) ? "Heating (On)" : "Cooling (Off)";
+            outdoor_4way_valve_text->publish_state(s);
           }
           return;
         }

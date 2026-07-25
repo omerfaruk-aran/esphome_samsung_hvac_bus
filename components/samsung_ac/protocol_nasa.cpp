@@ -834,12 +834,14 @@ namespace esphome
             case MessageNumber::ENUM_in_fan_mode_real:
             {
                 LOG_MESSAGE(ENUM_in_fan_mode_real, (double)message.value, source, dest);
+                target->set_indoor_real_fan_speed_text_sensor(source, message.value);
                 break;
             }
             case MessageNumber::ENUM_in_alt_mode:
             {
                 LOG_MESSAGE(ENUM_in_alt_mode, (double)message.value, source, dest);
                 target->set_altmode(source, message.value);
+                target->set_indoor_real_alt_mode_text_sensor(source, message.value);
                 break;
             }
             case MessageNumber::ENUM_in_louver_hl_swing:
@@ -909,6 +911,20 @@ namespace esphome
                     LOG_MESSAGE(ENUM_out_operation_heatcool, code, source, dest);
                 }
                 target->set_outdoor_operation_heatcool_text_sensor(source, code);
+                break;
+            }
+
+            case MessageNumber::ENUM_in_operation_mode_real:
+            {
+                LOG_MESSAGE(ENUM_in_operation_mode_real, (double)message.value, source, dest);
+                target->set_indoor_real_mode_text_sensor(source, message.value);
+                break;
+            }
+
+            case MessageNumber::ENUM_out_load_4way:
+            {
+                LOG_MESSAGE(ENUM_out_load_4way, (double)message.value, source, dest);
+                target->set_outdoor_4way_valve_text_sensor(source, message.value);
                 break;
             }
 

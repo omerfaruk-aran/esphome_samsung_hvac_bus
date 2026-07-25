@@ -103,6 +103,10 @@ namespace esphome
             virtual void set_outdoor_voltage(const std::string &address, float value) = 0;
             virtual void set_outdoor_operation_odu_mode_text_sensor(const std::string &address, int value) = 0;
             virtual void set_outdoor_operation_heatcool_text_sensor(const std::string &address, int value) = 0;
+            virtual void set_indoor_real_mode_text_sensor(const std::string &address, int value) = 0;
+            virtual void set_indoor_real_fan_speed_text_sensor(const std::string &address, int value) = 0;
+            virtual void set_indoor_real_alt_mode_text_sensor(const std::string &address, int value) = 0;
+            virtual void set_outdoor_4way_valve_text_sensor(const std::string &address, int value) = 0;
         };
 
         struct ProtocolRequest
