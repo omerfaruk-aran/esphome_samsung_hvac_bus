@@ -24,17 +24,15 @@ namespace esphome
       traits.set_visual_min_temperature(16);
       traits.set_visual_max_temperature(30);
 
-      std::vector<climate::ClimateMode> modes = {
-          climate::CLIMATE_MODE_OFF,
-          this->get_map_auto_to_heat_cool() ? climate::CLIMATE_MODE_HEAT_COOL : climate::CLIMATE_MODE_AUTO,
-          climate::CLIMATE_MODE_COOL,
-          climate::CLIMATE_MODE_DRY,
-          climate::CLIMATE_MODE_FAN_ONLY};
+      traits.add_supported_mode(climate::CLIMATE_MODE_OFF);
+      traits.add_supported_mode(this->get_map_auto_to_heat_cool() ? climate::CLIMATE_MODE_HEAT_COOL : climate::CLIMATE_MODE_AUTO);
+      traits.add_supported_mode(climate::CLIMATE_MODE_COOL);
+      traits.add_supported_mode(climate::CLIMATE_MODE_DRY);
+      traits.add_supported_mode(climate::CLIMATE_MODE_FAN_ONLY);
       if (device->supports_heat_mode())
       {
-        modes.push_back(climate::CLIMATE_MODE_HEAT);
+        traits.add_supported_mode(climate::CLIMATE_MODE_HEAT);
       }
-      traits.set_supported_modes(modes);
 
       if (device->supports_fan_modes()) {
         traits.set_supported_fan_modes({climate::CLIMATE_FAN_HIGH,
