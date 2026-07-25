@@ -329,6 +329,8 @@ namespace esphome
           ProtocolRequest request;
           request.reset_filter_time = true;
           publish_request(request);
+          update_filter_use_time(0.0f);
+          update_filter_clean_alarm(false);
         };
       }
 
