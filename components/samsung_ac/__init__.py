@@ -30,6 +30,9 @@ from esphome.const import (
     CONF_FILTERS,
     CONF_FLOW_CONTROL_PIN,
     ENTITY_CATEGORY_DIAGNOSTIC,
+    CONF_STEP,
+    CONF_MIN_VALUE,
+    CONF_MAX_VALUE,
 )
 from esphome.core import CORE, Lambda
 from esphome.cpp_helpers import gpio_pin_expression
@@ -674,8 +677,11 @@ async def to_code(config):
             conf = device[CONF_DEVICE_WATER_TARGET_TEMPERATURE]
             conf[CONF_UNIT_OF_MEASUREMENT] = UNIT_CELSIUS
             conf[CONF_DEVICE_CLASS] = DEVICE_CLASS_TEMPERATURE
+            min_val = conf.get(CONF_MIN_VALUE, 30.0)
+            max_val = conf.get(CONF_MAX_VALUE, 70.0)
+            step_val = conf.get(CONF_STEP, 0.5)
             num = await number.new_number(
-                conf, min_value=30.0, max_value=70.0, step=0.5
+                conf, min_value=min_val, max_value=max_val, step=step_val
             )
             cg.add(var_dev.set_target_water_temperature_number(num))
 
@@ -683,8 +689,11 @@ async def to_code(config):
             conf = device[CONF_DEVICE_TARGET_TEMPERATURE]
             conf[CONF_UNIT_OF_MEASUREMENT] = UNIT_CELSIUS
             conf[CONF_DEVICE_CLASS] = DEVICE_CLASS_TEMPERATURE
+            min_val = conf.get(CONF_MIN_VALUE, 16.0)
+            max_val = conf.get(CONF_MAX_VALUE, 30.0)
+            step_val = conf.get(CONF_STEP, 1.0)
             num = await number.new_number(
-                conf, min_value=16.0, max_value=30.0, step=1.0
+                conf, min_value=min_val, max_value=max_val, step=step_val
             )
             cg.add(var_dev.set_target_temperature_number(num))
 
@@ -692,8 +701,11 @@ async def to_code(config):
             conf = device[CONF_DEVICE_WATER_OUTLET_TARGET]
             conf[CONF_UNIT_OF_MEASUREMENT] = UNIT_CELSIUS
             conf[CONF_DEVICE_CLASS] = DEVICE_CLASS_TEMPERATURE
+            min_val = conf.get(CONF_MIN_VALUE, 15.0)
+            max_val = conf.get(CONF_MAX_VALUE, 55.0)
+            step_val = conf.get(CONF_STEP, 0.1)
             num = await number.new_number(
-                conf, min_value=15.0, max_value=55.0, step=0.1
+                conf, min_value=min_val, max_value=max_val, step=step_val
             )
             cg.add(var_dev.set_water_outlet_target_number(num))
 
