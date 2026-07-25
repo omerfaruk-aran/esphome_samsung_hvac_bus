@@ -781,6 +781,7 @@ namespace esphome
             case MessageNumber::ENUM_in_state_humidity_percent:
             {
                 LOG_MESSAGE(ENUM_in_state_humidity_percent, (double)message.value, source, dest);
+                target->set_room_humidity(source, (float)message.value);
                 break;
             }
             case MessageNumber::ENUM_in_operation_power:

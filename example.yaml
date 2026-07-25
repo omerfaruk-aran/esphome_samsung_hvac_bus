@@ -79,11 +79,12 @@ samsung_ac:
   #flow_control_pin: GPIO4
 
   # Capabilities: Define which features your AC system supports.
-  # - fan_modes is enabled by default (fan speed controls will be shown in HA)
+  # - fan_modes and heat_mode are enabled by default (set heat_mode: false for cooling-only units)
   # - vertical_swing and horizontal_swing are disabled by default
   # You can set these globally here, or override per indoor unit under `devices:`
   capabilities:
     fan_modes: true
+    heat_mode: true
     vertical_swing: true
     horizontal_swing: true
     # Presets define special AC modes like Windfree, Eco, and so on. 

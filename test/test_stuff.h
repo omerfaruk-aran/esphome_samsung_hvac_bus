@@ -122,7 +122,7 @@ public:
 
     std::string last_set_room_humidity_address;
     float last_set_room_humidity_value;
-    void set_room_humidity(const std::string address, float value)
+    void set_room_humidity(const std::string address, float value) override
     {
         cout << "> " << address << " set_room_humidity=" << to_string(value) << endl;
         last_set_room_humidity_address = address;
@@ -252,6 +252,9 @@ public:
         last_set_error_code_address = address;
         last_set_error_code_value = error_code;
     }
+
+    void set_outdoor_operation_odu_mode_text_sensor(const std::string &address, int value) override {}
+    void set_outdoor_operation_heatcool_text_sensor(const std::string &address, int value) override {}
 
         void assert_only_address(const std::string address)
         {

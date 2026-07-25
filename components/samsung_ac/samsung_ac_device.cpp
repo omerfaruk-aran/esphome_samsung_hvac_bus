@@ -15,17 +15,26 @@ namespace esphome
       climate::ClimateTraits traits;
 
       traits.add_feature_flags(climate::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE);
+      if (device->room_humidity != nullptr)
+      {
+        traits.add_feature_flags(climate::CLIMATE_SUPPORTS_CURRENT_HUMIDITY);
+      }
 
       traits.set_visual_temperature_step(1);
       traits.set_visual_min_temperature(16);
       traits.set_visual_max_temperature(30);
 
-      traits.set_supported_modes({climate::CLIMATE_MODE_OFF,
-                                  this->get_map_auto_to_heat_cool() ? climate::CLIMATE_MODE_HEAT_COOL : climate::CLIMATE_MODE_AUTO,
-                                  climate::CLIMATE_MODE_COOL,
-                                  climate::CLIMATE_MODE_DRY,
-                                  climate::CLIMATE_MODE_FAN_ONLY,
-                                  climate::CLIMATE_MODE_HEAT});
+      std::vector<climate::ClimateMode> modes = {
+          climate::CLIMATE_MODE_OFF,
+          this->get_map_auto_to_heat_cool() ? climate::CLIMATE_MODE_HEAT_COOL : climate::CLIMATE_MODE_AUTO,
+          climate::CLIMATE_MODE_COOL,
+          climate::CLIMATE_MODE_DRY,
+          climate::CLIMATE_MODE_FAN_ONLY};
+      if (device->supports_heat_mode())
+      {
+        modes.push_back(climate::CLIMATE_MODE_HEAT);
+      }
+      traits.set_supported_modes(modes);
 
       if (device->supports_fan_modes()) {
         traits.set_supported_fan_modes({climate::CLIMATE_FAN_HIGH,

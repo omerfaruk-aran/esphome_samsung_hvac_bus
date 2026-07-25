@@ -896,9 +896,9 @@ void test_nasa_water_heater_target()
     assert(abs(target.last_set_target_water_temperature_value - 42.0f) < 0.01f);
 }
 
-void test_nasa_humidity_decoded_but_not_processed()
+void test_nasa_humidity_decoded_and_processed()
 {
-    std::cout << "test_nasa_humidity_decoded_but_not_processed" << std::endl;
+    std::cout << "test_nasa_humidity_decoded_and_processed" << std::endl;
     
     DebugTarget target;
     
@@ -928,11 +928,9 @@ void test_nasa_humidity_decoded_but_not_processed()
     // Verify address is registered
     assert(target.last_register_address == "00.00.00");
     
-    // Verify NO target methods are called (humidity is decoded but NOT processed, only logged)
-    // Note: There's no set_room_humidity method in MessageTarget interface
-    assert(target.last_set_room_temperature_address.empty()); // No temperature set
-    assert(target.last_set_power_address.empty()); // No power set
-    assert(target.last_set_mode_address.empty()); // No mode set
+    // Verify set_room_humidity target method is called
+    assert(target.last_set_room_humidity_address == "00.00.00");
+    assert(abs(target.last_set_room_humidity_value - 65.0f) < 0.01f);
 }
 
 void test_nasa_fan_mode_real_decoded_but_not_processed()
@@ -1626,7 +1624,7 @@ int main(int argc, char *argv[])
     test_nasa_water_heater_target();
     
     // NASA decoded-but-not-processed tests (low priority - documentation)
-    test_nasa_humidity_decoded_but_not_processed();
+    test_nasa_humidity_decoded_and_processed();
     test_nasa_fan_mode_real_decoded_but_not_processed();
     test_nasa_water_tank_temperature_decoded_but_not_processed();
     

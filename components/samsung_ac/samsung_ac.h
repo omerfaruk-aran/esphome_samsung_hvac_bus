@@ -134,6 +134,12 @@ namespace esphome
                                  { dev->update_room_temperature(value); });
       }
 
+      void set_room_humidity(const std::string address, float value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_room_humidity(value); });
+      }
+
       void set_outdoor_temperature(const std::string address, float value) override
       {
         execute_if_device_exists(address, [value](Samsung_AC_Device *dev)

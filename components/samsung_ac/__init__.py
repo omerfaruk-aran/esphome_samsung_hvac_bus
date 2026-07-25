@@ -98,6 +98,7 @@ CONF_NON_NASA_TX_DELAY_MS = "non_nasa_tx_delay_ms"
 
 CONF_CAPABILITIES = "capabilities"
 CONF_CAPABILITIES_FAN_MODES = "fan_modes"
+CONF_CAPABILITIES_HEAT_MODE = "heat_mode"
 CONF_CAPABILITIES_HORIZONTAL_SWING = "horizontal_swing"
 CONF_CAPABILITIES_VERTICAL_SWING = "vertical_swing"
 
@@ -138,6 +139,8 @@ PRESETS = {
 CAPABILITIES_SCHEMA = cv.Schema(
     {
         cv.Optional(CONF_CAPABILITIES_FAN_MODES, default=True): cv.boolean,
+        cv.Optional(CONF_CAPABILITIES_HEAT_MODE, default=True): cv.boolean,
+        cv.Optional("heat", default=True): cv.boolean,
         cv.Optional(CONF_CAPABILITIES_HORIZONTAL_SWING, default=False): cv.boolean,
         cv.Optional(CONF_CAPABILITIES_VERTICAL_SWING, default=False): cv.boolean,
         cv.Optional(CONF_PRESETS): cv.Schema(
@@ -360,7 +363,6 @@ DEVICE_SCHEMA = cv.Schema(
 
 CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_WATER_TEMPERATURE,
-    CONF_DEVICE_ROOM_HUMIDITY,
 ]
 
 CONF_DEVICES = "devices"
@@ -429,6 +431,11 @@ async def to_code(config):
             )
         )
 
+        heat_mode_supported = capabilities.get(
+            CONF_CAPABILITIES_HEAT_MODE, capabilities.get("heat", True)
+        )
+        cg.add(var_dev.set_supports_heat_mode(heat_mode_supported))
+
         if CONF_CAPABILITIES_VERTICAL_SWING in capabilities:
             cg.add(
                 var_dev.set_supports_vertical_swing(
@@ -496,6 +503,10 @@ async def to_code(config):
             CONF_DEVICE_ROOM_TEMPERATURE: (
                 sensor.new_sensor,
                 var_dev.set_room_temperature_sensor,
+            ),
+            CONF_DEVICE_ROOM_HUMIDITY: (
+                sensor.new_sensor,
+                var_dev.set_room_humidity_sensor,
             ),
             CONF_DEVICE_OUTDOOR_TEMPERATURE: (
                 sensor.new_sensor,

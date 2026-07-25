@@ -120,6 +120,7 @@ namespace esphome
 
       std::string address;
       sensor::Sensor *room_temperature{nullptr};
+      sensor::Sensor *room_humidity{nullptr};
       sensor::Sensor *outdoor_temperature{nullptr};
       sensor::Sensor *indoor_eva_in_temperature{nullptr};
       sensor::Sensor *indoor_eva_out_temperature{nullptr};
@@ -232,6 +233,23 @@ namespace esphome
         if (climate != nullptr)
         {
           climate->current_temperature = value + room_temperature_offset;
+          climate->publish_state();
+        }
+      }
+
+      void set_room_humidity_sensor(sensor::Sensor *sensor)
+      {
+        room_humidity = sensor;
+      }
+
+      void update_room_humidity(float value)
+      {
+        update_custom_sensor(0x4038, value);
+        if (room_humidity != nullptr)
+          room_humidity->publish_state(value);
+        if (climate != nullptr)
+        {
+          climate->current_humidity = value;
           climate->publish_state();
         }
       }
@@ -465,6 +483,11 @@ namespace esphome
         return supports_fan_modes_;
       }
 
+      bool supports_heat_mode()
+      {
+        return supports_heat_mode_;
+      }
+
       bool supports_horizontal_swing()
       {
         return supports_horizontal_swing_;
@@ -478,6 +501,11 @@ namespace esphome
       void set_supports_fan_modes(bool value)
       {
         supports_fan_modes_ = value;
+      }
+
+      void set_supports_heat_mode(bool value)
+      {
+        supports_heat_mode_ = value;
       }
 
       void set_supports_horizontal_swing(bool value)
@@ -689,6 +717,7 @@ namespace esphome
 
     protected:
       bool supports_fan_modes_{true};
+      bool supports_heat_mode_{true};
       bool map_auto_to_heat_cool_{false};
 
       bool supports_horizontal_swing_{false};
