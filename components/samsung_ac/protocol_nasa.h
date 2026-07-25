@@ -97,7 +97,7 @@ namespace esphome
             VAR_in_temp_eva_in_f = 0x4205,
             VAR_in_temp_eva_out_f = 0x4206,
             VAR_in_filter_use_time = 0x4212,
-            VAR_in_filter_clean_time = 0x4222,
+            VAR_in_total_operation_time = 0x4222,
 
             VAR_in_temp_water_heater_target_f = 0x4235,
             VAR_in_temp_water_tank_f = 0x4237,

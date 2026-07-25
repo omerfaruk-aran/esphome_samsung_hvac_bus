@@ -109,6 +109,7 @@ namespace esphome
             virtual void set_outdoor_4way_valve_text_sensor(const std::string &address, int value) = 0;
             virtual void set_filter_use_time(const std::string &address, float value) = 0;
             virtual void set_filter_clean_time(const std::string &address, float value) = 0;
+            virtual void set_total_operation_time(const std::string &address, float value) = 0;
             virtual void set_filter_clean_alarm(const std::string &address, bool value) = 0;
         };
 

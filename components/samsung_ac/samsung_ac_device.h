@@ -145,6 +145,7 @@ namespace esphome
       sensor::Sensor *outdoor_voltage{nullptr};
       sensor::Sensor *filter_use_time{nullptr};
       sensor::Sensor *filter_clean_time{nullptr};
+      sensor::Sensor *total_operation_time{nullptr};
       sensor::Sensor *filter_remained_time{nullptr};
       sensor::Sensor *filter_life_percent{nullptr};
       binary_sensor::BinarySensor *filter_clean_alarm{nullptr};
@@ -342,6 +343,10 @@ namespace esphome
       {
         filter_clean_time = sensor;
       }
+      void set_total_operation_time_sensor(sensor::Sensor *sensor)
+      {
+        total_operation_time = sensor;
+      }
       void set_filter_remained_time_sensor(sensor::Sensor *sensor)
       {
         filter_remained_time = sensor;
@@ -446,7 +451,7 @@ namespace esphome
       optional<Mode> _cur_mode;
       optional<WaterHeaterMode> _cur_water_heater_mode;
       float _cur_filter_use_time{-1.0f};
-      float _cur_filter_clean_time{-1.0f};
+      float _cur_filter_clean_time{1000.0f};
 
       void update_filter_use_time(float value)
       {
@@ -460,10 +465,16 @@ namespace esphome
       void update_filter_clean_time(float value)
       {
         _cur_filter_clean_time = value;
-        update_custom_sensor(0x4222, value);
         if (filter_clean_time != nullptr)
           filter_clean_time->publish_state(value);
         recalculate_filter_stats();
+      }
+
+      void update_total_operation_time(float value)
+      {
+        update_custom_sensor(0x4222, value);
+        if (total_operation_time != nullptr)
+          total_operation_time->publish_state(value);
       }
 
       void update_filter_clean_alarm(bool value)

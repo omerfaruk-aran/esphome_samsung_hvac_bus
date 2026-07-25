@@ -278,6 +278,15 @@ public:
         last_set_filter_clean_time_value = value;
     }
 
+    std::string last_set_total_operation_time_address;
+    float last_set_total_operation_time_value;
+    void set_total_operation_time(const std::string &address, float value) override
+    {
+        cout << "> " << address << " set_total_operation_time=" << to_string(value) << endl;
+        last_set_total_operation_time_address = address;
+        last_set_total_operation_time_value = value;
+    }
+
     std::string last_set_filter_clean_alarm_address;
     bool last_set_filter_clean_alarm_value;
     void set_filter_clean_alarm(const std::string &address, bool value) override

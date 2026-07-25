@@ -698,9 +698,9 @@ void test_nasa_filter_controls()
     use_time_msg.value = 150;
     packet.messages.push_back(use_time_msg);
     
-    MessageSet clean_time_msg(MessageNumber::VAR_in_filter_clean_time);
-    clean_time_msg.value = 1000;
-    packet.messages.push_back(clean_time_msg);
+    MessageSet total_time_msg(MessageNumber::VAR_in_total_operation_time);
+    total_time_msg.value = 1341;
+    packet.messages.push_back(total_time_msg);
     
     MessageSet alarm_msg(MessageNumber::ENUM_in_filter_clean_alarm);
     alarm_msg.value = 1;
@@ -711,8 +711,8 @@ void test_nasa_filter_controls()
     
     assert(target.last_set_filter_use_time_address == "20.00.00");
     assert(abs(target.last_set_filter_use_time_value - 150.0f) < 0.01f);
-    assert(target.last_set_filter_clean_time_address == "20.00.00");
-    assert(abs(target.last_set_filter_clean_time_value - 1000.0f) < 0.01f);
+    assert(target.last_set_total_operation_time_address == "20.00.00");
+    assert(abs(target.last_set_total_operation_time_value - 1341.0f) < 0.01f);
     assert(target.last_set_filter_clean_alarm_address == "20.00.00");
     assert(target.last_set_filter_clean_alarm_value == true);
 }

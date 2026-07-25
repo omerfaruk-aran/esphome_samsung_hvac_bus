@@ -822,10 +822,10 @@ namespace esphome
                 target->set_filter_use_time(source, (float)message.value);
                 break;
             }
-            case MessageNumber::VAR_in_filter_clean_time:
+            case MessageNumber::VAR_in_total_operation_time:
             {
-                LOG_MESSAGE(VAR_in_filter_clean_time, (double)message.value, source, dest);
-                target->set_filter_clean_time(source, (float)message.value);
+                LOG_MESSAGE(VAR_in_total_operation_time, (double)message.value, source, dest);
+                target->set_total_operation_time(source, (float)message.value);
                 break;
             }
             case MessageNumber::ENUM_in_water_heater_power:

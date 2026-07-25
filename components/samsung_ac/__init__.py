@@ -134,6 +134,7 @@ CONF_DEVICE_OUT_PIPE_OUT2_TEMP = "outdoor_pipe_out2_temperature"
 CONF_DEVICE_OUT_PIPE_IN3_TEMP = "outdoor_pipe_in3_temperature"
 CONF_DEVICE_FILTER_USE_TIME = "filter_use_time"
 CONF_DEVICE_FILTER_CLEAN_TIME = "filter_clean_time"
+CONF_DEVICE_TOTAL_OPERATION_TIME = "total_operation_time"
 CONF_DEVICE_FILTER_REMAINED_TIME = "filter_remained_time"
 CONF_DEVICE_FILTER_LIFE_PERCENT = "filter_life_percent"
 CONF_DEVICE_FILTER_CLEAN_ALARM = "filter_clean_alarm"
@@ -471,6 +472,12 @@ DEVICE_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
             icon="mdi:update",
         ),
+        cv.Optional(CONF_DEVICE_TOTAL_OPERATION_TIME): sensor.sensor_schema(
+            unit_of_measurement="h",
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:counter",
+        ),
         cv.Optional(CONF_DEVICE_FILTER_REMAINED_TIME): sensor.sensor_schema(
             unit_of_measurement="h",
             accuracy_decimals=0,
@@ -708,6 +715,10 @@ async def to_code(config):
             CONF_DEVICE_FILTER_CLEAN_TIME: (
                 sensor.new_sensor,
                 var_dev.set_filter_clean_time_sensor,
+            ),
+            CONF_DEVICE_TOTAL_OPERATION_TIME: (
+                sensor.new_sensor,
+                var_dev.set_total_operation_time_sensor,
             ),
             CONF_DEVICE_FILTER_REMAINED_TIME: (
                 sensor.new_sensor,
