@@ -747,6 +747,8 @@ namespace esphome
             case 2: s = "Dry"; break;
             case 3: s = "Fan"; break;
             case 4: s = "Heat"; break;
+            case 21: s = "CoolStorage"; break;
+            case 24: s = "HotWater"; break;
             case 254: case 255: s = "Off"; break;
             default: s = std::string("Mode ") + std::to_string(value); break;
             }
@@ -769,6 +771,16 @@ namespace esphome
             case 3: s = "High"; break;
             case 4: s = "Turbo"; break;
             case 9: s = "Windfree"; break;
+            case 10: s = "AutoLow"; break;
+            case 11: s = "AutoMid"; break;
+            case 12: s = "AutoHigh"; break;
+            case 13: s = "UL"; break;
+            case 14: s = "LL"; break;
+            case 15: s = "HH"; break;
+            case 16: s = "Speed"; break;
+            case 17: s = "NaturalLow"; break;
+            case 18: s = "NaturalMid"; break;
+            case 19: s = "NaturalHigh"; break;
             case 254: case 255: s = "Off"; break;
             default: s = std::string("Speed ") + std::to_string(value); break;
             }
@@ -790,6 +802,7 @@ namespace esphome
             case 2: s = "Quiet"; break;
             case 3: s = "Fast"; break;
             case 6: s = "Longreach"; break;
+            case 7: s = "Eco"; break;
             case 9: s = "Windfree"; break;
             case 254: case 255: s = "Off"; break;
             default: s = std::string("AltMode ") + std::to_string(value); break;
