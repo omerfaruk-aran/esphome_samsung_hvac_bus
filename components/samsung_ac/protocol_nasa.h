@@ -80,7 +80,7 @@ namespace esphome
             ENUM_in_fan_mode_real = 0x4007,
 
             ENUM_in_louver_hl_swing = 0x4011,
-            ENUM_in_filter_clean_alarm = 0x4015,
+            ENUM_in_filter_clean_alarm = 0x401b,
             ENUM_in_filter_time_reset = 0x4016,
             ENUM_in_louver_lr_swing = 0x407e,
 

@@ -486,6 +486,9 @@ namespace esphome
           if (percent > 100.0f) percent = 100.0f;
           if (filter_life_percent != nullptr)
             filter_life_percent->publish_state(percent);
+
+          if (filter_clean_alarm != nullptr)
+            filter_clean_alarm->publish_state(_cur_filter_use_time >= _cur_filter_clean_time);
         }
       }
 
