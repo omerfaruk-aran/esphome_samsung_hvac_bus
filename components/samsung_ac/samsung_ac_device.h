@@ -477,8 +477,11 @@ namespace esphome
           total_operation_time->publish_state(value);
       }
 
+      optional<bool> _cur_filter_clean_alarm;
+
       void update_filter_clean_alarm(bool value)
       {
+        _cur_filter_clean_alarm = value;
         if (filter_clean_alarm != nullptr)
           filter_clean_alarm->publish_state(value);
       }
@@ -499,7 +502,10 @@ namespace esphome
             filter_life_percent->publish_state(percent);
 
           if (filter_clean_alarm != nullptr)
-            filter_clean_alarm->publish_state(_cur_filter_use_time >= _cur_filter_clean_time);
+          {
+            bool alarm_state = _cur_filter_clean_alarm.value_or(_cur_filter_use_time >= _cur_filter_clean_time);
+            filter_clean_alarm->publish_state(alarm_state);
+          }
         }
       }
 
