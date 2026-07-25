@@ -463,7 +463,7 @@ DEVICE_SCHEMA = cv.Schema(
             unit_of_measurement="h",
             accuracy_decimals=0,
             state_class=STATE_CLASS_MEASUREMENT,
-            icon="mdi:timer-outline",
+            icon="mdi:clock-outline",
         ),
         cv.Optional(CONF_DEVICE_FILTER_CLEAN_TIME): sensor.sensor_schema(
             unit_of_measurement="h",
@@ -475,20 +475,20 @@ DEVICE_SCHEMA = cv.Schema(
             unit_of_measurement="h",
             accuracy_decimals=0,
             state_class=STATE_CLASS_MEASUREMENT,
-            icon="mdi:filter-time",
+            icon="mdi:progress-clock",
         ),
         cv.Optional(CONF_DEVICE_FILTER_LIFE_PERCENT): sensor.sensor_schema(
             unit_of_measurement=UNIT_PERCENT,
             accuracy_decimals=1,
             state_class=STATE_CLASS_MEASUREMENT,
-            icon="mdi:filter-outline",
+            icon="mdi:air-filter",
         ),
         cv.Optional(CONF_DEVICE_FILTER_CLEAN_ALARM): binary_sensor.binary_sensor_schema(
             icon="mdi:air-filter",
         ),
         cv.Optional(CONF_DEVICE_RESET_FILTER_TIME): button.button_schema(
             Samsung_AC_Button,
-            icon="mdi:filter-remove-outline",
+            icon="mdi:restart",
         ),
     }
 )
