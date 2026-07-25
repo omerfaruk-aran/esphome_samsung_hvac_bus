@@ -80,6 +80,8 @@ namespace esphome
             ENUM_in_fan_mode_real = 0x4007,
 
             ENUM_in_louver_hl_swing = 0x4011,
+            ENUM_in_filter_clean_alarm = 0x4015,
+            ENUM_in_filter_time_reset = 0x4016,
             ENUM_in_louver_lr_swing = 0x407e,
 
             ENUM_in_state_humidity_percent = 0x4038,
@@ -94,6 +96,8 @@ namespace esphome
             VAR_in_temp_room_f = 0x4204,
             VAR_in_temp_eva_in_f = 0x4205,
             VAR_in_temp_eva_out_f = 0x4206,
+            VAR_in_filter_use_time = 0x4212,
+            VAR_in_filter_clean_time = 0x4222,
 
             VAR_in_temp_water_heater_target_f = 0x4235,
             VAR_in_temp_water_tank_f = 0x4237,

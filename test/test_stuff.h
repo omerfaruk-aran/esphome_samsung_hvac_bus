@@ -260,6 +260,33 @@ public:
     void set_indoor_real_alt_mode_text_sensor(const std::string &address, int value) override {}
     void set_outdoor_4way_valve_text_sensor(const std::string &address, int value) override {}
 
+    std::string last_set_filter_use_time_address;
+    float last_set_filter_use_time_value;
+    void set_filter_use_time(const std::string &address, float value) override
+    {
+        cout << "> " << address << " set_filter_use_time=" << to_string(value) << endl;
+        last_set_filter_use_time_address = address;
+        last_set_filter_use_time_value = value;
+    }
+
+    std::string last_set_filter_clean_time_address;
+    float last_set_filter_clean_time_value;
+    void set_filter_clean_time(const std::string &address, float value) override
+    {
+        cout << "> " << address << " set_filter_clean_time=" << to_string(value) << endl;
+        last_set_filter_clean_time_address = address;
+        last_set_filter_clean_time_value = value;
+    }
+
+    std::string last_set_filter_clean_alarm_address;
+    bool last_set_filter_clean_alarm_value;
+    void set_filter_clean_alarm(const std::string &address, bool value) override
+    {
+        cout << "> " << address << " set_filter_clean_alarm=" << to_string(value) << endl;
+        last_set_filter_clean_alarm_address = address;
+        last_set_filter_clean_alarm_value = value;
+    }
+
         void assert_only_address(const std::string address)
         {
             assert(last_register_address == address);

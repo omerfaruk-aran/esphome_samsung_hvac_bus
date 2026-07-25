@@ -9,6 +9,7 @@ from esphome.components import (
     number,
     climate,
     text_sensor,
+    button,
 )
 from esphome.const import (
     CONF_ID,
@@ -40,7 +41,7 @@ from esphome import pins
 
 CODEOWNERS = ["matthias882", "lanwin", "omerfaruk-aran"]
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor", "binary_sensor", "switch", "select", "number", "climate", "text_sensor"]
+AUTO_LOAD = ["sensor", "binary_sensor", "switch", "select", "number", "climate", "text_sensor", "button"]
 MULTI_CONF = False
 
 CONF_SAMSUNG_AC_ID = "samsung_ac_id"
@@ -49,6 +50,7 @@ samsung_ac = cg.esphome_ns.namespace("samsung_ac")
 Samsung_AC = samsung_ac.class_("Samsung_AC", cg.PollingComponent, uart.UARTDevice)
 Samsung_AC_Device = samsung_ac.class_("Samsung_AC_Device")
 Samsung_AC_Switch = samsung_ac.class_("Samsung_AC_Switch", switch.Switch)
+Samsung_AC_Button = samsung_ac.class_("Samsung_AC_Button", button.Button)
 Samsung_AC_Mode_Select = samsung_ac.class_("Samsung_AC_Mode_Select", select.Select)
 Samsung_AC_Water_Heater_Mode_Select = samsung_ac.class_(
     "Samsung_AC_Water_Heater_Mode_Select", select.Select
@@ -130,6 +132,12 @@ CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP = "outdoor_compressor_top_temperature"
 CONF_DEVICE_OUT_PIPE_OUT1_TEMP = "outdoor_pipe_out1_temperature"
 CONF_DEVICE_OUT_PIPE_OUT2_TEMP = "outdoor_pipe_out2_temperature"
 CONF_DEVICE_OUT_PIPE_IN3_TEMP = "outdoor_pipe_in3_temperature"
+CONF_DEVICE_FILTER_USE_TIME = "filter_use_time"
+CONF_DEVICE_FILTER_CLEAN_TIME = "filter_clean_time"
+CONF_DEVICE_FILTER_REMAINED_TIME = "filter_remained_time"
+CONF_DEVICE_FILTER_LIFE_PERCENT = "filter_life_percent"
+CONF_DEVICE_FILTER_CLEAN_ALARM = "filter_clean_alarm"
+CONF_DEVICE_RESET_FILTER_TIME = "reset_filter_time"
 
 
 def preset_entry(name: str, value: int, displayName: str):
@@ -451,6 +459,37 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:valve",
             entity_category="diagnostic",
         ),
+        cv.Optional(CONF_DEVICE_FILTER_USE_TIME): sensor.sensor_schema(
+            unit_of_measurement="h",
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:timer-outline",
+        ),
+        cv.Optional(CONF_DEVICE_FILTER_CLEAN_TIME): sensor.sensor_schema(
+            unit_of_measurement="h",
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:update",
+        ),
+        cv.Optional(CONF_DEVICE_FILTER_REMAINED_TIME): sensor.sensor_schema(
+            unit_of_measurement="h",
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:filter-time",
+        ),
+        cv.Optional(CONF_DEVICE_FILTER_LIFE_PERCENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_PERCENT,
+            accuracy_decimals=1,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:filter-outline",
+        ),
+        cv.Optional(CONF_DEVICE_FILTER_CLEAN_ALARM): binary_sensor.binary_sensor_schema(
+            icon="mdi:air-filter",
+        ),
+        cv.Optional(CONF_DEVICE_RESET_FILTER_TIME): button.button_schema(
+            Samsung_AC_Button,
+            icon="mdi:filter-remove-outline",
+        ),
     }
 )
 
@@ -464,6 +503,8 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_OUT_PIPE_OUT1_TEMP,
     CONF_DEVICE_OUT_PIPE_OUT2_TEMP,
     CONF_DEVICE_OUT_PIPE_IN3_TEMP,
+    CONF_DEVICE_FILTER_USE_TIME,
+    CONF_DEVICE_FILTER_CLEAN_TIME,
 ]
 
 CONF_DEVICES = "devices"
@@ -661,6 +702,30 @@ async def to_code(config):
             CONF_DEVICE_OUT_4WAY_VALVE_TEXT: (
                 text_sensor.new_text_sensor,
                 var_dev.set_outdoor_4way_valve_text_sensor,
+            ),
+            CONF_DEVICE_FILTER_USE_TIME: (
+                sensor.new_sensor,
+                var_dev.set_filter_use_time_sensor,
+            ),
+            CONF_DEVICE_FILTER_CLEAN_TIME: (
+                sensor.new_sensor,
+                var_dev.set_filter_clean_time_sensor,
+            ),
+            CONF_DEVICE_FILTER_REMAINED_TIME: (
+                sensor.new_sensor,
+                var_dev.set_filter_remained_time_sensor,
+            ),
+            CONF_DEVICE_FILTER_LIFE_PERCENT: (
+                sensor.new_sensor,
+                var_dev.set_filter_life_percent_sensor,
+            ),
+            CONF_DEVICE_FILTER_CLEAN_ALARM: (
+                binary_sensor.new_binary_sensor,
+                var_dev.set_filter_clean_alarm_binary_sensor,
+            ),
+            CONF_DEVICE_RESET_FILTER_TIME: (
+                button.new_button,
+                var_dev.set_reset_filter_time_button,
             ),
         }
 

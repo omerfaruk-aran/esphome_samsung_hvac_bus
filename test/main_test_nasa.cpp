@@ -676,6 +676,47 @@ void test_nasa_automatic_cleaning()
     assert(target.last_set_automatic_cleaning_value == false);
 }
 
+void test_nasa_filter_controls()
+{
+    std::cout << "test_nasa_filter_controls" << std::endl;
+    
+    DebugTarget target;
+    
+    Address source = Address::parse("20.00.00");
+    Address dest = Address::parse("ff.ff.ff");
+    
+    Packet packet;
+    packet.sa = source;
+    packet.da = dest;
+    packet.command.packetInformation = true;
+    packet.command.protocolVersion = 2;
+    packet.command.packetType = PacketType::Normal;
+    packet.command.dataType = DataType::Notification;
+    packet.command.packetNumber = 15;
+    
+    MessageSet use_time_msg(MessageNumber::VAR_in_filter_use_time);
+    use_time_msg.value = 150;
+    packet.messages.push_back(use_time_msg);
+    
+    MessageSet clean_time_msg(MessageNumber::VAR_in_filter_clean_time);
+    clean_time_msg.value = 1000;
+    packet.messages.push_back(clean_time_msg);
+    
+    MessageSet alarm_msg(MessageNumber::ENUM_in_filter_clean_alarm);
+    alarm_msg.value = 1;
+    packet.messages.push_back(alarm_msg);
+    
+    auto packet_bytes = packet.encode();
+    test_process_data(bytes_to_hex(packet_bytes), target);
+    
+    assert(target.last_set_filter_use_time_address == "20.00.00");
+    assert(abs(target.last_set_filter_use_time_value - 150.0f) < 0.01f);
+    assert(target.last_set_filter_clean_time_address == "20.00.00");
+    assert(abs(target.last_set_filter_clean_time_value - 1000.0f) < 0.01f);
+    assert(target.last_set_filter_clean_alarm_address == "20.00.00");
+    assert(target.last_set_filter_clean_alarm_value == true);
+}
+
 void test_nasa_water_heater_control()
 {
     std::cout << "test_nasa_water_heater_control" << std::endl;
@@ -1615,6 +1656,7 @@ int main(int argc, char *argv[])
     
     // NASA control tests (water heater, automatic cleaning, alt mode, swing)
     test_nasa_automatic_cleaning();
+    test_nasa_filter_controls();
     test_nasa_water_heater_control();
     test_nasa_alt_mode();
     test_nasa_swing_controls();

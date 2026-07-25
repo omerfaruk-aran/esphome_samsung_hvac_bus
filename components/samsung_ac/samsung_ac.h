@@ -297,6 +297,24 @@ namespace esphome
                                  { dev->update_enum_text(0x801A, value); });
       }
 
+      void set_filter_use_time(const std::string &address, float value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_filter_use_time(value); });
+      }
+
+      void set_filter_clean_time(const std::string &address, float value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_filter_clean_time(value); });
+      }
+
+      void set_filter_clean_alarm(const std::string &address, bool value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_filter_clean_alarm(value); });
+      }
+
     protected:
       Samsung_AC_Device *find_device(const std::string &address)
       {
