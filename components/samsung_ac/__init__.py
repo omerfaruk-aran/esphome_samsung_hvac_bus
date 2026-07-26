@@ -571,7 +571,7 @@ DEVICE_SCHEMA = cv.Schema(
             0x4222,
             unit_of_measurement="h",
             accuracy_decimals=0,
-            state_class=STATE_CLASS_MEASUREMENT,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
             icon="mdi:timer-sand",
             entity_category="diagnostic",
         ),
