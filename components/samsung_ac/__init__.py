@@ -687,10 +687,6 @@ async def to_code(config):
                 sensor.new_sensor,
                 var_dev.set_filter_use_time_sensor,
             ),
-            CONF_DEVICE_FILTER_CLEAN_TIME: (
-                sensor.new_sensor,
-                var_dev.set_filter_clean_time_sensor,
-            ),
             CONF_DEVICE_TOTAL_OPERATION_TIME: (
                 sensor.new_sensor,
                 var_dev.set_total_operation_time_sensor,
