@@ -428,6 +428,7 @@ namespace esphome
       optional<bool> _cur_automatic_cleaning;
       optional<bool> _cur_water_heater_power;
       optional<Mode> _cur_mode;
+      optional<WaterHeaterMode> _cur_water_heater_mode;
       float _cur_filter_use_time{-1.0f};
 
       void update_filter_use_time(float value)

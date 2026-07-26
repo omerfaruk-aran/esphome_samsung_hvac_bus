@@ -649,8 +649,8 @@ namespace esphome
             if (request.swing_mode)
                 queued.swing_mode = request.swing_mode;
 
-            if (request.reset_filter_time)
-                queued.reset_filter_time = request.reset_filter_time;
+            if (request.display_lighting)
+                queued.display_lighting = request.display_lighting;
         }
 
         Mode operation_mode_to_mode(int value)
