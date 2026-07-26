@@ -144,11 +144,8 @@ namespace esphome
       sensor::Sensor *outdoor_current{nullptr};
       sensor::Sensor *outdoor_voltage{nullptr};
       sensor::Sensor *filter_use_time{nullptr};
-      sensor::Sensor *filter_clean_time{nullptr};
       sensor::Sensor *total_operation_time{nullptr};
-      sensor::Sensor *filter_remained_time{nullptr};
-      sensor::Sensor *filter_life_percent{nullptr};
-      binary_sensor::BinarySensor *filter_clean_alarm{nullptr};
+      Samsung_AC_Switch *display_lighting{nullptr};
       text_sensor::TextSensor *outdoor_operation_odu_mode_text{nullptr};
       text_sensor::TextSensor *outdoor_operation_heatcool_text{nullptr};
       text_sensor::TextSensor *indoor_real_mode_text{nullptr};
@@ -322,13 +319,13 @@ namespace esphome
         };
       }
 
-      void set_reset_filter_time_button(Samsung_AC_Button *button)
+      void set_display_lighting_switch(Samsung_AC_Switch *sw)
       {
-        reset_filter_time_button = button;
-        reset_filter_time_button->press_action_ = [this]()
+        display_lighting = sw;
+        display_lighting->write_state_ = [this](bool value)
         {
           ProtocolRequest request;
-          request.reset_filter_time = true;
+          request.display_lighting = value;
           publish_request(request);
         };
       }
@@ -337,25 +334,9 @@ namespace esphome
       {
         filter_use_time = sensor;
       }
-      void set_filter_clean_time_sensor(sensor::Sensor *sensor)
-      {
-        filter_clean_time = sensor;
-      }
       void set_total_operation_time_sensor(sensor::Sensor *sensor)
       {
         total_operation_time = sensor;
-      }
-      void set_filter_remained_time_sensor(sensor::Sensor *sensor)
-      {
-        filter_remained_time = sensor;
-      }
-      void set_filter_life_percent_sensor(sensor::Sensor *sensor)
-      {
-        filter_life_percent = sensor;
-      }
-      void set_filter_clean_alarm_binary_sensor(binary_sensor::BinarySensor *sensor)
-      {
-        filter_clean_alarm = sensor;
       }
 
       void set_mode_select(Samsung_AC_Mode_Select *select)
@@ -447,9 +428,7 @@ namespace esphome
       optional<bool> _cur_automatic_cleaning;
       optional<bool> _cur_water_heater_power;
       optional<Mode> _cur_mode;
-      optional<WaterHeaterMode> _cur_water_heater_mode;
       float _cur_filter_use_time{-1.0f};
-      float _cur_filter_clean_time{1000.0f};
 
       void update_filter_use_time(float value)
       {
@@ -457,15 +436,6 @@ namespace esphome
         update_custom_sensor(0x4212, value);
         if (filter_use_time != nullptr)
           filter_use_time->publish_state(value);
-        recalculate_filter_stats();
-      }
-
-      void update_filter_clean_time(float value)
-      {
-        _cur_filter_clean_time = value;
-        if (filter_clean_time != nullptr)
-          filter_clean_time->publish_state(value);
-        recalculate_filter_stats();
       }
 
       void update_total_operation_time(float value)
@@ -475,36 +445,13 @@ namespace esphome
           total_operation_time->publish_state(value);
       }
 
-      optional<bool> _cur_filter_clean_alarm;
+      optional<bool> _cur_display_lighting;
 
-      void update_filter_clean_alarm(bool value)
+      void update_display_lighting(bool value)
       {
-        _cur_filter_clean_alarm = value;
-        if (filter_clean_alarm != nullptr)
-          filter_clean_alarm->publish_state(value);
-      }
-
-      void recalculate_filter_stats()
-      {
-        if (_cur_filter_use_time >= 0.0f && _cur_filter_clean_time > 0.0f)
-        {
-          float remained = _cur_filter_clean_time - _cur_filter_use_time;
-          if (remained < 0.0f) remained = 0.0f;
-          if (filter_remained_time != nullptr)
-            filter_remained_time->publish_state(remained);
-
-          float percent = (1.0f - (_cur_filter_use_time / _cur_filter_clean_time)) * 100.0f;
-          if (percent < 0.0f) percent = 0.0f;
-          if (percent > 100.0f) percent = 100.0f;
-          if (filter_life_percent != nullptr)
-            filter_life_percent->publish_state(percent);
-
-          if (filter_clean_alarm != nullptr)
-          {
-            bool alarm_state = _cur_filter_clean_alarm.value_or(_cur_filter_use_time >= _cur_filter_clean_time);
-            filter_clean_alarm->publish_state(alarm_state);
-          }
-        }
+        _cur_display_lighting = value;
+        if (display_lighting != nullptr)
+          display_lighting->publish_state(value);
       }
 
       void update_power(bool value)

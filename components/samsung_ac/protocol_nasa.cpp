@@ -589,11 +589,11 @@ namespace esphome
                     packet.messages.push_back(lr_swing);
                 }
 
-                if (request.reset_filter_time)
+                if (request.display_lighting)
                 {
-                    MessageSet reset_filter(MessageNumber::ENUM_in_filter_time_reset);
-                    reset_filter.value = request.reset_filter_time.value() ? 1 : 0;
-                    packet.messages.push_back(reset_filter);
+                    MessageSet display_lighting(MessageNumber::ENUM_in_display_lighting);
+                    display_lighting.value = request.display_lighting.value() ? 1 : 0;
+                    packet.messages.push_back(display_lighting);
                 }
 
                 if (packet.messages.size() == 0)
@@ -806,10 +806,10 @@ namespace esphome
                 target->set_automatic_cleaning(source, message.value != 0);
                 break;
             }
-            case MessageNumber::ENUM_in_filter_clean_alarm:
+            case MessageNumber::ENUM_in_display_lighting:
             {
-                LOG_MESSAGE(ENUM_in_filter_clean_alarm, (double)message.value, source, dest);
-                target->set_filter_clean_alarm(source, message.value != 0);
+                LOG_MESSAGE(ENUM_in_display_lighting, (double)message.value, source, dest);
+                target->set_display_lighting(source, message.value != 0);
                 break;
             }
             case MessageNumber::VAR_in_filter_use_time:

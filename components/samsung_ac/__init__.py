@@ -133,12 +133,8 @@ CONF_DEVICE_OUT_PIPE_OUT1_TEMP = "outdoor_pipe_out1_temperature"
 CONF_DEVICE_OUT_PIPE_OUT2_TEMP = "outdoor_pipe_out2_temperature"
 CONF_DEVICE_OUT_PIPE_IN3_TEMP = "outdoor_pipe_in3_temperature"
 CONF_DEVICE_FILTER_USE_TIME = "filter_use_time"
-CONF_DEVICE_FILTER_CLEAN_TIME = "filter_clean_time"
 CONF_DEVICE_TOTAL_OPERATION_TIME = "total_operation_time"
-CONF_DEVICE_FILTER_REMAINED_TIME = "filter_remained_time"
-CONF_DEVICE_FILTER_LIFE_PERCENT = "filter_life_percent"
-CONF_DEVICE_FILTER_CLEAN_ALARM = "filter_clean_alarm"
-CONF_DEVICE_RESET_FILTER_TIME = "reset_filter_time"
+CONF_DEVICE_DISPLAY_LIGHTING = "display_lighting"
 
 
 def preset_entry(name: str, value: int, displayName: str):
@@ -466,36 +462,15 @@ DEVICE_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
             icon="mdi:timer-outline",
         ),
-        cv.Optional(CONF_DEVICE_FILTER_CLEAN_TIME): sensor.sensor_schema(
-            unit_of_measurement="h",
-            accuracy_decimals=0,
-            state_class=STATE_CLASS_MEASUREMENT,
-            icon="mdi:update",
-        ),
         cv.Optional(CONF_DEVICE_TOTAL_OPERATION_TIME): sensor.sensor_schema(
             unit_of_measurement="h",
             accuracy_decimals=0,
             state_class=STATE_CLASS_MEASUREMENT,
             icon="mdi:counter",
         ),
-        cv.Optional(CONF_DEVICE_FILTER_REMAINED_TIME): sensor.sensor_schema(
-            unit_of_measurement="h",
-            accuracy_decimals=0,
-            state_class=STATE_CLASS_MEASUREMENT,
-            icon="mdi:progress-clock",
-        ),
-        cv.Optional(CONF_DEVICE_FILTER_LIFE_PERCENT): sensor.sensor_schema(
-            unit_of_measurement=UNIT_PERCENT,
-            accuracy_decimals=1,
-            state_class=STATE_CLASS_MEASUREMENT,
-            icon="mdi:filter-outline",
-        ),
-        cv.Optional(CONF_DEVICE_FILTER_CLEAN_ALARM): binary_sensor.binary_sensor_schema(
-            icon="mdi:air-filter",
-        ),
-        cv.Optional(CONF_DEVICE_RESET_FILTER_TIME): button.button_schema(
-            Samsung_AC_Button,
-            icon="mdi:filter-remove-outline",
+        cv.Optional(CONF_DEVICE_DISPLAY_LIGHTING): switch.switch_schema(
+            Samsung_AC_Switch,
+            icon="mdi:led-on",
         ),
     }
 )
@@ -720,21 +695,9 @@ async def to_code(config):
                 sensor.new_sensor,
                 var_dev.set_total_operation_time_sensor,
             ),
-            CONF_DEVICE_FILTER_REMAINED_TIME: (
-                sensor.new_sensor,
-                var_dev.set_filter_remained_time_sensor,
-            ),
-            CONF_DEVICE_FILTER_LIFE_PERCENT: (
-                sensor.new_sensor,
-                var_dev.set_filter_life_percent_sensor,
-            ),
-            CONF_DEVICE_FILTER_CLEAN_ALARM: (
-                binary_sensor.new_binary_sensor,
-                var_dev.set_filter_clean_alarm_binary_sensor,
-            ),
-            CONF_DEVICE_RESET_FILTER_TIME: (
-                button.new_button,
-                var_dev.set_reset_filter_time_button,
+            CONF_DEVICE_DISPLAY_LIGHTING: (
+                switch.new_switch,
+                var_dev.set_display_lighting_switch,
             ),
         }
 

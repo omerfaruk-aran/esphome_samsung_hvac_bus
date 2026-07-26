@@ -269,15 +269,6 @@ public:
         last_set_filter_use_time_value = value;
     }
 
-    std::string last_set_filter_clean_time_address;
-    float last_set_filter_clean_time_value;
-    void set_filter_clean_time(const std::string &address, float value) override
-    {
-        cout << "> " << address << " set_filter_clean_time=" << to_string(value) << endl;
-        last_set_filter_clean_time_address = address;
-        last_set_filter_clean_time_value = value;
-    }
-
     std::string last_set_total_operation_time_address;
     float last_set_total_operation_time_value;
     void set_total_operation_time(const std::string &address, float value) override
@@ -287,13 +278,13 @@ public:
         last_set_total_operation_time_value = value;
     }
 
-    std::string last_set_filter_clean_alarm_address;
-    bool last_set_filter_clean_alarm_value;
-    void set_filter_clean_alarm(const std::string &address, bool value) override
+    std::string last_set_display_lighting_address;
+    bool last_set_display_lighting_value;
+    void set_display_lighting(const std::string &address, bool value) override
     {
-        cout << "> " << address << " set_filter_clean_alarm=" << to_string(value) << endl;
-        last_set_filter_clean_alarm_address = address;
-        last_set_filter_clean_alarm_value = value;
+        cout << "> " << address << " set_display_lighting=" << to_string(value) << endl;
+        last_set_display_lighting_address = address;
+        last_set_display_lighting_value = value;
     }
 
         void assert_only_address(const std::string address)
