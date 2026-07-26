@@ -344,6 +344,7 @@ namespace esphome
           room_temperature_offset = value;
           room_temperature_offset_number->publish_state(value);
         };
+        room_temperature_offset_number->publish_state(room_temperature_offset);
       };
 
       void set_water_outlet_target_number(Samsung_AC_Number *number)
