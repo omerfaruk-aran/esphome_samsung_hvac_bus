@@ -764,6 +764,10 @@ namespace esphome
             case 2: s = "Dry"; break;
             case 3: s = "Fan"; break;
             case 4: s = "Heat"; break;
+            case 11: s = "AutoCool"; break;
+            case 12: s = "AutoDry"; break;
+            case 13: s = "AutoFan"; break;
+            case 14: s = "AutoHeat"; break;
             case 21: s = "CoolStorage"; break;
             case 24: s = "HotWater"; break;
             case 254: case 255: s = "Off"; break;
