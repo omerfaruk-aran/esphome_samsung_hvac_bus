@@ -882,7 +882,9 @@ async def to_code(config):
 
         if CONF_DEVICE_MODE in device:
             conf = device[CONF_DEVICE_MODE]
-            values = ["Auto", "Cool", "Dry", "Fan", "Heat"]
+            values = ["Auto", "Cool", "Dry", "Fan"]
+            if heat_mode_supported:
+                values.append("Heat")
             sel = await select.new_select(conf, options=values)
             cg.add(var_dev.set_mode_select(sel))
 
