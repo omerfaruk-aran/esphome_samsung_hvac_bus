@@ -97,7 +97,7 @@ namespace esphome
 
       auto targetTempOpt = call.get_target_temperature();
       if (targetTempOpt.has_value())
-        request.target_temp = targetTempOpt.value();
+        request.target_temp = targetTempOpt.value() - device->room_temperature_offset;
 
       auto modeOpt = call.get_mode();
       const bool mode_changed = modeOpt.has_value();

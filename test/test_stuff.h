@@ -259,24 +259,7 @@ public:
     void set_indoor_real_fan_speed_text_sensor(const std::string &address, int value) override {}
     void set_indoor_real_alt_mode_text_sensor(const std::string &address, int value) override {}
     void set_outdoor_4way_valve_text_sensor(const std::string &address, int value) override {}
-
-    std::string last_set_filter_use_time_address;
-    float last_set_filter_use_time_value;
-    void set_filter_use_time(const std::string &address, float value) override
-    {
-        cout << "> " << address << " set_filter_use_time=" << to_string(value) << endl;
-        last_set_filter_use_time_address = address;
-        last_set_filter_use_time_value = value;
-    }
-
-    std::string last_set_total_operation_time_address;
-    float last_set_total_operation_time_value;
-    void set_total_operation_time(const std::string &address, float value) override
-    {
-        cout << "> " << address << " set_total_operation_time=" << to_string(value) << endl;
-        last_set_total_operation_time_address = address;
-        last_set_total_operation_time_value = value;
-    }
+    void set_indoor_model_information_text_sensor(const std::string &address, int value) override {}
 
         void assert_only_address(const std::string address)
         {

@@ -140,6 +140,7 @@ namespace esphome
       Samsung_AC_Number *target_temperature{nullptr};
       Samsung_AC_Number *water_outlet_target{nullptr};
       Samsung_AC_Number *target_water_temperature{nullptr};
+      Samsung_AC_Number *room_temperature_offset_number{nullptr};
       Samsung_AC_Switch *power{nullptr};
       Samsung_AC_Switch *automatic_cleaning{nullptr};
       Samsung_AC_Switch *water_heater_power{nullptr};
@@ -234,7 +235,7 @@ namespace esphome
       void update_room_temperature(float value)
       {
         if (room_temperature != nullptr)
-          room_temperature->publish_state(value + room_temperature_offset);
+          room_temperature->publish_state(value);
         if (climate != nullptr)
         {
           climate->current_temperature = value + room_temperature_offset;
@@ -335,6 +336,16 @@ namespace esphome
         };
       };
 
+      void set_room_temperature_offset_number(Samsung_AC_Number *number)
+      {
+        room_temperature_offset_number = number;
+        room_temperature_offset_number->write_state_ = [this](float value)
+        {
+          room_temperature_offset = value;
+          room_temperature_offset_number->publish_state(value);
+        };
+      };
+
       void set_water_outlet_target_number(Samsung_AC_Number *number)
       {
         water_outlet_target = number;
@@ -370,7 +381,7 @@ namespace esphome
           target_temperature->publish_state(value);
         if (climate != nullptr)
         {
-          climate->target_temperature = value;
+          climate->target_temperature = value + room_temperature_offset;
           climate->publish_state();
         }
       }

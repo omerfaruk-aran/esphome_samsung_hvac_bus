@@ -1,4 +1,5 @@
 #include <set>
+#include <cmath>
 #include "esphome/core/util.h"
 #include "esphome/core/hal.h"
 #include "util.h"
@@ -546,21 +547,21 @@ namespace esphome
                 if (request.target_temp)
                 {
                     MessageSet targettemp(MessageNumber::VAR_in_temp_target_f);
-                    targettemp.value = request.target_temp.value() * 10.0;
+                    targettemp.value = std::lround(request.target_temp.value() * 10.0);
                     packet.messages.push_back(targettemp);
                 }
 
                 if (request.water_outlet_target)
                 {
                     MessageSet wateroutlettarget(MessageNumber::VAR_in_temp_water_outlet_target_f);
-                    wateroutlettarget.value = request.water_outlet_target.value() * 10.0;
+                    wateroutlettarget.value = std::lround(request.water_outlet_target.value() * 10.0);
                     packet.messages.push_back(wateroutlettarget);
                 }
 
                 if (request.target_water_temp)
                 {
                     MessageSet targetwatertemp(MessageNumber::VAR_in_temp_water_heater_target_f);
-                    targetwatertemp.value = request.target_water_temp.value() * 10.0;
+                    targetwatertemp.value = std::lround(request.target_water_temp.value() * 10.0);
                     packet.messages.push_back(targetwatertemp);
                 }
 
