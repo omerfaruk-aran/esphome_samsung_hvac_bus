@@ -924,6 +924,13 @@ namespace esphome
                 break;
             }
 
+            case MessageNumber::VAR_in_model_information:
+            {
+                LOG_MESSAGE(VAR_in_model_information, (double)message.value, source, dest);
+                target->set_indoor_model_information_text_sensor(source, (int)message.value);
+                break;
+            }
+
             case MessageNumber::ENUM_out_load_4way:
             {
                 LOG_MESSAGE(ENUM_out_load_4way, (double)message.value, source, dest);

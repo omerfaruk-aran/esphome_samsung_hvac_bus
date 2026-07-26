@@ -297,6 +297,12 @@ namespace esphome
                                  { dev->update_enum_text(0x801A, value); });
       }
 
+      void set_indoor_model_information_text_sensor(const std::string &address, int value)
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_enum_text(0x4229, value); });
+      }
+
     protected:
       Samsung_AC_Device *find_device(const std::string &address)
       {

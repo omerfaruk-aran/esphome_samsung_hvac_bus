@@ -337,15 +337,6 @@ def co2_sensor_schema(message: int):
     )
 
 
-def model_information_sensor_schema(message: int):
-    return custom_sensor_schema(
-        message=message,
-        accuracy_decimals=0,
-        icon="mdi:information-outline",
-        entity_category="diagnostic",
-    )
-
-
 def binary_custom_sensor_schema(
     message: int,
     icon=cv.UNDEFINED,
@@ -552,8 +543,11 @@ DEVICE_SCHEMA = cv.Schema(
             entity_category="diagnostic",
         ),
         cv.Optional(CONF_DEVICE_CO2): co2_sensor_schema(0x421B),
-        cv.Optional(CONF_DEVICE_MODEL_INFORMATION): model_information_sensor_schema(
-            0x4229
+        cv.Optional(
+            CONF_DEVICE_MODEL_INFORMATION
+        ): text_sensor.text_sensor_schema(
+            icon="mdi:information-outline",
+            entity_category="diagnostic",
         ),
         cv.Optional(CONF_DEVICE_THERMO_STATE): binary_custom_sensor_schema(
             0x4028,
@@ -615,7 +609,6 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_OUT_PIPE_OUT2_TEMP,
     CONF_DEVICE_OUT_PIPE_IN3_TEMP,
     CONF_DEVICE_CO2,
-    CONF_DEVICE_MODEL_INFORMATION,
     CONF_DEVICE_OUT_HIGH_PRESSURE,
     CONF_DEVICE_OUT_LOW_PRESSURE,
     CONF_DEVICE_OUT_DISCHARGE_TEMP1,
@@ -830,6 +823,10 @@ async def to_code(config):
             CONF_DEVICE_OUT_4WAY_VALVE_TEXT: (
                 text_sensor.new_text_sensor,
                 var_dev.set_outdoor_4way_valve_text_sensor,
+            ),
+            CONF_DEVICE_MODEL_INFORMATION: (
+                text_sensor.new_text_sensor,
+                var_dev.set_indoor_model_information_text_sensor,
             ),
         }
 

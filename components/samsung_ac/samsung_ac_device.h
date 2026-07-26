@@ -135,6 +135,7 @@ namespace esphome
       text_sensor::TextSensor *indoor_real_fan_speed_text{nullptr};
       text_sensor::TextSensor *indoor_real_alt_mode_text{nullptr};
       text_sensor::TextSensor *outdoor_4way_valve_text{nullptr};
+      text_sensor::TextSensor *indoor_model_information_text{nullptr};
 
       Samsung_AC_Number *target_temperature{nullptr};
       Samsung_AC_Number *water_outlet_target{nullptr};
@@ -572,6 +573,10 @@ namespace esphome
       {
         outdoor_4way_valve_text = sensor;
       }
+      void set_indoor_model_information_text_sensor(text_sensor::TextSensor *sensor)
+      {
+        indoor_model_information_text = sensor;
+      }
       void update_enum_text(uint16_t message_number, int value)
       {
         // 0x8003 -> ENUM_out_operation_heatcool
@@ -774,9 +779,9 @@ namespace esphome
             case 10: s = "AutoLow"; break;
             case 11: s = "AutoMid"; break;
             case 12: s = "AutoHigh"; break;
-            case 13: s = "UL"; break;
-            case 14: s = "LL"; break;
-            case 15: s = "HH"; break;
+            case 13: s = "UltraLow (UL)"; break;
+            case 14: s = "LowLow (LL)"; break;
+            case 15: s = "HighHigh (HH)"; break;
             case 16: s = "Speed"; break;
             case 17: s = "NaturalLow"; break;
             case 18: s = "NaturalMid"; break;
@@ -819,6 +824,59 @@ namespace esphome
           {
             std::string s = (value == 1) ? "Heating (On)" : "Cooling (Off)";
             outdoor_4way_valve_text->publish_state(s);
+          }
+          return;
+        }
+
+        // 0x4229 -> VAR_in_model_information
+        if (message_number == 0x4229)
+        {
+          if (indoor_model_information_text != nullptr)
+          {
+            std::string s;
+            switch (value)
+            {
+            case 12: s = "Master-N"; break;
+            case 31: s = "Slim 1Way"; break;
+            case 32: s = "Big Slim 1Way"; break;
+            case 51: s = "Global 4Way"; break;
+            case 52: s = "Global Mini4Way"; break;
+            case 53: s = "Mini 4Way"; break;
+            case 62: s = "Big Duct"; break;
+            case 63: s = "Global BigDuct"; break;
+            case 68: s = "Fresh Duct"; break;
+            case 71: s = "Big Ceiling"; break;
+            case 98: s = "Mini AHU"; break;
+            case 108: s = "ERV+"; break;
+            case 115: s = "EHS Split"; break;
+            case 116: s = "EHS Mono"; break;
+            case 117: s = "EHS TDM"; break;
+            case 125: s = "EHS HT"; break;
+            case 170: s = "Diffuser"; break;
+            default:
+              if (value >= 1 && value <= 9) s = "FSC/PAC";
+              else if (value >= 10 && value <= 19) s = "RAC";
+              else if (value >= 30 && value <= 39) s = "1Way";
+              else if (value >= 40 && value <= 49) s = "2Way";
+              else if (value >= 50 && value <= 59) s = "4Way";
+              else if (value >= 60 && value <= 69) s = "Duct";
+              else if (value >= 70 && value <= 79) s = "Ceiling";
+              else if (value >= 80 && value <= 89) s = "Console";
+              else if (value >= 90 && value <= 99) s = "AHU";
+              else if (value >= 100 && value <= 109) s = "ERV";
+              else if (value >= 110 && value <= 114) s = "DVM HE";
+              else if (value >= 115 && value <= 119) s = "EHS";
+              else if (value >= 120 && value <= 124) s = "DVM HT";
+              else if (value >= 125 && value <= 129) s = "EHS HT";
+              else if (value >= 140 && value <= 149) s = "DVM Chiller";
+              else if (value >= 150 && value <= 159) s = "360CST";
+              else if (value >= 160 && value <= 169) s = "FCU Kit";
+              else if (value >= 256 && value <= 511) s = "CAC";
+              else if (value >= 512 && value <= 767) s = "CAC Inverter";
+              else s = "Unknown";
+              break;
+            }
+            indoor_model_information_text->publish_state(s);
           }
           return;
         }
