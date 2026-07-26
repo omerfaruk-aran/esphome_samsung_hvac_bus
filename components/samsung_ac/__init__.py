@@ -152,6 +152,7 @@ CONF_DEVICE_OUT_COMP1_CURRENT_FREQ = "outdoor_compressor1_current_frequency"
 CONF_DEVICE_OUT_FAN1_RPM = "outdoor_fan1_rpm"
 CONF_DEVICE_OUT_IPM1_TEMP = "outdoor_ipm1_temperature"
 CONF_DEVICE_OUT_CAPACITY_HP = "outdoor_capacity_hp"
+CONF_DEVICE_CUMULATIVE_OPERATION_TIME = "cumulative_operation_time"
 
 
 def preset_entry(name: str, value: int, displayName: str):
@@ -564,6 +565,16 @@ DEVICE_SCHEMA = cv.Schema(
             0x4046,
             icon="mdi:volume-off",
         ),
+        cv.Optional(
+            CONF_DEVICE_CUMULATIVE_OPERATION_TIME
+        ): custom_sensor_schema(
+            0x4222,
+            unit_of_measurement="h",
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:timer-sand",
+            entity_category="diagnostic",
+        ),
         cv.Optional(CONF_DEVICE_OUT_HIGH_PRESSURE): outdoor_pressure_sensor_schema(
             0x8206
         ),
@@ -622,6 +633,7 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_OUT_FAN1_RPM,
     CONF_DEVICE_OUT_IPM1_TEMP,
     CONF_DEVICE_OUT_CAPACITY_HP,
+    CONF_DEVICE_CUMULATIVE_OPERATION_TIME,
 ]
 
 CUSTOM_BINARY_SENSOR_KEYS = [
