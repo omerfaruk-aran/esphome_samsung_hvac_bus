@@ -278,15 +278,6 @@ public:
         last_set_total_operation_time_value = value;
     }
 
-    std::string last_set_display_lighting_address;
-    bool last_set_display_lighting_value;
-    void set_display_lighting(const std::string &address, bool value) override
-    {
-        cout << "> " << address << " set_display_lighting=" << to_string(value) << endl;
-        last_set_display_lighting_address = address;
-        last_set_display_lighting_value = value;
-    }
-
         void assert_only_address(const std::string address)
         {
             assert(last_register_address == address);

@@ -5,7 +5,6 @@
 #include <algorithm>
 #include "esphome/core/helpers.h"
 #include "esphome/components/switch/switch.h"
-#include "esphome/components/button/button.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
@@ -96,19 +95,6 @@ namespace esphome
       }
     };
 
-    class Samsung_AC_Button : public button::Button
-    {
-    public:
-      std::function<void()> press_action_;
-
-    protected:
-      void press_action() override
-      {
-        if (press_action_)
-          press_action_();
-      }
-    };
-
     struct Samsung_AC_Sensor
     {
       uint16_t message_number;
@@ -143,9 +129,6 @@ namespace esphome
       sensor::Sensor *outdoor_cumulative_energy{nullptr};
       sensor::Sensor *outdoor_current{nullptr};
       sensor::Sensor *outdoor_voltage{nullptr};
-      sensor::Sensor *filter_use_time{nullptr};
-      sensor::Sensor *total_operation_time{nullptr};
-      Samsung_AC_Switch *display_lighting{nullptr};
       text_sensor::TextSensor *outdoor_operation_odu_mode_text{nullptr};
       text_sensor::TextSensor *outdoor_operation_heatcool_text{nullptr};
       text_sensor::TextSensor *indoor_real_mode_text{nullptr};
@@ -159,7 +142,6 @@ namespace esphome
       Samsung_AC_Switch *power{nullptr};
       Samsung_AC_Switch *automatic_cleaning{nullptr};
       Samsung_AC_Switch *water_heater_power{nullptr};
-      Samsung_AC_Button *reset_filter_time_button{nullptr};
       Samsung_AC_Mode_Select *mode{nullptr};
       Samsung_AC_Water_Heater_Mode_Select *waterheatermode{nullptr};
       Samsung_AC_Climate *climate{nullptr};
@@ -319,26 +301,6 @@ namespace esphome
         };
       }
 
-      void set_display_lighting_switch(Samsung_AC_Switch *sw)
-      {
-        display_lighting = sw;
-        display_lighting->write_state_ = [this](bool value)
-        {
-          ProtocolRequest request;
-          request.display_lighting = value;
-          publish_request(request);
-        };
-      }
-
-      void set_filter_use_time_sensor(sensor::Sensor *sensor)
-      {
-        filter_use_time = sensor;
-      }
-      void set_total_operation_time_sensor(sensor::Sensor *sensor)
-      {
-        total_operation_time = sensor;
-      }
-
       void set_mode_select(Samsung_AC_Mode_Select *select)
       {
         mode = select;
@@ -429,31 +391,6 @@ namespace esphome
       optional<bool> _cur_water_heater_power;
       optional<Mode> _cur_mode;
       optional<WaterHeaterMode> _cur_water_heater_mode;
-      float _cur_filter_use_time{-1.0f};
-
-      void update_filter_use_time(float value)
-      {
-        _cur_filter_use_time = value;
-        update_custom_sensor(0x4212, value);
-        if (filter_use_time != nullptr)
-          filter_use_time->publish_state(value);
-      }
-
-      void update_total_operation_time(float value)
-      {
-        update_custom_sensor(0x4222, value);
-        if (total_operation_time != nullptr)
-          total_operation_time->publish_state(value);
-      }
-
-      optional<bool> _cur_display_lighting;
-
-      void update_display_lighting(bool value)
-      {
-        _cur_display_lighting = value;
-        if (display_lighting != nullptr)
-          display_lighting->publish_state(value);
-      }
 
       void update_power(bool value)
       {

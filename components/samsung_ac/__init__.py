@@ -9,7 +9,6 @@ from esphome.components import (
     number,
     climate,
     text_sensor,
-    button,
 )
 from esphome.const import (
     CONF_ID,
@@ -21,11 +20,16 @@ from esphome.const import (
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_CURRENT,
+    DEVICE_CLASS_RUNNING,
+    DEVICE_CLASS_CARBON_DIOXIDE,
+    DEVICE_CLASS_FREQUENCY,
     UNIT_CELSIUS,
     UNIT_PERCENT,
     UNIT_WATT,
     UNIT_VOLT,
     UNIT_AMPERE,
+    UNIT_PARTS_PER_MILLION,
+    UNIT_HERTZ,
     CONF_UNIT_OF_MEASUREMENT,
     CONF_DEVICE_CLASS,
     CONF_FILTERS,
@@ -41,7 +45,7 @@ from esphome import pins
 
 CODEOWNERS = ["matthias882", "lanwin", "omerfaruk-aran"]
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor", "binary_sensor", "switch", "select", "number", "climate", "text_sensor", "button"]
+AUTO_LOAD = ["sensor", "binary_sensor", "switch", "select", "number", "climate", "text_sensor"]
 MULTI_CONF = False
 
 CONF_SAMSUNG_AC_ID = "samsung_ac_id"
@@ -50,7 +54,6 @@ samsung_ac = cg.esphome_ns.namespace("samsung_ac")
 Samsung_AC = samsung_ac.class_("Samsung_AC", cg.PollingComponent, uart.UARTDevice)
 Samsung_AC_Device = samsung_ac.class_("Samsung_AC_Device")
 Samsung_AC_Switch = samsung_ac.class_("Samsung_AC_Switch", switch.Switch)
-Samsung_AC_Button = samsung_ac.class_("Samsung_AC_Button", button.Button)
 Samsung_AC_Mode_Select = samsung_ac.class_("Samsung_AC_Mode_Select", select.Select)
 Samsung_AC_Water_Heater_Mode_Select = samsung_ac.class_(
     "Samsung_AC_Water_Heater_Mode_Select", select.Select
@@ -132,9 +135,22 @@ CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP = "outdoor_compressor_top_temperature"
 CONF_DEVICE_OUT_PIPE_OUT1_TEMP = "outdoor_pipe_out1_temperature"
 CONF_DEVICE_OUT_PIPE_OUT2_TEMP = "outdoor_pipe_out2_temperature"
 CONF_DEVICE_OUT_PIPE_IN3_TEMP = "outdoor_pipe_in3_temperature"
-CONF_DEVICE_FILTER_USE_TIME = "filter_use_time"
-CONF_DEVICE_TOTAL_OPERATION_TIME = "total_operation_time"
-CONF_DEVICE_DISPLAY_LIGHTING = "display_lighting"
+CONF_DEVICE_CO2 = "co2"
+CONF_DEVICE_MODEL_INFORMATION = "model_information"
+CONF_DEVICE_THERMO_STATE = "thermo_state"
+CONF_DEVICE_DEFROST_MODE = "defrost_mode"
+CONF_DEVICE_SILENCE_MODE = "silence_mode"
+CONF_DEVICE_OUT_HIGH_PRESSURE = "outdoor_high_pressure"
+CONF_DEVICE_OUT_LOW_PRESSURE = "outdoor_low_pressure"
+CONF_DEVICE_OUT_DISCHARGE_TEMP1 = "outdoor_discharge_temperature1"
+CONF_DEVICE_OUT_COND_OUT_TEMP = "outdoor_condenser_out_temperature"
+CONF_DEVICE_OUT_SUCTION_TEMP = "outdoor_suction_temperature"
+CONF_DEVICE_OUT_COMP1_ORDER_FREQ = "outdoor_compressor1_order_frequency"
+CONF_DEVICE_OUT_COMP1_TARGET_FREQ = "outdoor_compressor1_target_frequency"
+CONF_DEVICE_OUT_COMP1_CURRENT_FREQ = "outdoor_compressor1_current_frequency"
+CONF_DEVICE_OUT_FAN1_RPM = "outdoor_fan1_rpm"
+CONF_DEVICE_OUT_IPM1_TEMP = "outdoor_ipm1_temperature"
+CONF_DEVICE_OUT_CAPACITY_HP = "outdoor_capacity_hp"
 
 
 def preset_entry(name: str, value: int, displayName: str):
@@ -310,6 +326,85 @@ def outdoor_temp_sensor_schema(message: int):
     )
 
 
+def co2_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement=UNIT_PARTS_PER_MILLION,
+        accuracy_decimals=0,
+        device_class=DEVICE_CLASS_CARBON_DIOXIDE,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:molecule-co2",
+    )
+
+
+def model_information_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        accuracy_decimals=0,
+        icon="mdi:information-outline",
+        entity_category="diagnostic",
+    )
+
+
+def binary_custom_sensor_schema(
+    message: int,
+    icon=cv.UNDEFINED,
+    device_class=cv.UNDEFINED,
+    entity_category=cv.UNDEFINED,
+):
+    return binary_sensor.binary_sensor_schema(
+        icon=icon,
+        device_class=device_class,
+        entity_category=entity_category,
+    ).extend(
+        {
+            cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=message): cv.hex_int,
+        }
+    )
+
+
+def outdoor_pressure_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement="kgf/cm²",
+        accuracy_decimals=1,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:gauge",
+        raw_filters=[{"lambda": Lambda("return (int16_t)x;")}, {"multiply": 0.1}],
+    )
+
+
+def outdoor_frequency_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement=UNIT_HERTZ,
+        accuracy_decimals=0,
+        device_class=DEVICE_CLASS_FREQUENCY,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:sine-wave",
+    )
+
+
+def outdoor_fan_rpm_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement="RPM",
+        accuracy_decimals=0,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:fan",
+    )
+
+
+def outdoor_capacity_hp_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement="HP",
+        accuracy_decimals=0,
+        icon="mdi:air-conditioner",
+        entity_category="diagnostic",
+    )
+
+
 DEVICE_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_DEVICE_ID): cv.declare_id(Samsung_AC_Device),
@@ -456,21 +551,55 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:valve",
             entity_category="diagnostic",
         ),
-        cv.Optional(CONF_DEVICE_FILTER_USE_TIME): sensor.sensor_schema(
-            unit_of_measurement="h",
-            accuracy_decimals=0,
-            state_class=STATE_CLASS_MEASUREMENT,
-            icon="mdi:timer-outline",
+        cv.Optional(CONF_DEVICE_CO2): co2_sensor_schema(0x421B),
+        cv.Optional(CONF_DEVICE_MODEL_INFORMATION): model_information_sensor_schema(
+            0x4229
         ),
-        cv.Optional(CONF_DEVICE_TOTAL_OPERATION_TIME): sensor.sensor_schema(
-            unit_of_measurement="h",
-            accuracy_decimals=0,
-            state_class=STATE_CLASS_MEASUREMENT,
-            icon="mdi:counter",
+        cv.Optional(CONF_DEVICE_THERMO_STATE): binary_custom_sensor_schema(
+            0x4028,
+            icon="mdi:thermometer",
+            device_class=DEVICE_CLASS_RUNNING,
         ),
-        cv.Optional(CONF_DEVICE_DISPLAY_LIGHTING): switch.switch_schema(
-            Samsung_AC_Switch,
-            icon="mdi:led-on",
+        cv.Optional(CONF_DEVICE_DEFROST_MODE): binary_custom_sensor_schema(
+            0x402E,
+            icon="mdi:snowflake-melt",
+        ),
+        cv.Optional(CONF_DEVICE_SILENCE_MODE): binary_custom_sensor_schema(
+            0x4046,
+            icon="mdi:volume-off",
+        ),
+        cv.Optional(CONF_DEVICE_OUT_HIGH_PRESSURE): outdoor_pressure_sensor_schema(
+            0x8206
+        ),
+        cv.Optional(CONF_DEVICE_OUT_LOW_PRESSURE): outdoor_pressure_sensor_schema(
+            0x8208
+        ),
+        cv.Optional(
+            CONF_DEVICE_OUT_DISCHARGE_TEMP1
+        ): outdoor_temp_sensor_schema(0x820A),
+        cv.Optional(CONF_DEVICE_OUT_COND_OUT_TEMP): outdoor_temp_sensor_schema(
+            0x8218
+        ),
+        cv.Optional(CONF_DEVICE_OUT_SUCTION_TEMP): outdoor_temp_sensor_schema(
+            0x821A
+        ),
+        cv.Optional(
+            CONF_DEVICE_OUT_COMP1_ORDER_FREQ
+        ): outdoor_frequency_sensor_schema(0x8236),
+        cv.Optional(
+            CONF_DEVICE_OUT_COMP1_TARGET_FREQ
+        ): outdoor_frequency_sensor_schema(0x8237),
+        cv.Optional(
+            CONF_DEVICE_OUT_COMP1_CURRENT_FREQ
+        ): outdoor_frequency_sensor_schema(0x8238),
+        cv.Optional(CONF_DEVICE_OUT_FAN1_RPM): outdoor_fan_rpm_sensor_schema(
+            0x823D
+        ),
+        cv.Optional(CONF_DEVICE_OUT_IPM1_TEMP): outdoor_temp_sensor_schema(
+            0x8254
+        ),
+        cv.Optional(CONF_DEVICE_OUT_CAPACITY_HP): outdoor_capacity_hp_sensor_schema(
+            0x8287
         ),
     }
 )
@@ -485,6 +614,25 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_OUT_PIPE_OUT1_TEMP,
     CONF_DEVICE_OUT_PIPE_OUT2_TEMP,
     CONF_DEVICE_OUT_PIPE_IN3_TEMP,
+    CONF_DEVICE_CO2,
+    CONF_DEVICE_MODEL_INFORMATION,
+    CONF_DEVICE_OUT_HIGH_PRESSURE,
+    CONF_DEVICE_OUT_LOW_PRESSURE,
+    CONF_DEVICE_OUT_DISCHARGE_TEMP1,
+    CONF_DEVICE_OUT_COND_OUT_TEMP,
+    CONF_DEVICE_OUT_SUCTION_TEMP,
+    CONF_DEVICE_OUT_COMP1_ORDER_FREQ,
+    CONF_DEVICE_OUT_COMP1_TARGET_FREQ,
+    CONF_DEVICE_OUT_COMP1_CURRENT_FREQ,
+    CONF_DEVICE_OUT_FAN1_RPM,
+    CONF_DEVICE_OUT_IPM1_TEMP,
+    CONF_DEVICE_OUT_CAPACITY_HP,
+]
+
+CUSTOM_BINARY_SENSOR_KEYS = [
+    CONF_DEVICE_THERMO_STATE,
+    CONF_DEVICE_DEFROST_MODE,
+    CONF_DEVICE_SILENCE_MODE,
 ]
 
 CONF_DEVICES = "devices"
@@ -683,18 +831,6 @@ async def to_code(config):
                 text_sensor.new_text_sensor,
                 var_dev.set_outdoor_4way_valve_text_sensor,
             ),
-            CONF_DEVICE_FILTER_USE_TIME: (
-                sensor.new_sensor,
-                var_dev.set_filter_use_time_sensor,
-            ),
-            CONF_DEVICE_TOTAL_OPERATION_TIME: (
-                sensor.new_sensor,
-                var_dev.set_total_operation_time_sensor,
-            ),
-            CONF_DEVICE_DISPLAY_LIGHTING: (
-                switch.new_switch,
-                var_dev.set_display_lighting_switch,
-            ),
         }
 
         # Iterate over the actions
@@ -804,6 +940,16 @@ async def to_code(config):
                 sens = await sensor.new_sensor(conf_copy)
                 cg.add(
                     var_dev.add_custom_sensor(conf[CONF_DEVICE_CUSTOM_MESSAGE], sens)
+                )
+
+        for key in CUSTOM_BINARY_SENSOR_KEYS:
+            if key in device:
+                conf = device[key]
+                sens = await binary_sensor.new_binary_sensor(conf)
+                cg.add(
+                    var_dev.add_custom_binary_sensor(
+                        conf[CONF_DEVICE_CUSTOM_MESSAGE], sens
+                    )
                 )
 
         cg.add(var.register_device(var_dev))

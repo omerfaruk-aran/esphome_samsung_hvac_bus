@@ -170,7 +170,23 @@ samsung_ac:
         name: "Kitchen Real Fan Speed"
       indoor_real_alt_mode:
         name: "Kitchen Alt Mode"
-      
+
+      # CO2 concentration sensor (if your indoor unit has one built in)
+      co2:
+        name: "Kitchen CO2"
+      # Raw indoor unit model information code (diagnostic, not human-readable)
+      model_information:
+        name: "Kitchen Model Info"
+      # Thermo On/Off - whether the compressor is actively being asked to run
+      thermo_state:
+        name: "Kitchen Thermo"
+      # Defrost mode status
+      defrost_mode:
+        name: "Kitchen Defrost"
+      # Silent/quiet mode status
+      silence_mode:
+        name: "Kitchen Silence"
+
       # Only supported on NASA-based heat pumps
       water_temperature:
         name: "Warm water"
@@ -248,6 +264,31 @@ samsung_ac:
         
       outdoor_temperature: # Should be used with outdoor device address
         name: "Outdoor temperature"
+
+      # Refrigerant cycle diagnostics - pressures, temperatures, compressor frequency
+      outdoor_high_pressure:
+        name: "Outdoor High Pressure"
+      outdoor_low_pressure:
+        name: "Outdoor Low Pressure"
+      outdoor_discharge_temperature1:
+        name: "Outdoor Discharge Temp"
+      outdoor_condenser_out_temperature:
+        name: "Outdoor Condenser Out Temp"
+      outdoor_suction_temperature:
+        name: "Outdoor Suction Temp"
+      outdoor_compressor1_order_frequency:
+        name: "Outdoor Compressor Order Frequency"
+      outdoor_compressor1_target_frequency:
+        name: "Outdoor Compressor Target Frequency"
+      outdoor_compressor1_current_frequency:
+        name: "Outdoor Compressor Current Frequency"
+      outdoor_fan1_rpm:
+        name: "Outdoor Fan1 RPM"
+      outdoor_ipm1_temperature:
+        name: "Outdoor IPM1 Temperature"
+      # Static installed outdoor unit capacity (diagnostic, does not change)
+      outdoor_capacity_hp:
+        name: "Outdoor Capacity"
 
 
 

@@ -589,13 +589,6 @@ namespace esphome
                     packet.messages.push_back(lr_swing);
                 }
 
-                if (request.display_lighting)
-                {
-                    MessageSet display_lighting(MessageNumber::ENUM_in_display_lighting);
-                    display_lighting.value = request.display_lighting.value() ? 1 : 0;
-                    packet.messages.push_back(display_lighting);
-                }
-
                 if (packet.messages.size() == 0)
                     continue;
 
@@ -631,6 +624,9 @@ namespace esphome
             if (request.water_heater_power)
                 queued.water_heater_power = request.water_heater_power;
 
+            if (request.waterheatermode)
+                queued.waterheatermode = request.waterheatermode;
+
             if (request.target_temp)
                 queued.target_temp = request.target_temp;
 
@@ -648,9 +644,6 @@ namespace esphome
 
             if (request.swing_mode)
                 queued.swing_mode = request.swing_mode;
-
-            if (request.display_lighting)
-                queued.display_lighting = request.display_lighting;
         }
 
         Mode operation_mode_to_mode(int value)
@@ -804,24 +797,6 @@ namespace esphome
             {
                 LOG_MESSAGE(ENUM_in_operation_automatic_cleaning, (double)message.value, source, dest);
                 target->set_automatic_cleaning(source, message.value != 0);
-                break;
-            }
-            case MessageNumber::ENUM_in_display_lighting:
-            {
-                LOG_MESSAGE(ENUM_in_display_lighting, (double)message.value, source, dest);
-                target->set_display_lighting(source, message.value != 0);
-                break;
-            }
-            case MessageNumber::VAR_in_filter_use_time:
-            {
-                LOG_MESSAGE(VAR_in_filter_use_time, (double)message.value, source, dest);
-                target->set_filter_use_time(source, (float)message.value);
-                break;
-            }
-            case MessageNumber::VAR_in_total_operation_time:
-            {
-                LOG_MESSAGE(VAR_in_total_operation_time, (double)message.value, source, dest);
-                target->set_total_operation_time(source, (float)message.value);
                 break;
             }
             case MessageNumber::ENUM_in_water_heater_power:

@@ -702,10 +702,6 @@ void test_nasa_filter_controls()
     total_time_msg.value = 1341;
     packet.messages.push_back(total_time_msg);
     
-    MessageSet lighting_msg(MessageNumber::ENUM_in_display_lighting);
-    lighting_msg.value = 1;
-    packet.messages.push_back(lighting_msg);
-    
     auto packet_bytes = packet.encode();
     test_process_data(bytes_to_hex(packet_bytes), target);
     
@@ -713,8 +709,6 @@ void test_nasa_filter_controls()
     assert(abs(target.last_set_filter_use_time_value - 150.0f) < 0.01f);
     assert(target.last_set_total_operation_time_address == "20.00.00");
     assert(abs(target.last_set_total_operation_time_value - 1341.0f) < 0.01f);
-    assert(target.last_set_display_lighting_address == "20.00.00");
-    assert(target.last_set_display_lighting_value == true);
 }
 
 void test_nasa_water_heater_control()
