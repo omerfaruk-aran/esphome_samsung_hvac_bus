@@ -598,6 +598,10 @@ namespace esphome
                     MessageSet reset_alarm(MessageNumber::ENUM_in_filter_clean_alarm);
                     reset_alarm.value = 0;
                     packet.messages.push_back(reset_alarm);
+
+                    MessageSet reset_sign(static_cast<MessageNumber>(0x4015));
+                    reset_sign.value = 0;
+                    packet.messages.push_back(reset_sign);
                 }
 
                 if (packet.messages.size() == 0)

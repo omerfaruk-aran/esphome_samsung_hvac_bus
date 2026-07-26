@@ -330,8 +330,7 @@ namespace esphome
           ProtocolRequest request;
           request.reset_filter_time = true;
           publish_request(request);
-          update_filter_use_time(0.0f);
-          update_filter_clean_alarm(false);
+          reset_filter_lifetime();
         };
       }
 
@@ -450,15 +449,28 @@ namespace esphome
       optional<bool> _cur_water_heater_power;
       optional<Mode> _cur_mode;
       optional<WaterHeaterMode> _cur_water_heater_mode;
-      float _cur_filter_use_time{-1.0f};
+      float _raw_filter_use_time{0.0f};
+      float _filter_reset_offset{0.0f};
+      float _cur_filter_use_time{0.0f};
       float _cur_filter_clean_time{1000.0f};
+
+      void reset_filter_lifetime()
+      {
+        _filter_reset_offset = _raw_filter_use_time;
+        _cur_filter_clean_alarm = false;
+        update_filter_use_time(_raw_filter_use_time);
+      }
 
       void update_filter_use_time(float value)
       {
-        _cur_filter_use_time = value;
-        update_custom_sensor(0x4212, value);
+        _raw_filter_use_time = value;
+        float effective_value = value - _filter_reset_offset;
+        if (effective_value < 0.0f) effective_value = 0.0f;
+        _cur_filter_use_time = effective_value;
+
+        update_custom_sensor(0x4212, effective_value);
         if (filter_use_time != nullptr)
-          filter_use_time->publish_state(value);
+          filter_use_time->publish_state(effective_value);
         recalculate_filter_stats();
       }
 
