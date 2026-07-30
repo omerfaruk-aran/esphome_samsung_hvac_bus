@@ -25,6 +25,30 @@ namespace esphome
         static bool pending_control_tx_ = false;
         static uint32_t pending_control_tx_due_ms_ = 0;
 
+        void send_register_controller(MessageTarget *target);
+
+        // Registration rate-limiting: shared by initial registration and the wake-up path.
+        // Both paths must respect the same 10-second minimum interval to avoid spamming
+        // the RS-485 bus with D1 registration packets, which overwhelms the outdoor unit
+        // and forces it to require a hard power-cycle reset.
+        static uint32_t last_reg_attempt_ms_ = 0;
+        constexpr uint32_t REG_MIN_INTERVAL_MS = 10000;
+
+        // Rate-limited wrapper around send_register_controller().
+        // Returns true if a packet was actually sent, false if still within the quiet period.
+        // last_reg_attempt_ms_ == 0 means "never sent"; the first attempt is always allowed
+        // through immediately. Subsequent attempts are rate-limited to REG_MIN_INTERVAL_MS.
+        static bool try_send_register_controller(MessageTarget *target)
+        {
+            const uint32_t now = millis();
+            if (last_reg_attempt_ms_ != 0 &&
+                now - last_reg_attempt_ms_ < REG_MIN_INTERVAL_MS)
+                return false;
+            last_reg_attempt_ms_ = now;
+            send_register_controller(target);
+            return true;
+        }
+
         // Track cumulative energy calculation per device address
         // Note: Energy tracker persists across device reconnections. This is intentional to maintain
         // cumulative energy across device restarts. The tracker is keyed by device address, so if
@@ -1012,14 +1036,18 @@ namespace esphome
 
         void NonNasaProtocol::protocol_update(MessageTarget *target)
         {
-            // non-blocking keepalive send (scheduled from broadcast request)
+            // non-blocking keepalive send (scheduled from broadcast request).
+            // Uses try_send_register_controller() to enforce the shared 10-second rate limit
+            // so the keepalive cannot fire back-to-back with an initial registration or wake-up send.
             if (non_nasa_keepalive && pending_keepalive_)
             {
                 const uint32_t now = millis();
                 if ((int32_t)(now - pending_keepalive_due_ms_) >= 0)
                 {
-                    send_register_controller(target);
-                    last_keepalive_sent_ms_ = now;
+                    if (try_send_register_controller(target))
+                    {
+                        last_keepalive_sent_ms_ = now;
+                    }
                     pending_keepalive_ = false;
                 }
             }
@@ -1044,10 +1072,11 @@ namespace esphome
             }
 
             // If we're not currently registered, keep sending a registration request until it has
-            // been confirmed by the outdoor unit.
+            // been confirmed by the outdoor unit. Uses try_send_register_controller() to enforce
+            // the shared 10-second rate limit so this path cannot spam the bus.
             if (!controller_registered)
             {
-                send_register_controller(target);
+                try_send_register_controller(target);
             }
 
             // If we have *any* messages in the queue for longer than 15s, assume failure and
@@ -1070,7 +1099,8 @@ namespace esphome
 
             // If we have any *unsent* messages in the queue for over 1000ms, it likely means the indoor
             // and/or outdoor unit has gone to sleep due to inactivity. Send a registration request to
-            // wake the unit up.
+            // wake the unit up. Uses try_send_register_controller() to enforce the shared 10-second
+            // rate limit, preventing this path from spamming the bus when a command is pending.
             for (auto &item : nonnasa_requests)
             {
                 if (item.time_sent == 0 && now - item.time > 1000 && item.resend_count == 0 && item.retry_count == 0)
@@ -1079,7 +1109,7 @@ namespace esphome
                     indoor_unit_awake = false;
                     item.retry_count++;
                     LOGD("Device is likely sleeping, waking...");
-                    send_register_controller(target);
+                    try_send_register_controller(target);
                     break;
                 }
             }
