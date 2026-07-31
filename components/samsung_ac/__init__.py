@@ -4,6 +4,7 @@ from esphome.components import (
     uart,
     sensor,
     binary_sensor,
+    button,
     switch,
     select,
     number,
@@ -46,6 +47,7 @@ samsung_ac = cg.esphome_ns.namespace("samsung_ac")
 Samsung_AC = samsung_ac.class_("Samsung_AC", cg.PollingComponent, uart.UARTDevice)
 Samsung_AC_Device = samsung_ac.class_("Samsung_AC_Device")
 Samsung_AC_Switch = samsung_ac.class_("Samsung_AC_Switch", switch.Switch)
+Samsung_AC_Button = samsung_ac.class_("Samsung_AC_Button", button.Button)
 Samsung_AC_Mode_Select = samsung_ac.class_("Samsung_AC_Mode_Select", select.Select)
 Samsung_AC_Water_Heater_Mode_Select = samsung_ac.class_(
     "Samsung_AC_Water_Heater_Mode_Select", select.Select
@@ -77,6 +79,8 @@ CONF_DEVICE_INDOOR_EVA_OUT_TEMPERATURE = "indoor_eva_out_temperature"
 CONF_DEVICE_WATER_TEMPERATURE = "water_temperature"
 CONF_DEVICE_WATER_TARGET_TEMPERATURE = "water_target_temperature"
 CONF_DEVICE_POWER = "power"
+CONF_DEVICE_DISPLAY_LED = "display_led"
+CONF_DEVICE_FILTER_RESET = "filter_reset"
 CONF_DEVICE_AUTOMATIC_CLEANING = "automatic_cleaning"
 CONF_DEVICE_WATER_HEATER_POWER = "water_heater_power"
 CONF_DEVICE_MODE = "mode"
@@ -277,6 +281,12 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_WATER_TARGET_TEMPERATURE): NUMBER_SCHEMA,
         cv.Optional(CONF_DEVICE_POWER): switch.switch_schema(
             Samsung_AC_Switch, icon="mdi:power"
+        ),
+        cv.Optional(CONF_DEVICE_DISPLAY_LED): switch.switch_schema(
+            Samsung_AC_Switch, icon="mdi:led-on"
+        ),
+        cv.Optional(CONF_DEVICE_FILTER_RESET): button.button_schema(
+            Samsung_AC_Button, icon="mdi:air-filter"
         ),
         cv.Optional(CONF_DEVICE_AUTOMATIC_CLEANING): switch.switch_schema(
             Samsung_AC_Switch, icon="mdi:broom"
@@ -485,6 +495,14 @@ async def to_code(config):
         # Mapping of config keys to their corresponding methods and types
         device_actions = {
             CONF_DEVICE_POWER: (switch.new_switch, var_dev.set_power_switch),
+            CONF_DEVICE_DISPLAY_LED: (
+                switch.new_switch,
+                var_dev.set_display_led_switch,
+            ),
+            CONF_DEVICE_FILTER_RESET: (
+                button.new_button,
+                var_dev.set_filter_reset_button,
+            ),
             CONF_DEVICE_AUTOMATIC_CLEANING: (
                 switch.new_switch,
                 var_dev.set_automatic_cleaning_switch,
