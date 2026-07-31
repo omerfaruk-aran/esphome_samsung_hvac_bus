@@ -529,6 +529,20 @@ namespace esphome
                     packet.messages.push_back(power);
                 }
 
+                if (request.display_led)
+                {
+                    MessageSet display_led(MessageNumber::ENUM_in_operation_display_led);
+                    display_led.value = request.display_led.value() ? 1 : 0;
+                    packet.messages.push_back(display_led);
+                }
+
+                if (request.filter_reset)
+                {
+                    MessageSet filter_reset(MessageNumber::ENUM_in_filter_clean);
+                    filter_reset.value = 1;
+                    packet.messages.push_back(filter_reset);
+                }
+
                 if (request.automatic_cleaning)
                 {
                     MessageSet automatic_cleaning(MessageNumber::ENUM_in_operation_automatic_cleaning);
@@ -617,6 +631,12 @@ namespace esphome
 
             if (request.power)
                 queued.power = request.power;
+
+            if (request.display_led)
+                queued.display_led = request.display_led;
+
+            if (request.filter_reset)
+                queued.filter_reset = request.filter_reset;
 
             if (request.automatic_cleaning)
                 queued.automatic_cleaning = request.automatic_cleaning;
@@ -781,6 +801,13 @@ namespace esphome
             case MessageNumber::ENUM_in_state_humidity_percent:
             {
                 LOG_MESSAGE(ENUM_in_state_humidity_percent, (double)message.value, source, dest);
+                break;
+            }
+            case MessageNumber::ENUM_in_operation_display_led:
+            {
+                bool value = message.value != 0;
+                LOG_MESSAGE(ENUM_in_operation_display_led, value, source, dest);
+                target->set_display_led(source, value);
                 break;
             }
             case MessageNumber::ENUM_in_operation_power:
