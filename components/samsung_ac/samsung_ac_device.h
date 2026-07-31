@@ -7,6 +7,7 @@
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/button/button.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/select/select.h"
 #include "esphome/components/number/number.h"
@@ -82,6 +83,18 @@ namespace esphome
       std::function<void(WaterHeaterMode)> write_state_;
     };
 
+    class Samsung_AC_Button : public button::Button
+    {
+    public:
+      std::function<void()> press_action_;
+
+    protected:
+      void press_action() override
+      {
+        press_action_();
+      }
+    };
+
     class Samsung_AC_Switch : public switch_::Switch
     {
     public:
@@ -135,6 +148,8 @@ namespace esphome
       Samsung_AC_Number *water_outlet_target{nullptr};
       Samsung_AC_Number *target_water_temperature{nullptr};
       Samsung_AC_Switch *power{nullptr};
+      Samsung_AC_Switch *display_led{nullptr};
+      Samsung_AC_Button *filter_reset{nullptr};
       Samsung_AC_Switch *automatic_cleaning{nullptr};
       Samsung_AC_Switch *water_heater_power{nullptr};
       Samsung_AC_Mode_Select *mode{nullptr};
@@ -257,6 +272,28 @@ namespace esphome
         };
       }
 
+      void set_display_led_switch(Samsung_AC_Switch *switch_)
+      {
+        display_led = switch_;
+        display_led->write_state_ = [this](bool value)
+        {
+          ProtocolRequest request;
+          request.display_led = value;
+          publish_request(request);
+        };
+      }
+
+      void set_filter_reset_button(Samsung_AC_Button *button)
+      {
+        filter_reset = button;
+        filter_reset->press_action_ = [this]()
+        {
+          ProtocolRequest request;
+          request.filter_reset = true;
+          publish_request(request);
+        };
+      }
+
       void set_automatic_cleaning_switch(Samsung_AC_Switch *switch_)
       {
         automatic_cleaning = switch_;
@@ -369,6 +406,12 @@ namespace esphome
       optional<bool> _cur_water_heater_power;
       optional<Mode> _cur_mode;
       optional<WaterHeaterMode> _cur_water_heater_mode;
+
+      void update_display_led(bool value)
+      {
+        if (display_led != nullptr)
+          display_led->publish_state(value);
+      }
 
       void update_power(bool value)
       {
