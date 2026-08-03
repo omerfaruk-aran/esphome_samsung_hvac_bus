@@ -3,6 +3,7 @@
 #include <iostream>
 #include <bitset>
 #include <cassert>
+#include <cstdlib>
 #include <optional>
 #include <set>
 #include "esphome/core/optional.h"
@@ -22,6 +23,16 @@ static const bool unbuffered_stdout = []
     std::cout << std::unitbuf;
     return true;
 }();
+
+// Route assertion failures through cout as well. glibc's assert only writes to
+// stderr, and a truncated CI log routinely loses that line, leaving an abort
+// with no indication of which check failed.
+#undef assert
+#define assert(expr)                                                            \
+    ((expr) ? (void)0                                                           \
+            : (std::cout << "ASSERT FAILED: " << #expr << "  at " << __FILE__   \
+                         << ":" << __LINE__ << std::endl,                       \
+               std::abort()))
 
 class DebugTarget : public MessageTarget
 {
