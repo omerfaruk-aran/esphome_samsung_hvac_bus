@@ -480,6 +480,8 @@ namespace esphome
         int fanmode_to_nasa_fanmode(FanMode mode)
         {
             // This stuff did not exists in XML only in Remcode.dll
+            // Confirmed against vendor tooling: ENUM_in_fan_mode (0x4006) is
+            // written with Auto=0, Low=1, Mid=2, High=3, Turbo=4, Off=254.
             switch (mode)
             {
             case FanMode::Low:
@@ -490,6 +492,8 @@ namespace esphome
                 return 3;
             case FanMode::Turbo:
                 return 4;
+            case FanMode::Off:
+                return 254;
             case FanMode::Auto:
             default:
                 return 0;
@@ -754,10 +758,10 @@ namespace esphome
 
             switch (message.messageNumber)
             {
-            case MessageNumber::VAR_in_temp_room_f: // unit = 'Celsius' from XML
+            case MessageNumber::VAR_in_temp_room_modified_f: // unit = 'Celsius' from XML
             {
                 double temp = (double)message.value / (double)10;
-                LOG_MESSAGE(VAR_in_temp_room_f, temp, source, dest);
+                LOG_MESSAGE(VAR_in_temp_room_modified_f, temp, source, dest);
                 target->set_room_temperature(source, temp);
                 break;
             }
@@ -1427,7 +1431,6 @@ namespace esphome
             case 0x808d:
             case 0x8248:
             case 0x823f:
-            case 0x4203:
             case 0x4006:
             {
                 // LOGW("s:%s d:%s NoMap %s %li", source.c_str(), dest.c_str(), long_to_hex((int)message.messageNumber).c_str(), message.value);

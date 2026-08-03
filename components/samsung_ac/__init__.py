@@ -81,6 +81,7 @@ CLIMATE_SCHEMA = climate.climate_schema(Samsung_AC_Climate)
 CONF_DEVICE_ID = "samsung_ac_device_id"
 CONF_DEVICE_ADDRESS = "address"
 CONF_DEVICE_ROOM_TEMPERATURE = "room_temperature"
+CONF_DEVICE_ROOM_TEMPERATURE_RAW = "room_temperature_raw"
 CONF_DEVICE_ROOM_TEMPERATURE_OFFSET = "room_temperature_offset"
 CONF_DEVICE_ROOM_TEMPERATURE_OFFSET_NUMBER = "room_temperature_offset_number"
 CONF_DEVICE_TARGET_TEMPERATURE = "target_temperature"
@@ -88,6 +89,10 @@ CONF_DEVICE_WATER_OUTLET_TARGET = "water_outlet_target"
 CONF_DEVICE_OUTDOOR_TEMPERATURE = "outdoor_temperature"
 CONF_DEVICE_INDOOR_EVA_IN_TEMPERATURE = "indoor_eva_in_temperature"
 CONF_DEVICE_INDOOR_EVA_OUT_TEMPERATURE = "indoor_eva_out_temperature"
+CONF_DEVICE_INDOOR_DISCHARGE_TEMPERATURE = "indoor_discharge_temperature"
+CONF_DEVICE_INDOOR_EEV = "indoor_eev"
+CONF_DEVICE_INDOOR_ERROR_CODE = "indoor_error_code"
+CONF_DEVICE_INDOOR_MTFC = "indoor_mtfc"
 CONF_DEVICE_WATER_TEMPERATURE = "water_temperature"
 CONF_DEVICE_WATER_TARGET_TEMPERATURE = "water_target_temperature"
 CONF_DEVICE_POWER = "power"
@@ -152,6 +157,18 @@ CONF_DEVICE_OUT_COMP1_CURRENT_FREQ = "outdoor_compressor1_current_frequency"
 CONF_DEVICE_OUT_FAN1_RPM = "outdoor_fan1_rpm"
 CONF_DEVICE_OUT_IPM1_TEMP = "outdoor_ipm1_temperature"
 CONF_DEVICE_OUT_CAPACITY_HP = "outdoor_capacity_hp"
+# Second-unit counterparts of the sensors above
+CONF_DEVICE_OUT_DISCHARGE_TEMP2 = "outdoor_discharge_temperature2"
+CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP2 = "outdoor_compressor_top_temperature2"
+CONF_DEVICE_OUT_IPM2_TEMP = "outdoor_ipm2_temperature"
+CONF_DEVICE_OUT_PIPE_IN1_TEMP = "outdoor_pipe_in1_temperature"
+CONF_DEVICE_OUT_PIPE_IN2_TEMP = "outdoor_pipe_in2_temperature"
+CONF_DEVICE_OUT_COMP2_CURRENT_FREQ = "outdoor_compressor2_current_frequency"
+CONF_DEVICE_OUT_SENSOR_CT2 = "outdoor_current2"
+# Refrigerant-cycle values derived from the pressure sensors
+CONF_DEVICE_OUT_SAT_TEMP_HIGH_PRESSURE = "outdoor_saturated_temperature_high_pressure"
+CONF_DEVICE_OUT_SAT_TEMP_LOW_PRESSURE = "outdoor_saturated_temperature_low_pressure"
+CONF_DEVICE_OUT_DISCHARGE_SUPERHEAT = "outdoor_discharge_superheat"
 CONF_DEVICE_CUMULATIVE_OPERATION_TIME = "cumulative_operation_time"
 
 
@@ -257,13 +274,14 @@ def custom_sensor_schema(
     return schema
 
 
-def temperature_sensor_schema(message: int):
+def temperature_sensor_schema(message: int, entity_category=cv.UNDEFINED):
     return custom_sensor_schema(
         message=message,
         unit_of_measurement=UNIT_CELSIUS,
         accuracy_decimals=1,
         device_class=DEVICE_CLASS_TEMPERATURE,
         state_class=STATE_CLASS_MEASUREMENT,
+        entity_category=entity_category,
         raw_filters=[{"lambda": Lambda("return (int16_t)x;")}, {"multiply": 0.1}],
     )
 
@@ -388,6 +406,29 @@ def outdoor_fan_rpm_sensor_schema(message: int):
     )
 
 
+def outdoor_current_sensor_schema(message: int):
+    return custom_sensor_schema(
+        message=message,
+        unit_of_measurement=UNIT_AMPERE,
+        accuracy_decimals=2,
+        device_class=DEVICE_CLASS_CURRENT,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:current-ac",
+        raw_filters=[{"multiply": 0.1}],
+    )
+
+
+def eev_sensor_schema(message: int):
+    # Electronic expansion valve opening, reported as raw steps (0..3000).
+    return custom_sensor_schema(
+        message=message,
+        accuracy_decimals=0,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:valve",
+        entity_category="diagnostic",
+    )
+
+
 def outdoor_capacity_hp_sensor_schema(message: int):
     return custom_sensor_schema(
         message=message,
@@ -403,11 +444,18 @@ DEVICE_SCHEMA = cv.Schema(
         cv.GenerateID(CONF_DEVICE_ID): cv.declare_id(Samsung_AC_Device),
         cv.Optional(CONF_CAPABILITIES): CAPABILITIES_SCHEMA,
         cv.Required(CONF_DEVICE_ADDRESS): cv.string,
+        # Compensated room temperature (0x4204). This is what drives the climate
+        # entity's current temperature.
         cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE): sensor.sensor_schema(
             unit_of_measurement=UNIT_CELSIUS,
             accuracy_decimals=1,
             device_class=DEVICE_CLASS_TEMPERATURE,
             state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        # Raw room sensor reading (0x4203), reported as-is. Diagnostic only - it does
+        # not feed the climate entity; useful for comparing against the compensated value.
+        cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE_RAW): temperature_sensor_schema(
+            0x4203, entity_category="diagnostic"
         ),
         cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE_OFFSET): cv.float_,
         cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE_OFFSET_NUMBER): NUMBER_SCHEMA,
@@ -608,10 +656,53 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_OUT_CAPACITY_HP): outdoor_capacity_hp_sensor_schema(
             0x8287
         ),
+        # --- indoor unit ---
+        cv.Optional(
+            CONF_DEVICE_INDOOR_DISCHARGE_TEMPERATURE
+        ): temperature_sensor_schema(0x420B),
+        cv.Optional(CONF_DEVICE_INDOOR_EEV): eev_sensor_schema(0x4217),
+        # Indoor-side error code. The `error_code` sensor above reads 0x8235, which is
+        # the outdoor unit's.
+        cv.Optional(CONF_DEVICE_INDOOR_ERROR_CODE): error_code_sensor_schema(0x0202),
+        # MTFC status. Reported as a raw value - the meaning of each state is not
+        # documented in any source available to this project.
+        cv.Optional(CONF_DEVICE_INDOOR_MTFC): custom_sensor_schema(
+            0x402F,
+            accuracy_decimals=0,
+            icon="mdi:state-machine",
+            entity_category="diagnostic",
+        ),
+        # --- outdoor: counterparts of the single-unit sensors above ---
+        cv.Optional(CONF_DEVICE_OUT_DISCHARGE_TEMP2): outdoor_temp_sensor_schema(
+            0x820C
+        ),
+        cv.Optional(
+            CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP2
+        ): outdoor_temp_sensor_schema(0x8281),
+        cv.Optional(CONF_DEVICE_OUT_IPM2_TEMP): outdoor_temp_sensor_schema(0x8255),
+        cv.Optional(CONF_DEVICE_OUT_PIPE_IN1_TEMP): outdoor_temp_sensor_schema(0x825F),
+        cv.Optional(CONF_DEVICE_OUT_PIPE_IN2_TEMP): outdoor_temp_sensor_schema(0x8260),
+        cv.Optional(
+            CONF_DEVICE_OUT_COMP2_CURRENT_FREQ
+        ): outdoor_frequency_sensor_schema(0x8276),
+        cv.Optional(CONF_DEVICE_OUT_SENSOR_CT2): outdoor_current_sensor_schema(0x8277),
+        # --- outdoor: refrigerant cycle ---
+        # Saturation temperatures matching the high/low pressure sensors above.
+        # Together with the discharge temperature these give superheat/subcooling.
+        cv.Optional(
+            CONF_DEVICE_OUT_SAT_TEMP_HIGH_PRESSURE
+        ): outdoor_temp_sensor_schema(0x829F),
+        cv.Optional(
+            CONF_DEVICE_OUT_SAT_TEMP_LOW_PRESSURE
+        ): outdoor_temp_sensor_schema(0x82A0),
+        cv.Optional(CONF_DEVICE_OUT_DISCHARGE_SUPERHEAT): outdoor_temp_sensor_schema(
+            0x827A
+        ),
     }
 )
 
 CUSTOM_SENSOR_KEYS = [
+    CONF_DEVICE_ROOM_TEMPERATURE_RAW,
     CONF_DEVICE_WATER_TEMPERATURE,
     CONF_DEVICE_PM10,
     CONF_DEVICE_PM25,
@@ -634,6 +725,20 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_OUT_IPM1_TEMP,
     CONF_DEVICE_OUT_CAPACITY_HP,
     CONF_DEVICE_CUMULATIVE_OPERATION_TIME,
+    CONF_DEVICE_INDOOR_DISCHARGE_TEMPERATURE,
+    CONF_DEVICE_INDOOR_EEV,
+    CONF_DEVICE_INDOOR_ERROR_CODE,
+    CONF_DEVICE_INDOOR_MTFC,
+    CONF_DEVICE_OUT_DISCHARGE_TEMP2,
+    CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP2,
+    CONF_DEVICE_OUT_IPM2_TEMP,
+    CONF_DEVICE_OUT_PIPE_IN1_TEMP,
+    CONF_DEVICE_OUT_PIPE_IN2_TEMP,
+    CONF_DEVICE_OUT_COMP2_CURRENT_FREQ,
+    CONF_DEVICE_OUT_SENSOR_CT2,
+    CONF_DEVICE_OUT_SAT_TEMP_HIGH_PRESSURE,
+    CONF_DEVICE_OUT_SAT_TEMP_LOW_PRESSURE,
+    CONF_DEVICE_OUT_DISCHARGE_SUPERHEAT,
 ]
 
 CUSTOM_BINARY_SENSOR_KEYS = [

@@ -829,6 +829,258 @@ Below tables show the available information from these files in a concise layout
 | 0x860F | STR_OUT_INSTALL_OUTDOOR_SETUP_INFO  | NASA_OUTDOOR_SETUP_INFO  | Structure Type | |
 | 0x8613 | STR_OUT_REF_CHECK_INFO | | Structure Type | |
 
+## Access classification
+
+The tables above say *what* each message number is, but not whether a controller may
+**write** it. This section adds that. It is compiled from vendor protocol definitions and
+from the observed behaviour of vendor commissioning tooling, not from traffic captures.
+
+### How to read the access tag
+
+- **`RW`** - both read back and written by vendor tooling.
+- **`W`** - only ever written, never read back.
+- **`R`** - read back only; no writer observed.
+
+`R` is a **lower bound**. It means no writer was observed, not that the bus refuses a
+write. The two louver addresses (`0x4011`, `0x407E`) are a good example: nothing reads
+them back, yet both are demonstrably written.
+
+`ENUM_IN_FSV_*` / `VAR_IN_FSV_*` are installer **Field Setting Values** - commissioning
+settings, not runtime controls. They account for 99 of the writable addresses below.
+
+### Addresses with no upstream definition
+
+These are written in practice but have **no entry in any published message-number table**:
+
+| MsgNr | Values | Function |
+| :-- | :-- | :-- |
+| `0x4006` | `0` Auto, `1` Low, `2` Mid, `3` High, `4` Turbo, `254` Off | Fan speed (set). Read back on `0x4007` `ENUM_in_fan_mode_real`. |
+| `0x4023` | `0` Disable, `1` Enable | Sterilising ioniser |
+| `0x4053` | `0` Off, `1` On | Drain pump |
+| `0x4054` | `0` Off, `1` On | Ventilation |
+| `0x401A` | int | Remote-control permission level |
+| `0x4405` | bitmask | Indoor addresses 0-31, for multi-unit broadcast |
+| `0x4406` | bitmask | Indoor addresses 32-63 |
+| `0x4407` | bitmask | Indoor addresses 64-95 |
+| `0x8065` | `1`, `2` | Outdoor unit reset |
+| `0x8081` | `2` test run, `3` refrigerant check | Start test run / refrigerant check |
+
+`0x2006`-`0x2014`, `0x2200` and `0xE010` are firmware-download and network-management
+messages. They are unrelated to normal control and can leave a unit in download mode.
+
+### Louver / swing
+
+Vertical and horizontal swing are two separate `Enum` addresses; there is no combined one.
+Both directions are set by putting **two message sets in a single packet**:
+
+| MsgNr | Label | Values |
+| :-- | :-- | :-- |
+| `0x4011` | `ENUM_IN_LOUVER_HL_SWING` - Wind direction (Vertical) | `0` Off, `1` On |
+| `0x407E` | `ENUM_IN_LOUVER_LR_SWING` - Wind direction (Horizontal) | `0` Off, `1` On |
+
+`0x4012` `ENUM_in_louver_hl_part_swing` is defined upstream but is neither read nor
+written by any tooling seen, so its values are **unverified**: `0` swing off, `1`-`14`
+individual louver bitmask (LOUVER 1..4), `15` swing on, `64`-`106` per-vane angle codes
+(H/M/V).
+
+### Multi-unit broadcast
+
+To drive several indoor units at once, target `b2.ff.20` (set-layer broadcast, set
+address 32) and prepend three bitmask message sets:
+
+```
+setAddress < 32  ->  0x4405 |= 1 << setAddress
+setAddress < 64  ->  0x4406 |= 1 << (setAddress - 32)
+otherwise        ->  0x4407 |= 1 << (setAddress - 64)
+```
+
+### Broadcast addresses
+
+| Address | Meaning |
+| :-- | :-- |
+| `b0.ff.ff` | Self layer, all |
+| `b1.ff.ff` | Control layer, all |
+| `b2.ff.ff` | Set layer, all |
+| `b3.ff.ff` | Control + set layer, all |
+| `b4.ff.ff` | Module layer, all |
+| `b8.ff.ff` | Local layer, all |
+| `b2.ff.20` | Set layer, all indoor units |
+| `b2.ff.10` | Set layer, all outdoor units |
+| `b0.ff.50` | Self layer, wired remote controllers |
+| `ff.ff.ff` | Everything |
+
+These match the `AddressClass` values in `components/samsung_ac/protocol_nasa.h`.
+
+### Room temperature: two messages
+
+Room temperature exists as two separate message numbers, and they are **not**
+interchangeable:
+
+| MsgNr | Enum name in `protocol_nasa.h` | Meaning | Where it surfaces |
+| :-- | :-- | :-- | :-- |
+| `0x4204` | `VAR_in_temp_room_modified_f` | `NASA_MODIFIED_CURRENT_TEMP` - compensated value | `room_temperature` sensor **and** the climate entity's current temperature |
+| `0x4203` | `VAR_in_temp_room_f` | `NASA_CURRENT_TEMP` - raw sensor reading | `room_temperature_raw` sensor only |
+
+Earlier revisions named the `0x4204` constant `VAR_in_temp_room_f`, which made it look like
+the `0x4203` entry in the tables above. It has been renamed to `VAR_in_temp_room_modified_f`
+so the two are distinguishable; the address it maps to and the behaviour are unchanged.
+
+The climate entity keeps using the compensated value, which is the right default -
+`MODIFIED` is what a unit uses for its own thermostat control, so it is the value the
+wall remote agrees with. The raw reading is available alongside it for comparison and
+diagnostics:
+
+```yaml
+devices:
+  - address: "20.00.00"
+    room_temperature:                 # 0x4204, compensated - also drives the climate entity
+      name: "Room temperature"
+    room_temperature_raw:             # 0x4203, raw sensor reading
+      name: "Room temperature (raw)"
+```
+
+Both are plain optional sensors; scaling (signed, x0.1) is applied automatically. If the
+two disagree consistently on your hardware, that is worth reporting.
+
+### Writable addresses - air conditioners
+
+Scope: CAC, CAC Inverter, DVM S, DVM S Eco (3HP / 789HP / BIG / HPHR), DVM S Water (+ mini),
+DVM Slim, FJM, Home DVM. EHS, Chiller, GHP, ERV and FCU are excluded.
+
+129 addresses. Read-only addresses are not listed here - see the enum in `components/samsung_ac/protocol_nasa.h`.
+
+| MsgNr | Access | Label | Description | Unit / scaling | Values |
+| :-- | :-- | :-- | :-- | :-- | :-- |
+| `0x0402` | RW | `LVAR_ad_address_rmc` | RMC | LogicalAnd 0xFF |  |
+| `0x0600` | RW | `STR_ad_option_basic` | Product Option |  |  |
+| `0x0601` | RW | `STR_ad_option_install` | Installation Option |  |  |
+| `0x0602` | RW | `STR_ad_option_install_2` | Installation Option2 |  |  |
+| `0x0605` | RW | `STR_ad_info_equip_position` | Location |  |  |
+| `0x0607` | RW | `STR_ad_id_serial_number` | Serial Number |  |  |
+| `0x0608` | RW | `STR_ad_dbcode_micom_main` | Main Micom |  |  |
+| `0x060C` | RW | `STR_ad_dbcode_eeprom` | EEPROM Version |  |  |
+| `0x061A` | RW | `STR_AD_PRODUCT_MODEL_NAME` | Model |  |  |
+| `0x4000` | RW | `ENUM_in_operation_power` | Normal Operation / Power / Zone1 Normal Power |  | 0=Off; 1=On; 2=On |
+| `0x4001` | W | `ENUM_in_operation_mode` |  |  | 0=Auto; 1=Cool; 2=Dry; 3=Fan; 4=Heat; 21=Cool Storage; 24=Hot Water |
+| `0x4011` | RW | `ENUM_IN_LOUVER_HL_SWING` | Wind direction(Vertical) |  | 0=Off; 1=On |
+| `0x4065` | RW | `ENUM_IN_WATER_HEATER_POWER` | DHW Power / WaterHeaterPower |  | 0=Off; 1=On |
+| `0x4066` | RW | `ENUM_IN_WATER_HEATER_MODE` | DHW Mode / WaterHeaterMode |  | 0=Eco; 1=Standard; 2=Power; 3=Force |
+| `0x406F` | RW | `ENUM_IN_REFERENCE_EHS_TEMP` | Ref. Temp. |  | 0=Room; 1=Water Out |
+| `0x407E` | RW | `ENUM_IN_LOUVER_LR_SWING` | Wind direction(Horizontal) |  | 0=Off; 1=On |
+| `0x4093` | RW | `ENUM_IN_FSV_2041` | 2041:WL type- Auto heating of wired remote controller - Water Law |  | 1=1:Floor; 2=2:FCU |
+| `0x4094` | RW | `ENUM_IN_FSV_2081` | 2081:WL type- Auto cooling of wired remote controller - Water Law |  | 1=1:Floor; 2=2:FCU |
+| `0x4095` | RW | `ENUM_IN_FSV_2091` | 2091:#1(Floor)- Use of thermostat - Water Law |  | 0=No; 1=1; 2=2; 3=3; 4=4 |
+| `0x4096` | RW | `ENUM_IN_FSV_2092` | 2092:#2(FCU)- Use of thermostat - Water Law |  | 0=No; 1=1; 2=2; 3=3; 4=4 |
+| `0x4097` | RW | `ENUM_IN_FSV_3011` | 3011:DHW application- Activating hot water function - DHW |  | 0=No; 1=1; 2=2 |
+| `0x4098` | RW | `ENUM_IN_FSV_3031` | 3031:Operation- Booster heater - DHW |  | 0=No; 1=Yes |
+| `0x4099` | RW | `ENUM_IN_FSV_3041` | 3041:Operation- Disinfection - DHW |  | 0=No; 1=Yes |
+| `0x409A` | RW | `ENUM_IN_FSV_3042` | 3042:Operation interval- Disinfection - DHW |  | 0=Sunday; 1=Monday; 2=Tuesday; 3=Wednesday; 4=Thursday; 5=Friday; 6=Saturday; 7=Everyday |
+| `0x409B` | RW | `ENUM_IN_FSV_3051` | 3051:Timer OFF Function- Forced DHW Opreration - DHW |  | 0=No; 1=Yes |
+| `0x409C` | RW | `ENUM_IN_FSV_3061` | 3061:H/P interlocking- Solar heat panel/DHW thermostat - DHW |  | 0=No; 1=1; 2=2; 3=3 |
+| `0x409D` | RW | `ENUM_IN_FSV_3071` | 3071:Basic valve direction - 3-way/DHW Valve - DHW |  | 0=Room; 1=Tank |
+| `0x409E` | RW | `ENUM_IN_FSV_4011` | 4011:Heating/hot water priority- Heat pump - Heating |  | 0=DHW; 1=Heating |
+| `0x409F` | RW | `ENUM_IN_FSV_4021` | 4021:Application- Backup Heater - Heating |  | 0=0; 1=1; 2=2 |
+| `0x40A0` | RW | `ENUM_IN_FSV_4022` | 4022:BUH/BSH priority- Backup Heater - Heating |  | 0=BUH/BSH Both; 1=BUH; 2=BSH |
+| `0x40A1` | RW | `ENUM_IN_FSV_4023` | 4023:Cold Weather compensation- Backup Heater - Heating |  | 0=No; 1=Yes |
+| `0x40A2` | RW | `ENUM_IN_FSV_4031` | 4031:Application- Backup Boiler - Heating |  | 0=No; 1=Yes |
+| `0x40A3` | RW | `ENUM_IN_FSV_4032` | 4032:Boiler priority- Backup Boiler - Heating |  | 0=No; 1=Yes |
+| `0x40A4` | RW | `ENUM_IN_FSV_5041` | 5041:Operation- Benefit kWh (Power Peak control) - Others |  | 0=No; 1=Yes |
+| `0x40A5` | RW | `ENUM_IN_FSV_5042` | 5042:Heat source for operation limit- Benefit kWh (Power Peak control) - Others |  | 0=All; 1=1; 2=2; 3=3 |
+| `0x40A6` | RW | `ENUM_IN_FSV_5043` | 5043:Contact Logic- Benefit kWh (Power Peak control) - Others |  | 0=Low; 1=High |
+| `0x40A7` | RW | `ENUM_IN_FSV_5051` | 5051:Operation - Frequency Ratio Control - Others |  | 0=No; 1=Yes |
+| `0x40B4` | RW | `ENUM_IN_FSV_5061` | 5061:Ratio of hot water supply compare to heating  - Others |  |  |
+| `0x40BD` | RW | `ENUM_IN_EMPTY_ROOM_CONTROL_USED` | Unoccupied room setting |  | 0=Disable; 1=Enable |
+| `0x40C0` | RW | `ENUM_IN_FSV_4041` | 4041:Application- Mixing valve - Heating |  | 0=No; 1=1; 2=2 |
+| `0x40C1` | RW | `ENUM_IN_FSV_4044` | 4044:Control Factor- Mixing valve - Heating |  |  |
+| `0x40C2` | RW | `ENUM_IN_FSV_4051` | 4051:Application- Inverter Pump - Heating |  |  |
+| `0x40C3` | RW | `ENUM_IN_FSV_4053` | 4053:Control Factor- Inverter Pump - Heating |  |  |
+| `0x40D5` | RW | `ENUM_IN_ENTER_ROOM_CONTROL_USED` | Entering room setting |  | 0=Disable; 1=Enable |
+| `0x4107` | RW | `ENUM_IN_FSV_5033` | 5033:A2A/DHW Priority- TDM Operation Time - Others |  | 0=A2A; 1=DHW |
+| `0x411A` | RW | `ENUM_IN_FSV_4061` | 4061:Zone Control-Application |  | 0=0; 1=1 |
+| `0x411B` | RW | `ENUM_IN_FSV_5081` | 5081:PV Control-Application |  | 0=0; 1=1 |
+| `0x411C` | RW | `ENUM_IN_FSV_5091` | 5091:Smart Grid Control-Application |  | 0=0; 1=1 |
+| `0x411D` | RW | `ENUM_IN_FSV_5094` | 5094:Smart Grid Control-DHW Mode |  | 0=0; 1=1 |
+| `0x4127` | RW | `ENUM_IN_FSV_2093` | 2093:Remote Controller Auto mode |  | 1=1; 2=2; 3=3; 4=4 |
+| `0x4128` | RW | `ENUM_IN_FSV_5022` | 5022:Saving hot water-DHW Saving Mode |  | 0=0; 1=1 |
+| `0x412A` | RW | `ENUM_IN_FSV_2094` |  |  | 0=No; 1=1; 2=2; 3=3; 4=4 |
+| `0x4201` | RW | `VAR_in_temp_target_f` | Zone1 Room Set Temp. / Set Temperature | Celsius, / 10, signed |  |
+| `0x4217` | RW | `VAR_in_eev_value_real_1` | EEV1 |  |  |
+| `0x4235` | RW | `VAR_IN_TEMP_WATER_HEATER_TARGET_F` | DHW Set Temp. / WaterHeater Set Temp. | Celsius, / 10, signed |  |
+| `0x4247` | RW | `VAR_IN_TEMP_WATER_OUTLET_TARGET_F` | Water Outlet Set Temp. | Celsius, / 10, signed |  |
+| `0x424A` | RW | `VAR_IN_FSV_1011` | 1011:Max.- Temperature of general cooling discharge water - Remote Controller | Celsius, / 10, signed |  |
+| `0x424B` | RW | `VAR_IN_FSV_1012` | 1012:Min.- Temperature of general cooling discharge water - Remote Controller | Celsius, / 10, signed |  |
+| `0x424C` | RW | `VAR_IN_FSV_1021` | 1021:Max.- General Indoor cooling temperature - Remote Controller | Celsius, / 10, signed |  |
+| `0x424D` | RW | `VAR_IN_FSV_1022` | 1022:Min.- General Indoor cooling temperature - Remote Controller | Celsius, / 10, signed |  |
+| `0x424E` | RW | `VAR_IN_FSV_1031` | 1031:Max.- Temperature of general heating discharge water - Remote Controller | Celsius, / 10, signed |  |
+| `0x424F` | RW | `VAR_IN_FSV_1032` | 1032:Min.- Temperature of general heating discharge water - Remote Controller | Celsius, / 10, signed |  |
+| `0x4250` | RW | `VAR_IN_FSV_1041` | 1041:Max.- General indoor heating temperature - Remote Controller | Celsius, / 10, signed |  |
+| `0x4251` | RW | `VAR_IN_FSV_1042` | 1042:Min.- General indoor heating temperature - Remote Controller | Celsius, / 10, signed |  |
+| `0x4252` | RW | `VAR_IN_FSV_1051` | 1051:Max.- Temperature of hot water tank - Remote Controller | Celsius, / 10, signed |  |
+| `0x4253` | RW | `VAR_IN_FSV_1052` | 1052:Min.- Temperature of hot water tank - Remote Controller | Celsius, / 10, signed |  |
+| `0x4254` | RW | `VAR_IN_FSV_2011` | 2011:Max.- Auto heating ambient temperature - Water Law | Celsius, / 10, signed |  |
+| `0x4255` | RW | `VAR_IN_FSV_2012` | 2012:Min.- Auto heating ambient temperature - Water Law | Celsius, / 10, signed |  |
+| `0x4256` | RW | `VAR_IN_FSV_2021` | 2021:Max.- Temperature of auto heating discharge water (WL1-Floor) - Water Law | Celsius, / 10, signed |  |
+| `0x4257` | RW | `VAR_IN_FSV_2022` | 2022:Min.- Temperature of auto heating discharge water ((WL1-Floor) - Water Law | Celsius, / 10, signed |  |
+| `0x4258` | RW | `VAR_IN_FSV_2031` | 2031:Max.- Temperature of auto heating discharge water (WL2-FCU) - Water Law | Celsius, / 10, signed |  |
+| `0x4259` | RW | `VAR_IN_FSV_2032` | 2032:Min.- Temperature of auto heating discharge water (WL2-FCU) - Water Law | Celsius, / 10, signed |  |
+| `0x425A` | RW | `VAR_IN_FSV_2051` | 2051:Max.- Auto cooling ambient temperature - Water Law | Celsius, / 10, signed |  |
+| `0x425B` | RW | `VAR_IN_FSV_2052` | 2052:Min.- Auto cooling ambient temperature - Water Law | Celsius, / 10, signed |  |
+| `0x425C` | RW | `VAR_IN_FSV_2061` | 2061:Max.- Temperature of auto cooling discharge water (WL1-Floor) - Water Law | Celsius, / 10, signed |  |
+| `0x425D` | RW | `VAR_IN_FSV_2062` | 2062:Min.- Temperature of auto cooling discharge water ((WL1-Floor) - Water Law | Celsius, / 10, signed |  |
+| `0x425E` | RW | `VAR_IN_FSV_2071` | 2071:Max.- Temperature of auto cooling discharge water (WL2-FCU) - Water Law | Celsius, / 10, signed |  |
+| `0x425F` | RW | `VAR_IN_FSV_2072` | 2072:Min.- Temperature of auto cooling discharge water (WL2-FCU) - Water Law | Celsius, / 10, signed |  |
+| `0x4260` | RW | `VAR_IN_FSV_3021` | 3021:Max.- Heat pump - DHW | Celsius, / 10, signed |  |
+| `0x4261` | RW | `VAR_IN_FSV_3022` | 3022:Stop- Heat pump - DHW | Celsius, / 10, signed |  |
+| `0x4262` | RW | `VAR_IN_FSV_3023` | 3023:Start- Heat pump - DHW | Celsius, / 10, signed |  |
+| `0x4263` | RW | `VAR_IN_FSV_3024` | 3024:Min. hour- Heat pump - DHW |  |  |
+| `0x4264` | RW | `VAR_IN_FSV_3025` | 3025:Max. hour- Heat pump - DHW |  |  |
+| `0x4265` | RW | `VAR_IN_FSV_3026` | 3026:Operation interval- Heat pump - DHW |  |  |
+| `0x4266` | RW | `VAR_IN_FSV_3032` | 3032:Delayed time- Booster heater - DHW |  |  |
+| `0x4267` | RW | `VAR_IN_FSV_3033` | 3033:Overshoot- Booster heater - DHW | Celsius, / 10, signed |  |
+| `0x4269` | RW | `VAR_IN_FSV_3043` | 3043:Start time- Disinfection - DHW |  |  |
+| `0x426A` | RW | `VAR_IN_FSV_3044` | 3044:Target temp.- Disinfection - DHW | Celsius, / 10, signed |  |
+| `0x426B` | RW | `VAR_IN_FSV_3045` | 3045:Holding time- Disinfection - DHW | signed |  |
+| `0x426C` | RW | `VAR_IN_FSV_3052` | 3052:Timer Duration(per 10min)- Forced DHW Opreration - DHW | / 0.1, signed |  |
+| `0x426D` | RW | `VAR_IN_FSV_4012` | 4012:Heating priority- Heat pump - Heating | Celsius, / 10, signed |  |
+| `0x426E` | RW | `VAR_IN_FSV_4013` | 4013:Heating Off- Heat pump - Heating | Celsius, / 10, signed |  |
+| `0x4270` | RW | `VAR_IN_FSV_4024` | 4024:Threshold Temp.- Backup Heater - Heating | Celsius, / 10, signed |  |
+| `0x4271` | RW | `VAR_IN_FSV_4025` | 4025:Defrost Backup Temp.- Backup Heater - Heating | Celsius, / 10, signed |  |
+| `0x4272` | RW | `VAR_IN_FSV_4033` | 4033:Threshold Temp.- Backup Boiler - Heating | Celsius, / 10, signed |  |
+| `0x4273` | RW | `VAR_IN_FSV_5011` | 5011:Temperature of cooling water oulet- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x4274` | RW | `VAR_IN_FSV_5012` | 5012:Room Temperature of cooling Mode- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x4275` | RW | `VAR_IN_FSV_5013` | 5013:Temperature of heating discharge water- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x4276` | RW | `VAR_IN_FSV_5014` | 5014:Indoor heating temperature- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x4277` | RW | `VAR_IN_FSV_5015` | 5015:Temperature of auto cooling WL1 water- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x4278` | RW | `VAR_IN_FSV_5016` | 5016:Temperature of auto cooling WL2 water- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x4279` | RW | `VAR_IN_FSV_5017` | 5017:Temperature of auto heating WL1 water- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x427A` | RW | `VAR_IN_FSV_5018` | 5018:Temperature of auto heating WL2 water- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x427B` | RW | `VAR_IN_FSV_5019` | 5019:Temperature of hot water Tank- Outing mode - Others | Celsius, / 10, signed |  |
+| `0x427C` | RW | `VAR_IN_FSV_5021` | 5021:Temperature of hot water Tank- Saving hot water - Others | Celsius, / 10, signed |  |
+| `0x427D` | RW | `VAR_IN_FSV_5031` | 5031:Priority Max. Operation Time- TDM Operation Time - Others |  |  |
+| `0x427E` | RW | `VAR_IN_FSV_5032` | 5032:Non Priority Min. Operation Time- TDM Operation Time - Others |  |  |
+| `0x4286` | RW | `VAR_IN_FSV_4042` | 4042:Target ΔT(Heating)- Mixing valve - Heating | Celsius, / 10 |  |
+| `0x4287` | RW | `VAR_IN_FSV_4043` | 4043:Target ΔT(Cooling)- Mixing valve - Heating | Celsius, / 10 |  |
+| `0x4288` | RW | `VAR_IN_FSV_4045` | 4045:Control Interval- Mixing valve - Heating |  |  |
+| `0x4289` | RW | `VAR_IN_FSV_4046` | 4046:Running Time(per 10 sec.)- Mixing valve - Heating | / 0.1 |  |
+| `0x428A` | RW | `VAR_IN_FSV_4052` | 4052:Target ΔT- Inverter Pump - Heating | Celsius, / 10 |  |
+| `0x42CE` | RW | `VAR_IN_FSV_3046` | 3046:Max. Operation Time-Disinfection-DHW |  |  |
+| `0x42D6` | RW | `VAR_IN_TEMP_TARGET_ZONE2_F` | Zone2 Room Set Temp. | Celsius, / 10, signed |  |
+| `0x42D7` | RW | `VAR_IN_TEMP_WATER_OUTLET_TARGET_ZONE2_F` | Water Outlet2 Set Temp. | Celsius, / 10, signed |  |
+| `0x42DB` | RW | `VAR_IN_FSV_5082` | 5082:PV Control-Setting Temp Shift Value(Cooling) | Celsius, / 10 |  |
+| `0x42DC` | RW | `VAR_IN_FSV_5083` | 5083:PV Control-Setting Temp Shift Value(Heating) | Celsius, / 10 |  |
+| `0x42DD` | RW | `VAR_IN_FSV_5092` | 5092:Smart Grid Control-Setting Temp Shift Value(Heating) | Celsius, / 10 |  |
+| `0x42DE` | RW | `VAR_IN_FSV_5093` | 5093:Smart Grid Control-Setting Temp Shift Value(DHW) | Celsius, / 10 |  |
+| `0x42ED` | RW | `VAR_IN_FSV_3081` | 3081:Energy metering-BUH 1step capacity | signed |  |
+| `0x42EE` | RW | `VAR_IN_FSV_3082` | 3082:Energy metering-BUH 2step capacity | signed |  |
+| `0x42EF` | RW | `VAR_IN_FSV_3083` | 3083:Energy metering-BSH capacity | signed |  |
+| `0x42F0` | RW | `VAR_IN_FSV_5023` | 5023:Saving hot water-Thermo On | Celsius, / 10, signed |  |
+| `0x4415` | W | `LVAR_IN_AUTO_STATIC_PRESSURE` |  |  |  |
+| `0x809C` | RW | `ENUM_OUT_CHECK_REF_RESULT` | Refrigerant Check Result |  | 0=RefResult_NotInspect; 1=completed normally; 2=RefResult_NotJudgment; 3=subcooling not achievable; 4=RefResult_Normal; 5=RefResult_Insuffici ... |
+| `0x8202` | RW | `VAR_out_install_Comp_Num` | Total Comp |  |  |
+| `0x8229` | RW | `VAR_out_load_outeev1` | Main EEV1 / E_M / E_M1 / EEV 1 |  |  |
+| `0x822A` | RW | `VAR_out_load_outeev2` | Main EEV2 / E_M2 / EEV 2 |  |  |
+| `0x82F5` | W | `VAR_OUT_HIGH_OVERLOAD_DETECT` |  |  |  |
+
 ## Parsing information
 
 | MsgNr  | Type | Signed | Unit     | Arithmetic    |
