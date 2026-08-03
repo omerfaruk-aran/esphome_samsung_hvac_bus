@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include <set>
 #include <optional>
 #include <algorithm>

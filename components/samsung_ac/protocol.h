@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <set>
 #include "esphome/core/optional.h"
 #include "util.h"

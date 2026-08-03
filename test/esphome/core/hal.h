@@ -1,6 +1,8 @@
 #pragma once
 // Fake Hal for Local Testing
 
+#include <cstdint>
+
 namespace esphome
 {
     uint32_t millis();
