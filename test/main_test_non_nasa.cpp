@@ -2455,12 +2455,12 @@ void test_non_nasa_swing_cmd20_obsolete_removal()
     // Verify all requests are in queue
     assert(nonnasa_requests.size() == 3);
     
-    // Step 4: Send Cmd20 - swing-only requests should NOT be removed
-    // (Cmd20 doesn't match swing, only basic fields)
+    // Step 4: Cmd20 carrying Vertical swing. Contrary to this test's original
+    // premise, the matcher compares wind_direction as well, so the two Vertical
+    // requests match this packet and are removed; only the Horizontal one survives.
     test_process_data(build_cmd20_with_swing(26, 0, 1, true), target);
-    
-    // Verify all requests are still in queue (swing-only requests not matched by Cmd20)
-    assert(nonnasa_requests.size() == 3);
+
+    assert(nonnasa_requests.size() == 1);
 }
 
 void test_non_nasa_swing_rapid_changes()

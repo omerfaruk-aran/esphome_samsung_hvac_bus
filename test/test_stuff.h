@@ -24,15 +24,38 @@ static const bool unbuffered_stdout = []
     return true;
 }();
 
-// Route assertion failures through cout as well. glibc's assert only writes to
-// stderr, and a truncated CI log routinely loses that line, leaving an abort
-// with no indication of which check failed.
+// Report every failing assertion instead of aborting on the first one, so a
+// single run lists everything that is broken rather than one item per CI round.
+// Also route the message through cout: glibc's assert only writes to stderr and
+// a truncated CI log routinely loses that line.
+//
+// Execution continues past a failure, so later output can be a knock-on effect
+// of an earlier one - and a check guarding a container access (a size() test
+// before front(), say) will let genuinely undefined behaviour through. Read the
+// first failure in each test as the reliable one.
+static int assert_failure_count = 0;
+
 #undef assert
 #define assert(expr)                                                            \
     ((expr) ? (void)0                                                           \
-            : (std::cout << "ASSERT FAILED: " << #expr << "  at " << __FILE__   \
-                         << ":" << __LINE__ << std::endl,                       \
-               std::abort()))
+            : (void)(++assert_failure_count,                                    \
+                     std::cout << "ASSERT FAILED: " << #expr << "  at "         \
+                               << __FILE__ << ":" << __LINE__ << std::endl))
+
+// Runs after main returns; _Exit avoids re-entering the exit machinery.
+static struct AssertSummary
+{
+    ~AssertSummary()
+    {
+        if (assert_failure_count > 0)
+        {
+            std::cout << "\n==== " << assert_failure_count
+                      << " ASSERTION(S) FAILED ====" << std::endl;
+            std::_Exit(1);
+        }
+        std::cout << "\n==== ALL ASSERTIONS PASSED ====" << std::endl;
+    }
+} assert_summary_instance;
 
 class DebugTarget : public MessageTarget
 {
