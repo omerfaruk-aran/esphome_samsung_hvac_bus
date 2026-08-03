@@ -40,14 +40,5 @@ jobs:
       with:
         yaml-file: .github/conf_esp_idf.yml
 
-  #tests:
-  #  runs-on: ubuntu-latest     
-  #  steps:
-  #  - uses: actions/checkout@v3
-  #  - name: install cpp
-  #    run: sudo apt-get install -y build-essential
-  #  - name: chmod
-  #    run: sudo chmod +x test/*.sh
-  #  - name: runtest
-  #    run: sudo test/test.sh
-      
+  # Native protocol tests live in .github/workflows/native-tests.yml
+

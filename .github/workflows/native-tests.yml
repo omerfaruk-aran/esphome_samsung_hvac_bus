@@ -1,0 +1,31 @@
+name: Native Protocol Tests
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'components/samsung_ac/**'
+      - 'test/**'
+      - '.github/workflows/native-tests.yml'
+  pull_request:
+    paths:
+      - 'components/samsung_ac/**'
+      - 'test/**'
+      - '.github/workflows/native-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  native-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Show compiler version
+        run: g++ --version
+
+      - name: NASA protocol tests
+        run: ./test/test_nasa.sh
+
+      - name: Non-NASA protocol tests
+        run: ./test/test_non_nasa.sh
