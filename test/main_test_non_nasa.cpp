@@ -2341,9 +2341,10 @@ void test_non_nasa_swing_cmd20_matching()
     assert(nonnasa_requests.front().request.wind_direction != NonNasaWindDirection::Stop);
     assert(nonnasa_requests.front().request.wind_direction == NonNasaWindDirection::Vertical);
     
-    // Step 6: Send Cmd20 with matching swing (Vertical = 26) - swing-only request should be removed
-    // Cmd20 now matches swing-only requests when wind_direction matches
-    test_process_data(build_cmd20_with_swing(26, 0, 1, true), target);
+    // Step 6: Send a Cmd20 matching the queued swing request, which should remove it.
+    // Cmd20 matches on every field, so it has to carry the fan and mode the request
+    // inherited from step 4 (High, Cool), not the builder defaults.
+    test_process_data(build_cmd20_with_swing(26, 5, 2, true), target);
     
     // Verify request was removed (swing matched)
     assert(nonnasa_requests.size() == 0);
