@@ -1803,14 +1803,18 @@ void test_cmd54_state_persistence()
     
     get_protocol("00")->publish_request(&target, "00", req2);
     
-    // Verify the new request uses state from initial Cmd20 (not from Cmd54)
+    // Verify the new request uses state from Cmd20 (not from Cmd54).
+    // Note the "make indoor awake" packet in step 3 is itself a Cmd20 and, because
+    // nothing had been sent yet at that point, it was not treated as a pending
+    // control message - so it is that packet's state that survives here, not the
+    // step 1 baseline. The two only differ in room_temp (25 -> 26).
     assert(nonnasa_requests.size() == 1);
     auto &queued_req2 = nonnasa_requests.front().request;
     assert(queued_req2.mode == NonNasaMode::Heat); // From initial Cmd20, not Cool from Cmd54
     assert(queued_req2.fanspeed == NonNasaFanspeed::Auto); // From initial Cmd20, not High from Cmd54
     assert(queued_req2.target_temp.to_celsius() == 23); // Explicitly set
     assert(queued_req2.power == false); // From initial Cmd20, not true from Cmd54
-    assert(queued_req2.room_temp.to_celsius() == 25); // Preserved from initial Cmd20
+    assert(queued_req2.room_temp.to_celsius() == 26); // From the step 3 Cmd20, not from Cmd54
     
     // Step 6: Verify swing state is preserved from initial Cmd20
     auto encoded = queued_req2.encode();
