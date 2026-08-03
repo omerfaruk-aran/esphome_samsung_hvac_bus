@@ -121,7 +121,7 @@ namespace esphome
             // Voltage (existing)
             LVAR_NM_OUT_SENSOR_VOLTAGE = 0x24fc,  // no vendor definition (community-sourced)
 
-            // --- Debug-only / extra enums used in process_messageset_debug() ---
+            // --- Known addresses with no handler of their own. Reachable as custom_sensor. ---
             ENUM_IN_OPERATION_VENT_POWER = 0x4003,  // [R] Power / Ventilator Power | 0..1 | 0=Off; 1=On
             ENUM_IN_OPERATION_VENT_MODE = 0x4004,  // [R] Mode / Ventilator Mode | 0..25 | 0=Normal; 1=HeatEx; 2=Bypass; 3=Normal+Purify; 4=HeatEx+Purify; 5=Purify; 6=Sleep; 7=Bypass+Puri...
 
