@@ -91,7 +91,7 @@ void test_non_nasa_swing_cmd20_obsolete_removal();
 void test_non_nasa_swing_rapid_changes();
 void test_non_nasa_swing_edge_cases();
 void test_wind_direction_zero_conversion();
-// void test_keepalive_rate_limiting();  // disabled, see definition
+void test_keepalive_rate_limiting();
 
 void test_decoding()
 {
@@ -1882,121 +1882,88 @@ void test_cmdc6_conditions()
     // But we can verify the handler was called by checking send_requests() was triggered
 }
 
-// DISABLED: this test drives a global `last_keepalive_response` that no longer
-// exists. Keepalive was reworked into a deferred send: a broadcast request now
-// sets pending_keepalive_ / pending_keepalive_due_ms_ (both file-static in
-// protocol_non_nasa.cpp) and the registration is emitted later from
-// protocol_update(). The old assertions - immediate send plus a timestamp read
-// back straight after test_process_data() - no longer describe the behaviour, so
-// they were not mechanically translated. Rewrite against the observable
-// behaviour (target.last_register_address after protocol_update) and re-enable.
-#if 0
 void test_keepalive_rate_limiting()
 {
     std::cout << "test_keepalive_rate_limiting" << std::endl;
-    
+
+    // Rewritten against observable behaviour. Receiving a broadcast registration
+    // request no longer sends anything itself: it schedules pending_keepalive_ and
+    // protocol_update() emits the registration once the turnaround delay is up.
+    //
+    // The interesting state (pending_keepalive_, last_keepalive_sent_ms_,
+    // last_reg_attempt_ms_) is file-static in protocol_non_nasa.cpp and cannot be
+    // reset from here, so the clock is moved far past anything earlier tests left
+    // behind instead. Timings below mirror the constants in that file: a 30 ms
+    // turnaround, a 5 s minimum between keepalives, and a 10 s floor shared with
+    // every other registration send.
+    //
+    // The signal is publish_data. last_register_address is not usable - it is set
+    // for every packet that arrives, not just registrations.
+
     DebugTarget target;
-    
-    // Enable keepalive for testing
+    nonnasa_requests.clear();
+
+    const bool saved_keepalive = non_nasa_keepalive;
+    const bool saved_registered = controller_registered;
+
+    // Registered, so protocol_update() skips the "keep retrying until registered"
+    // path and the keepalive is the only thing that can publish.
+    controller_registered = true;
     non_nasa_keepalive = true;
-    last_keepalive_response = 0; // Reset to initial state
-    
-    // Build broadcast registration packet: src=c8, dst=ad, cmd=0xd1, data[0] & 1 == 1
-    auto broadcast_packet = build_packet(0xc8, 0xad, 0xd1, [](std::vector<uint8_t> &data) {
-        data[4] = 0x11; // First data byte, odd value (0x11 & 1 == 1)
+
+    auto broadcast = build_packet(0xc8, 0xad, 0xd1, [](std::vector<uint8_t> &data) {
+        data[4] = 0x11; // first payload byte has to be odd
     });
-    
-    // Test 1: First response - should respond immediately (last_keepalive_response == 0)
-    esphome::test_millis_value = 1000;
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    
-    assert(!target.last_register_address.empty()); // send_register_controller() was called
-    assert(target.last_register_address == "c8");
-    assert(last_keepalive_response == 1000); // Timestamp updated
-    
-    // Test 2: Second response too soon (< 7 seconds) - should NOT respond
-    esphome::test_millis_value = 1000 + 5000; // 5 seconds later (less than 7s interval)
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    
-    assert(target.last_register_address.empty()); // send_register_controller() should NOT be called
-    assert(last_keepalive_response == 1000); // Timestamp unchanged
-    
-    // Test 3: Response after interval (>= 7 seconds) - should respond
-    esphome::test_millis_value = 1000 + 7000; // Exactly 7 seconds later
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    
-    assert(!target.last_register_address.empty()); // send_register_controller() should be called
-    assert(target.last_register_address == "c8");
-    assert(last_keepalive_response == 1000 + 7000); // Timestamp updated
-    
-    // Test 4: Response after more than interval - should respond
-    esphome::test_millis_value = 1000 + 7000 + 10000; // 10 seconds after last response
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    
-    assert(!target.last_register_address.empty()); // send_register_controller() should be called
-    assert(target.last_register_address == "c8");
-    assert(last_keepalive_response == 1000 + 7000 + 10000); // Timestamp updated
-    
-    // Test 5: Multiple rapid requests - should only respond once per interval
-    esphome::test_millis_value = 1000 + 7000 + 10000 + 1000; // 1 second after last response
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    assert(target.last_register_address.empty()); // Should NOT respond (only 1s elapsed)
-    
-    esphome::test_millis_value = 1000 + 7000 + 10000 + 2000; // 2 seconds after last response
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    assert(target.last_register_address.empty()); // Should NOT respond (only 2s elapsed)
-    
-    esphome::test_millis_value = 1000 + 7000 + 10000 + 7000; // 7 seconds after last response
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    assert(!target.last_register_address.empty()); // Should respond (7s elapsed)
-    assert(last_keepalive_response == 1000 + 7000 + 10000 + 7000);
-    
-    // Test 6: Wraparound scenario - should handle correctly
-    // Simulate wraparound: last_keepalive_response near UINT32_MAX, now wraps to small value
-    last_keepalive_response = UINT32_MAX - 3000; // 3 seconds before wraparound
-    esphome::test_millis_value = 5000; // 5 seconds after wraparound (wrapped to small value)
-    
-    // Calculate expected elapsed: (UINT32_MAX - last_keepalive_response) + now + 1
-    // = (UINT32_MAX - (UINT32_MAX - 3000)) + 5000 + 1 = 3000 + 5000 + 1 = 8001ms (> 7000ms)
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    
-    assert(!target.last_register_address.empty()); // Should respond (wraparound handled correctly)
-    assert(last_keepalive_response == 5000); // Timestamp updated to current time
-    
-    // Test 7: Wraparound scenario - should NOT respond if elapsed < interval
-    last_keepalive_response = UINT32_MAX - 2000; // 2 seconds before wraparound
-    esphome::test_millis_value = 3000; // 3 seconds after wraparound
-    
-    // Calculate expected elapsed: (UINT32_MAX - (UINT32_MAX - 2000)) + 3000 + 1 = 2000 + 3000 + 1 = 5001ms (< 7000ms)
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    
-    assert(target.last_register_address.empty()); // Should NOT respond (only 5001ms elapsed)
-    assert(last_keepalive_response == UINT32_MAX - 2000); // Timestamp unchanged
-    
-    // Test 8: Keepalive disabled - should NOT respond
+
+    const uint32_t t0 = 5000000;
+    esphome::test_millis_value = t0;
+
+    // Decoding the broadcast only schedules; nothing goes out yet.
+    target.last_publish_data = "";
+    test_process_data(packet_to_hex(broadcast), target);
+    assert(target.last_publish_data.empty());
+
+    // Still inside the 30 ms turnaround.
+    esphome::test_millis_value = t0 + 10;
+    get_protocol("00")->protocol_update(&target);
+    assert(target.last_publish_data.empty());
+
+    // Past it: a registration packet is published (src d0, dst c8, cmd d1).
+    esphome::test_millis_value = t0 + 30;
+    get_protocol("00")->protocol_update(&target);
+    assert(target.last_publish_data.rfind("32d0c8d1", 0) == 0);
+
+    // A second broadcast one second later is inside the 5 s keepalive window, so
+    // it schedules nothing and protocol_update() stays quiet.
+    target.last_publish_data = "";
+    esphome::test_millis_value = t0 + 1000;
+    test_process_data(packet_to_hex(broadcast), target);
+    esphome::test_millis_value = t0 + 1030;
+    get_protocol("00")->protocol_update(&target);
+    assert(target.last_publish_data.empty());
+
+    // 20 s later both the keepalive interval and the 10 s registration floor have
+    // passed, so a broadcast schedules and sends again.
+    target.last_publish_data = "";
+    esphome::test_millis_value = t0 + 20000;
+    test_process_data(packet_to_hex(broadcast), target);
+    esphome::test_millis_value = t0 + 20030;
+    get_protocol("00")->protocol_update(&target);
+    assert(target.last_publish_data.rfind("32d0c8d1", 0) == 0);
+
+    // Turning keepalive off drops a schedule that has not fired yet.
+    target.last_publish_data = "";
+    esphome::test_millis_value = t0 + 40000;
+    test_process_data(packet_to_hex(broadcast), target);
     non_nasa_keepalive = false;
-    last_keepalive_response = 0; // Reset
-    esphome::test_millis_value = 1000;
-    target.last_register_address = "";
-    test_process_data(packet_to_hex(broadcast_packet), target);
-    
-    assert(target.last_register_address.empty()); // Should NOT respond (keepalive disabled)
-    assert(last_keepalive_response == 0); // Timestamp unchanged
-    
-    // Re-enable keepalive for other tests
-    non_nasa_keepalive = true;
-    last_keepalive_response = 0;
+    esphome::test_millis_value = t0 + 40030;
+    get_protocol("00")->protocol_update(&target);
+    assert(target.last_publish_data.empty());
+
+    non_nasa_keepalive = saved_keepalive;
+    controller_registered = saved_registered;
+    esphome::test_millis_value = 0;
 }
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -2060,7 +2027,7 @@ int main(int argc, char *argv[])
     test_wind_direction_zero_conversion();
     
     // Keepalive rate limiting tests
-    // test_keepalive_rate_limiting();  // disabled, see definition
+    test_keepalive_rate_limiting();
 }
 
 // Helper function to build Cmd20 packet with specific wind_direction
