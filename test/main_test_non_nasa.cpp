@@ -532,6 +532,7 @@ void test_cmdc6_control_status()
     
     target.last_publish_data = ""; // Clear previous
     test_process_data(packet_to_hex(cmdC6_packet), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify send_requests() was called (publish_data was called)
     assert(!target.last_publish_data.empty());
@@ -580,6 +581,7 @@ void test_cmd54_control_ack()
     });
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty()); // Request was sent
     
     // Now send Cmd54 acknowledgment from indoor unit (00) to controller (d0)
@@ -1154,6 +1156,7 @@ void test_non_nasa_sequence()
     
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6_packet), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty()); // Request was sent
     
     // Step 4: Send Cmd54 acknowledgment
@@ -1211,6 +1214,7 @@ void test_non_nasa_sequence()
     // Trigger send with CmdC6
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6_packet), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty());
     
     // Acknowledge with Cmd54
@@ -1268,6 +1272,7 @@ void test_cmd20_pending_control_message_ignores_state()
     });
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6_packet), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty()); // Request was sent, now pending
     
     // Step 4: Send Cmd20 with DIFFERENT state while request is pending
@@ -1510,6 +1515,7 @@ void test_cmd20_mode_fan_mismatch_handling()
     });
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6_packet), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty()); // Request was sent
     
     // Verify request is in queue
@@ -1677,6 +1683,7 @@ void test_cmd54_dst_condition()
     });
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty()); // Request was sent
     
     // Send Cmd54 with dst="d0" - should remove pending request
@@ -1701,6 +1708,7 @@ void test_cmd54_dst_condition()
     test_process_data("3200c8204d51500001100051e434", target);
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty()); // Request was sent
     
     // Send Cmd54 with dst="d1" (not "d0") - should NOT process
@@ -1765,6 +1773,7 @@ void test_cmd54_state_persistence()
     });
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty()); // Request was sent
     
     // Verify request is in queue with new state
@@ -1861,6 +1870,7 @@ void test_cmdc6_conditions()
     
     target.last_publish_data = "";
     test_process_data(packet_to_hex(cmdC6_correct), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     assert(!target.last_publish_data.empty()); // send_requests() should be called
     
     // Note: We can't directly verify controller_registered state without accessing internal state
