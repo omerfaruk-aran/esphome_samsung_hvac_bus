@@ -2,7 +2,6 @@ name: Native Protocol Tests
 
 on:
   push:
-    branches: [ main, master ]
     paths:
       - 'components/samsung_ac/**'
       - 'test/**'
