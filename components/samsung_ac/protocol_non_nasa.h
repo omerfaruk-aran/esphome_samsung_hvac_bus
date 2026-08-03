@@ -48,7 +48,11 @@ namespace esphome
         struct Temperature
         {
             TemperatureUnit unit;
-            uint8_t temperature;
+            // Signed, and wider than the wire byte. A Celsius reading decodes as
+            // data - 55, so the value spans -55..200: negative during defrost and
+            // well past 127 on compressor discharge. Storing it unsigned lost the
+            // sign, and casting to int8_t at the call sites lost the top end.
+            int16_t temperature;
 
             static Temperature decode(uint8_t data);
             uint8_t encode();

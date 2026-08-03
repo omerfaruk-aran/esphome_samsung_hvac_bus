@@ -172,9 +172,9 @@ namespace esphome
         {
             bool is_fahrenheit = (data >> 7) & 1;
             if (is_fahrenheit)
-                return { TemperatureUnit::Fahrenheit, static_cast<uint8_t>(data - 128) };
+                return { TemperatureUnit::Fahrenheit, static_cast<int16_t>(static_cast<int16_t>(data) - 128) };
             else
-                return { TemperatureUnit::Celsius, static_cast<uint8_t>(data - 55) };
+                return { TemperatureUnit::Celsius, static_cast<int16_t>(static_cast<int16_t>(data) - 55) };
         }
 
         uint8_t Temperature::encode()
@@ -216,7 +216,7 @@ namespace esphome
             }
             case TemperatureUnit::Fahrenheit:
             {
-                temperature = (uint8_t)std::round((celsius * (9.0 / 5.0) ) + 32);
+                temperature = (int16_t)std::round((celsius * (9.0 / 5.0)) + 32);
                 break;
             }
             default:
@@ -893,21 +893,20 @@ namespace esphome
                 // Publish EVA (evaporator) temperatures - pipe_in/pipe_out are equivalent to eva_in/eva_out
                 // These are sensor readings and should always be published, regardless of pending control messages
                 // Compare to CmdC0 and Cmd8D handlers which explicitly do not check for pending control messages
-                // Cast to int8_t first to preserve sign (uint8_t wraps negative values), then to float
-                float pipe_in_temp = static_cast<float>(static_cast<int8_t>(nonpacket_.command20.pipe_in.to_celsius()));
-                float pipe_out_temp = static_cast<float>(static_cast<int8_t>(nonpacket_.command20.pipe_out.to_celsius()));
+                float pipe_in_temp = nonpacket_.command20.pipe_in.to_celsius();
+                float pipe_out_temp = nonpacket_.command20.pipe_out.to_celsius();
                 target->set_indoor_eva_in_temperature(nonpacket_.src, pipe_in_temp);
                 target->set_indoor_eva_out_temperature(nonpacket_.src, pipe_out_temp);
 
                 if (!pending_control_message)
                 {
                     last_command20s_[nonpacket_.src] = nonpacket_.command20;
-                    target->set_target_temperature(nonpacket_.src, static_cast<float>(static_cast<int8_t>(nonpacket_.command20.target_temp.to_celsius())));
+                    target->set_target_temperature(nonpacket_.src, nonpacket_.command20.target_temp.to_celsius());
                     // TODO
                     target->set_water_outlet_target(nonpacket_.src, false);
                     // TODO
                     target->set_target_water_temperature(nonpacket_.src, false);
-                    target->set_room_temperature(nonpacket_.src, static_cast<float>(static_cast<int8_t>(nonpacket_.command20.room_temp.to_celsius())));
+                    target->set_room_temperature(nonpacket_.src, nonpacket_.command20.room_temp.to_celsius());
                     target->set_power(nonpacket_.src, nonpacket_.command20.power);
                     // TODO
                     target->set_water_heater_power(nonpacket_.src, false);
@@ -933,8 +932,7 @@ namespace esphome
                 // Note: No pending control message check needed here since CmdC0 comes from the
                 // outdoor unit (typically "c8"), while control messages are sent to indoor units.
                 // Outdoor temperature updates are independent status data and should always be processed.
-                // Cast to int8_t first to preserve sign (uint8_t wraps negative values), then to float
-                float temp = static_cast<float>(static_cast<int8_t>(nonpacket_.commandC0.outdoor_unit_outdoor_temp.to_celsius()));
+                float temp = nonpacket_.commandC0.outdoor_unit_outdoor_temp.to_celsius();
                 target->set_outdoor_temperature(nonpacket_.src, temp);
             }
             else if (nonpacket_.cmd == NonNasaCommand::Cmd8D)
