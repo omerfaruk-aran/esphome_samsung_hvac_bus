@@ -2213,8 +2213,8 @@ void test_non_nasa_swing_state_preservation()
     // Clear any pending requests from previous tests
     nonnasa_requests.clear();
     
-    // Test: verify that wind_direction is NOT preserved in create() but IS preserved in encode()
-    // This design allows matching logic to distinguish "explicitly requested swing" vs "preserved state"
+    // Test: create() carries wind_direction forward from the last Cmd20, and encode()
+    // emits it, so a request that does not touch swing leaves the device state alone.
     
     // First, simulate receiving a Cmd20 with horizontal swing
     DebugTarget target;
@@ -2229,7 +2229,7 @@ void test_non_nasa_swing_state_preservation()
     // Now create a request - wind_direction should NOT be preserved in create()
     // (This allows matching logic to distinguish "explicitly requested" vs "preserved state")
     auto req = NonNasaRequest::create("00");
-    assert(req.wind_direction == NonNasaWindDirection::Stop); // Should NOT be set in create()
+    assert(req.wind_direction == NonNasaWindDirection::Horizontal); // create() carries the device state forward
     
     // However, encode() should preserve swing state from last_command20s_ for encoding
     // This ensures the device maintains its current swing state if we don't change it
@@ -2242,7 +2242,7 @@ void test_non_nasa_swing_state_preservation()
     test_process_data(build_cmd20_with_swing(26, 0, 1, true), target);
     
     req = NonNasaRequest::create("00");
-    assert(req.wind_direction == NonNasaWindDirection::Stop); // Should NOT be set in create()
+    assert(req.wind_direction == NonNasaWindDirection::Vertical);   // create() carries the device state forward
     
     // Verify encode() preserves vertical swing
     encoded = req.encode();
@@ -2254,7 +2254,7 @@ void test_non_nasa_swing_state_preservation()
     test_process_data(build_cmd20_with_swing(28, 0, 1, true), target);
     
     req = NonNasaRequest::create("00");
-    assert(req.wind_direction == NonNasaWindDirection::Stop); // Should NOT be set in create()
+    assert(req.wind_direction == NonNasaWindDirection::FourWay);    // create() carries the device state forward
     
     // Verify encode() preserves four-way swing
     encoded = req.encode();
@@ -2272,7 +2272,7 @@ void test_non_nasa_swing_state_preservation()
     test_process_data(build_cmd20_with_swing(31, 0, 1, true), target);
     
     req = NonNasaRequest::create("00");
-    assert(req.wind_direction == NonNasaWindDirection::Stop); // Should NOT be set in create()
+    assert(req.wind_direction == NonNasaWindDirection::Stop);       // create() carries the device state forward
     
     // Verify encode() preserves swing off state
     encoded = req.encode();
