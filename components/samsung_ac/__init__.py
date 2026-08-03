@@ -166,6 +166,18 @@ CONF_DEVICE_OUT_PIPE_IN2_TEMP = "outdoor_pipe_in2_temperature"
 CONF_DEVICE_OUT_COMP2_CURRENT_FREQ = "outdoor_compressor2_current_frequency"
 CONF_DEVICE_OUT_SENSOR_CT2 = "outdoor_current2"
 # Refrigerant-cycle values derived from the pressure sensors
+# Outdoor diagnostics
+CONF_DEVICE_OUT_CONTROL_BOX_TEMP = "outdoor_control_box_temperature"
+CONF_DEVICE_OUT_LIQUID_TUBE_TEMP = "outdoor_liquid_tube_temperature"
+CONF_DEVICE_OUT_MID_PRESSURE = "outdoor_mid_pressure"
+CONF_DEVICE_OUT_EEV1 = "outdoor_eev1"
+CONF_DEVICE_OUT_EEV2 = "outdoor_eev2"
+CONF_DEVICE_OUT_FAN_STEP = "outdoor_fan_step"
+CONF_DEVICE_OUT_DC_LINK_VOLTAGE = "outdoor_dc_link_voltage"
+CONF_DEVICE_OUT_COMP1_STATE = "outdoor_compressor1_state"
+CONF_DEVICE_OUT_COMP2_STATE = "outdoor_compressor2_state"
+CONF_DEVICE_OUT_HOT_GAS_VALVE = "outdoor_hot_gas_valve"
+CONF_DEVICE_OUT_LIQUID_TUBE_VALVE = "outdoor_liquid_tube_valve"
 CONF_DEVICE_OUT_SAT_TEMP_HIGH_PRESSURE = "outdoor_saturated_temperature_high_pressure"
 CONF_DEVICE_OUT_SAT_TEMP_LOW_PRESSURE = "outdoor_saturated_temperature_low_pressure"
 CONF_DEVICE_OUT_DISCHARGE_SUPERHEAT = "outdoor_discharge_superheat"
@@ -415,6 +427,19 @@ def outdoor_current_sensor_schema(message: int):
         state_class=STATE_CLASS_MEASUREMENT,
         icon="mdi:current-ac",
         raw_filters=[{"multiply": 0.1}],
+    )
+
+
+def raw_diagnostic_sensor_schema(message: int, icon=cv.UNDEFINED):
+    # For values whose unit and scaling are not documented in any source available
+    # to this project. Published raw so a filter can be applied in YAML once the
+    # scale is known for a given model.
+    return custom_sensor_schema(
+        message=message,
+        accuracy_decimals=0,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon=icon,
+        entity_category="diagnostic",
     )
 
 
@@ -698,6 +723,43 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_OUT_DISCHARGE_SUPERHEAT): outdoor_temp_sensor_schema(
             0x827A
         ),
+        # --- outdoor diagnostics ---
+        cv.Optional(CONF_DEVICE_OUT_CONTROL_BOX_TEMP): outdoor_temp_sensor_schema(
+            0x82BE
+        ),
+        cv.Optional(CONF_DEVICE_OUT_LIQUID_TUBE_TEMP): outdoor_temp_sensor_schema(
+            0x821C
+        ),
+        cv.Optional(CONF_DEVICE_OUT_MID_PRESSURE): outdoor_pressure_sensor_schema(
+            0x82B8
+        ),
+        cv.Optional(CONF_DEVICE_OUT_EEV1): eev_sensor_schema(0x8229),
+        cv.Optional(CONF_DEVICE_OUT_EEV2): eev_sensor_schema(0x822A),
+        cv.Optional(CONF_DEVICE_OUT_FAN_STEP): raw_diagnostic_sensor_schema(
+            0x8226, icon="mdi:fan"
+        ),
+        # No unit or scaling is documented for this one; see raw_diagnostic_sensor_schema.
+        cv.Optional(CONF_DEVICE_OUT_DC_LINK_VOLTAGE): raw_diagnostic_sensor_schema(
+            0x823B, icon="mdi:flash"
+        ),
+        cv.Optional(CONF_DEVICE_OUT_COMP1_STATE): binary_custom_sensor_schema(
+            0x8010,
+            icon="mdi:air-conditioner",
+            device_class=DEVICE_CLASS_RUNNING,
+        ),
+        cv.Optional(CONF_DEVICE_OUT_COMP2_STATE): binary_custom_sensor_schema(
+            0x8011,
+            icon="mdi:air-conditioner",
+            device_class=DEVICE_CLASS_RUNNING,
+        ),
+        cv.Optional(CONF_DEVICE_OUT_HOT_GAS_VALVE): binary_custom_sensor_schema(
+            0x8017,
+            icon="mdi:valve",
+        ),
+        cv.Optional(CONF_DEVICE_OUT_LIQUID_TUBE_VALVE): binary_custom_sensor_schema(
+            0x8034,
+            icon="mdi:valve",
+        ),
     }
 )
 
@@ -739,12 +801,23 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_OUT_SAT_TEMP_HIGH_PRESSURE,
     CONF_DEVICE_OUT_SAT_TEMP_LOW_PRESSURE,
     CONF_DEVICE_OUT_DISCHARGE_SUPERHEAT,
+    CONF_DEVICE_OUT_CONTROL_BOX_TEMP,
+    CONF_DEVICE_OUT_LIQUID_TUBE_TEMP,
+    CONF_DEVICE_OUT_MID_PRESSURE,
+    CONF_DEVICE_OUT_EEV1,
+    CONF_DEVICE_OUT_EEV2,
+    CONF_DEVICE_OUT_FAN_STEP,
+    CONF_DEVICE_OUT_DC_LINK_VOLTAGE,
 ]
 
 CUSTOM_BINARY_SENSOR_KEYS = [
     CONF_DEVICE_THERMO_STATE,
     CONF_DEVICE_DEFROST_MODE,
     CONF_DEVICE_SILENCE_MODE,
+    CONF_DEVICE_OUT_COMP1_STATE,
+    CONF_DEVICE_OUT_COMP2_STATE,
+    CONF_DEVICE_OUT_HOT_GAS_VALVE,
+    CONF_DEVICE_OUT_LIQUID_TUBE_VALVE,
 ]
 
 CONF_DEVICES = "devices"
