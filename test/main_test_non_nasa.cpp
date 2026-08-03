@@ -2501,22 +2501,20 @@ void test_non_nasa_swing_rapid_changes()
     // Verify all requests are in queue
     assert(nonnasa_requests.size() == 3);
     
-    // Step 4: Send Cmd54 for first request (preserves all swing requests)
+    // Step 4: Cmd54 acknowledges every request that has been sent to this address.
+    // It does not inspect the payload, so all three swing requests go at once - the
+    // same behaviour test_non_nasa_swing_cmd54_preserving describes.
     auto cmd54 = build_packet(0x00, 0xd0, 0x54, [](std::vector<uint8_t> &data) {
         // Cmd54 data
     });
     test_process_data(packet_to_hex(cmd54), target);
-    
-    // Verify all requests are still in queue (swing requests preserved)
-    assert(nonnasa_requests.size() == 3);
-    
-    // Step 5: Send Cmd20 with FourWay swing (28)
-    // Note: With simplified matching, Cmd20 only matches basic fields (temp, mode, fan, power)
-    // Swing-only requests are not matched by Cmd20, so they remain in queue until Cmd54 removes them
+
+    assert(nonnasa_requests.size() == 0);
+
+    // Step 5: A later Cmd20 has nothing left to match against.
     test_process_data(build_cmd20_with_swing(28, 0, 1, true), target);
-    
-    // Verify all requests are still in queue (swing-only requests not matched by Cmd20)
-    assert(nonnasa_requests.size() == 3);
+
+    assert(nonnasa_requests.size() == 0);
 }
 
 void test_non_nasa_swing_edge_cases()
