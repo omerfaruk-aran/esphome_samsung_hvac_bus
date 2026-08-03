@@ -1,6 +1,5 @@
 #include <set>
 #include <cmath>
-#include "esphome/core/util.h"
 #include "esphome/core/hal.h"
 #include "util.h"
 #include "log.h"
