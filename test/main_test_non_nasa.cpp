@@ -1546,7 +1546,7 @@ void test_cmd20_mode_fan_mismatch_handling()
         data[5] = 80; // room_temp = 25°C
         data[6] = 23 + 55; // pipe_in = 23°C
         data[7] = (31 << 3) | 0; // wind_direction = Stop (31), fanspeed = Auto (0)
-        data[8] = 0x02; // mode = Cool (0x02, matches request), power = off
+        data[8] = 0x80 | 0x02; // mode = Cool, power = ON. publish_request forces power on when a mode is set, so the queued request has power=true
         data[11] = 24 + 55; // pipe_out = 24°C
     });
     
@@ -1566,6 +1566,7 @@ void test_cmd20_mode_fan_mismatch_handling()
     
     // Make indoor awake and send request
     test_process_data(packet_to_hex(cmdC6_packet), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify request is in queue
     assert(nonnasa_requests.size() == 1);
@@ -2310,6 +2311,7 @@ void test_non_nasa_swing_cmd20_matching()
         data[4] = 0x01;
     });
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify request is in queue
     assert(nonnasa_requests.size() == 1);
@@ -2338,6 +2340,7 @@ void test_non_nasa_swing_cmd20_matching()
     
     // Make indoor awake and send request
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify request is in queue
     assert(nonnasa_requests.size() == 1);
@@ -2355,6 +2358,7 @@ void test_non_nasa_swing_cmd20_matching()
     req_swing.swing_mode = SwingMode::Horizontal;
     get_protocol("00")->publish_request(&target, "00", req_swing);
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify request is in queue
     assert(nonnasa_requests.size() == 1);
@@ -2391,6 +2395,7 @@ void test_non_nasa_swing_cmd54_preserving()
         data[4] = 0x01;
     });
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify request is in queue
     assert(nonnasa_requests.size() == 1);
@@ -2450,6 +2455,7 @@ void test_non_nasa_swing_cmd20_obsolete_removal()
         data[4] = 0x01;
     });
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify all requests are in queue
     assert(nonnasa_requests.size() == 3);
@@ -2495,6 +2501,7 @@ void test_non_nasa_swing_rapid_changes()
         data[4] = 0x01;
     });
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify all requests are in queue
     assert(nonnasa_requests.size() == 3);
@@ -2544,6 +2551,7 @@ void test_non_nasa_swing_edge_cases()
         data[4] = 0x01;
     });
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify request is in queue with swing set
     assert(nonnasa_requests.size() == 1);
@@ -2568,6 +2576,7 @@ void test_non_nasa_swing_edge_cases()
     
     // Make indoor awake and send request
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify request is in queue
     assert(nonnasa_requests.size() == 1);
@@ -2606,6 +2615,7 @@ void test_non_nasa_swing_edge_cases()
     
     // Make indoor awake and send request
     test_process_data(packet_to_hex(cmdC6), target);
+    get_protocol("00")->protocol_update(&target);  // CmdC6 only schedules the TX
     
     // Verify request is in queue
     assert(nonnasa_requests.size() == 1);
