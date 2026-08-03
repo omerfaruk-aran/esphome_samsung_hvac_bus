@@ -601,7 +601,11 @@ namespace esphome
             bool individual = false;
 
             data[4] = encode_request_wind_direction(wind_direction);
-            data[5] = room_temp.encode();
+            // Only overwrite the placeholder when a room temperature is actually known.
+            // NonNasaRequest::create() leaves room_temp at its default when there is no
+            // cached Cmd20 for the address, and the byte must stay 0x04 in that case.
+            if (room_temp.temperature > 0)
+                data[5] = room_temp.encode();
             data[6] = (target_temp.encode() & 31U) | encode_request_fanspeed(fanspeed);
             data[7] = (uint8_t)encode_request_mode(mode);
             data[8] = !power ? (uint8_t)0xC0 : (uint8_t)0xF0;
