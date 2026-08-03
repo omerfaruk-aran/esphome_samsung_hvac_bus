@@ -13,6 +13,16 @@
 using namespace std;
 using namespace esphome::samsung_ac;
 
+// assert() writes to stderr while the traces below use cout. With cout buffered
+// the two interleave arbitrarily, so a CI log shows the failure detached from
+// the test that produced it. Make cout unbuffered so the last line before an
+// abort is always the one that caused it.
+static const bool unbuffered_stdout = []
+{
+    std::cout << std::unitbuf;
+    return true;
+}();
+
 class DebugTarget : public MessageTarget
 {
 public:
