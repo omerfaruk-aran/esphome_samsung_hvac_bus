@@ -97,70 +97,70 @@ void test_decoding()
 {
     auto p = test_decode("3200c8204b504e000110004ee234");
     assert(p.command20.power == false);
-    assert(p.command20.target_temp == 20);
-    assert(p.command20.room_temp == 25);
-    assert(p.command20.pipe_in == 23);
-    assert(p.command20.pipe_out == 23);
+    assert(p.command20.target_temp.to_celsius() == 20);
+    assert(p.command20.room_temp.to_celsius() == 25);
+    assert(p.command20.pipe_in.to_celsius() == 23);
+    assert(p.command20.pipe_out.to_celsius() == 23);
     assert(p.command20.fanspeed == NonNasaFanspeed::Auto);
     assert(p.command20.mode == NonNasaMode::Heat);
     assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
 
     p = test_decode("3200c8204b4f4efd8110004e8034");
     assert(p.command20.power == true);
-    assert(p.command20.target_temp == 20);
-    assert(p.command20.room_temp == 24);
-    assert(p.command20.pipe_in == 23);
-    assert(p.command20.pipe_out == 23);
+    assert(p.command20.target_temp.to_celsius() == 20);
+    assert(p.command20.room_temp.to_celsius() == 24);
+    assert(p.command20.pipe_in.to_celsius() == 23);
+    assert(p.command20.pipe_out.to_celsius() == 23);
     assert(p.command20.fanspeed == NonNasaFanspeed::High);
     assert(p.command20.mode == NonNasaMode::Heat);
     assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
 
     p = test_decode("3200c8204b4f4efc8110004e8134");
     assert(p.command20.power == true);
-    assert(p.command20.target_temp == 20);
-    assert(p.command20.room_temp == 24);
-    assert(p.command20.pipe_in == 23);
-    assert(p.command20.pipe_out == 23);
+    assert(p.command20.target_temp.to_celsius() == 20);
+    assert(p.command20.room_temp.to_celsius() == 24);
+    assert(p.command20.pipe_in.to_celsius() == 23);
+    assert(p.command20.pipe_out.to_celsius() == 23);
     assert(p.command20.fanspeed == NonNasaFanspeed::Medium);
     assert(p.command20.mode == NonNasaMode::Heat);
     assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
 
     p = test_decode("3200c8204b4f4efa8110004e8734");
     assert(p.command20.power == true);
-    assert(p.command20.target_temp == 20);
-    assert(p.command20.room_temp == 24);
-    assert(p.command20.pipe_in == 23);
-    assert(p.command20.pipe_out == 23);
+    assert(p.command20.target_temp.to_celsius() == 20);
+    assert(p.command20.room_temp.to_celsius() == 24);
+    assert(p.command20.pipe_in.to_celsius() == 23);
+    assert(p.command20.pipe_out.to_celsius() == 23);
     assert(p.command20.fanspeed == NonNasaFanspeed::Low);
     assert(p.command20.mode == NonNasaMode::Heat);
     assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
 
     p = test_decode("3200c8204f4f4ef8a21c004eae34");
     assert(p.command20.power == true);
-    assert(p.command20.target_temp == 24);
-    assert(p.command20.room_temp == 24);
-    assert(p.command20.pipe_in == 23);
-    assert(p.command20.pipe_out == 23);
+    assert(p.command20.target_temp.to_celsius() == 24);
+    assert(p.command20.room_temp.to_celsius() == 24);
+    assert(p.command20.pipe_in.to_celsius() == 23);
+    assert(p.command20.pipe_out.to_celsius() == 23);
     assert(p.command20.fanspeed == NonNasaFanspeed::Auto);
     assert(p.command20.mode == NonNasaMode::Auto);
     assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
 
     p = test_decode("3200c8204f4f4efd821c004e8b34");
     assert(p.command20.power == true);
-    assert(p.command20.target_temp == 24);
-    assert(p.command20.room_temp == 24);
-    assert(p.command20.pipe_in == 23);
-    assert(p.command20.pipe_out == 23);
+    assert(p.command20.target_temp.to_celsius() == 24);
+    assert(p.command20.room_temp.to_celsius() == 24);
+    assert(p.command20.pipe_in.to_celsius() == 23);
+    assert(p.command20.pipe_out.to_celsius() == 23);
     assert(p.command20.fanspeed == NonNasaFanspeed::High);
     assert(p.command20.mode == NonNasaMode::Cool);
     assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
 
     p = test_decode("3200c8204f4f4efd821c004e8b34");
     assert(p.command20.power == true);
-    assert(p.command20.target_temp == 24);
-    assert(p.command20.room_temp == 24);
-    assert(p.command20.pipe_in == 23);
-    assert(p.command20.pipe_out == 23);
+    assert(p.command20.target_temp.to_celsius() == 24);
+    assert(p.command20.room_temp.to_celsius() == 24);
+    assert(p.command20.pipe_in.to_celsius() == 23);
+    assert(p.command20.pipe_out.to_celsius() == 23);
     assert(p.command20.fanspeed == NonNasaFanspeed::High);
     assert(p.command20.mode == NonNasaMode::Cool);
     assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
@@ -171,7 +171,7 @@ NonNasaRequest create_request()
     NonNasaRequest p;
     p.dst = "00";
     p.power = false;
-    p.target_temp = 20;
+    p.target_temp.set_from_celsius(20);
     p.fanspeed = NonNasaFanspeed::Auto;
     p.mode = NonNasaMode::Auto;
     return p;
@@ -190,8 +190,8 @@ void test_encoding()
     req = create_request();
     req.dst = "00";
     req.power = true;
-    req.room_temp = 23;
-    req.target_temp = 24;
+    req.room_temp.set_from_celsius(23);
+    req.target_temp.set_from_celsius(24);
     req.fanspeed = NonNasaFanspeed::Auto;
     req.mode = NonNasaMode::Fan;
     test_request(req, "32d000b01f171803f4210000a634");
@@ -218,7 +218,7 @@ void test_encoding()
     test_request(req, "32d000b01f045400c4210000ca34");
 
     req = create_request();
-    req.target_temp = 25;
+    req.target_temp.set_from_celsius(25);
     test_request(req, "32d000b01f041900c42100008734");
 
     req = create_request();
@@ -325,8 +325,8 @@ void test_previous_data_is_used_correctly()
 
     NonNasaRequest request1;
     request1.dst = "00";
-    request1.room_temp = 26.000000;
-    request1.target_temp = 22.000000;
+    request1.room_temp.set_from_celsius(26.000000);
+    request1.target_temp.set_from_celsius(22.000000);
     request1.power = false;
     request1.fanspeed = NonNasaFanspeed::Auto;
     request1.mode = NonNasaMode::Heat;
@@ -348,8 +348,8 @@ void test_previous_data_is_used_correctly()
 
     NonNasaRequest request2;
     request2.dst = "01";
-    request2.room_temp = 24.000000;
-    request2.target_temp = 24.000000;
+    request2.room_temp.set_from_celsius(24.000000);
+    request2.target_temp.set_from_celsius(24.000000);
     request2.power = true;
     request2.fanspeed = NonNasaFanspeed::High;
     request2.mode = NonNasaMode::Cool;
@@ -997,8 +997,8 @@ void test_request_encoding_edge_cases()
         NonNasaRequest request;
         request.dst = "00";
         request.mode = mode;
-        request.target_temp = 22;
-        request.room_temp = 25;
+        request.target_temp.set_from_celsius(22);
+        request.room_temp.set_from_celsius(25);
         request.power = true;
         request.fanspeed = NonNasaFanspeed::Auto;
         
@@ -1027,8 +1027,8 @@ void test_request_encoding_edge_cases()
         NonNasaRequest request;
         request.dst = "00";
         request.mode = NonNasaMode::Heat;
-        request.target_temp = 22;
-        request.room_temp = 25;
+        request.target_temp.set_from_celsius(22);
+        request.room_temp.set_from_celsius(25);
         request.power = true;
         request.fanspeed = fanspeed;
         
@@ -1051,8 +1051,8 @@ void test_request_encoding_edge_cases()
         NonNasaRequest request;
         request.dst = "00";
         request.mode = NonNasaMode::Heat;
-        request.target_temp = temp;
-        request.room_temp = 25.0f;
+        request.target_temp.set_from_celsius(temp);
+        request.room_temp.set_from_celsius(25.0f);
         request.power = true;
         request.fanspeed = NonNasaFanspeed::Auto;
         
@@ -1076,8 +1076,8 @@ void test_request_encoding_edge_cases()
         NonNasaRequest request;
         request.dst = "00";
         request.mode = NonNasaMode::Heat;
-        request.target_temp = 22;
-        request.room_temp = 25;
+        request.target_temp.set_from_celsius(22);
+        request.room_temp.set_from_celsius(25);
         request.power = power;
         request.fanspeed = NonNasaFanspeed::Auto;
         
@@ -1105,8 +1105,8 @@ void test_request_encoding_edge_cases()
     NonNasaRequest request;
     request.dst = "00";
     request.mode = NonNasaMode::Heat;
-    request.target_temp = 22;
-    request.room_temp = 0; // Special case
+    request.target_temp.set_from_celsius(22);
+    request.room_temp.set_from_celsius(0); // Special case
     
     auto encoded = request.encode();
     // Verify packet structure
@@ -1203,7 +1203,7 @@ void test_non_nasa_sequence()
     
     // Publish request
     req.power = true;
-    req.target_temp = 23.0f;
+    req.target_temp.set_from_celsius(23.0f);
     get_protocol("00")->publish_request(&target, "00", req);
     
     // Trigger send with CmdC6
@@ -1255,7 +1255,7 @@ void test_cmd20_pending_control_message_ignores_state()
     // Use a different target_temp than what we'll send in Cmd20 to ensure request is NOT removed
     ProtocolRequest req;
     req.power = true;
-    req.target_temp = 23.0f; // Different from Cmd20 target_temp (24°C)
+    req.target_temp.set_from_celsius(23.0f); // Different from Cmd20 target_temp (24°C)
     get_protocol("00")->publish_request(&target, "00", req);
     
     // Step 3: Trigger send_requests() to mark request as sent (time_sent > 0)
@@ -1462,8 +1462,8 @@ void test_cmd20_last_command20s_update()
     
     // Verify stored state was used (except for power which was explicitly set)
     assert(queued_req.power == false); // Explicitly set
-    assert(queued_req.target_temp == 24); // From Cmd20
-    assert(queued_req.room_temp == 27); // From Cmd20
+    assert(queued_req.target_temp.to_celsius() == 24); // From Cmd20
+    assert(queued_req.room_temp.to_celsius() == 27); // From Cmd20
     assert(queued_req.mode == NonNasaMode::Cool); // From Cmd20
     assert(queued_req.fanspeed == NonNasaFanspeed::Medium); // From Cmd20
     
@@ -1498,7 +1498,7 @@ void test_cmd20_mode_fan_mismatch_handling()
     // Step 2: Publish a request to change mode to Cool
     ProtocolRequest req;
     req.mode = Mode::Cool;
-    req.target_temp = 23.0f;
+    req.target_temp.set_from_celsius(23.0f);
     get_protocol("00")->publish_request(&target, "00", req);
     
     // Step 3: Make indoor awake and send request
@@ -1751,7 +1751,7 @@ void test_cmd54_state_persistence()
     ProtocolRequest req;
     req.mode = Mode::Cool;
     req.fan_mode = FanMode::High;
-    req.target_temp = 24.0f;
+    req.target_temp.set_from_celsius(24.0f);
     req.power = true;
     
     get_protocol("00")->publish_request(&target, "00", req);
@@ -1770,7 +1770,7 @@ void test_cmd54_state_persistence()
     auto &queued_req = nonnasa_requests.front().request;
     assert(queued_req.mode == NonNasaMode::Cool);
     assert(queued_req.fanspeed == NonNasaFanspeed::High);
-    assert(queued_req.target_temp == 24);
+    assert(queued_req.target_temp.to_celsius() == 24);
     assert(queued_req.power == true);
     
     // Step 4: Send Cmd54 to acknowledge the request
@@ -1788,7 +1788,7 @@ void test_cmd54_state_persistence()
     // Create a new request without specifying parameters
     // It should use the state from the last Cmd20 (not from Cmd54)
     ProtocolRequest req2;
-    req2.target_temp = 23.0f; // Only change temp, other params should come from last_command20s_
+    req2.target_temp.set_from_celsius(23.0f); // Only change temp, other params should come from last_command20s_
     
     get_protocol("00")->publish_request(&target, "00", req2);
     
@@ -1797,9 +1797,9 @@ void test_cmd54_state_persistence()
     auto &queued_req2 = nonnasa_requests.front().request;
     assert(queued_req2.mode == NonNasaMode::Heat); // From initial Cmd20, not Cool from Cmd54
     assert(queued_req2.fanspeed == NonNasaFanspeed::Auto); // From initial Cmd20, not High from Cmd54
-    assert(queued_req2.target_temp == 23); // Explicitly set
+    assert(queued_req2.target_temp.to_celsius() == 23); // Explicitly set
     assert(queued_req2.power == false); // From initial Cmd20, not true from Cmd54
-    assert(queued_req2.room_temp == 25); // Preserved from initial Cmd20
+    assert(queued_req2.room_temp.to_celsius() == 25); // Preserved from initial Cmd20
     
     // Step 6: Verify swing state is preserved from initial Cmd20
     auto encoded = queued_req2.encode();
@@ -2113,8 +2113,8 @@ void test_wind_direction_zero_conversion()
     assert(p.command20.wind_direction == NonNasaWindDirection::Stop);
     
     // Verify other fields are still decoded correctly
-    assert(p.command20.target_temp == 20);
-    assert(p.command20.room_temp == 22);
+    assert(p.command20.target_temp.to_celsius() == 20);
+    assert(p.command20.room_temp.to_celsius() == 22);
     assert(p.command20.fanspeed == NonNasaFanspeed::Auto);
     assert(p.command20.mode == NonNasaMode::Heat);
     assert(p.command20.power == true);
@@ -2127,8 +2127,8 @@ void test_non_nasa_swing_encoding()
     NonNasaRequest req = create_request();
     req.dst = "00";
     req.power = true;
-    req.room_temp = 23;
-    req.target_temp = 24;
+    req.room_temp.set_from_celsius(23);
+    req.target_temp.set_from_celsius(24);
     req.fanspeed = NonNasaFanspeed::Auto;
     req.mode = NonNasaMode::Heat;
     
@@ -2382,7 +2382,7 @@ void test_non_nasa_swing_cmd54_preserving()
     // Step 5: Verify last_command20s_ was NOT updated by Cmd54
     // Create a new request - it should use the swing state from the last Cmd20 (Stop)
     ProtocolRequest req2;
-    req2.target_temp = 23.0f;
+    req2.target_temp.set_from_celsius(23.0f);
     get_protocol("00")->publish_request(&target, "00", req2);
     
     // Verify the new request uses swing state from initial Cmd20 (not from Cmd54)
@@ -2527,7 +2527,7 @@ void test_non_nasa_swing_edge_cases()
     // Verify other parameters are preserved from last_command20s_
     // (power=true, target_temp=20, mode=Heat from Cmd20)
     assert(nonnasa_requests.front().request.power == true);
-    assert(nonnasa_requests.front().request.target_temp == 20);
+    assert(nonnasa_requests.front().request.target_temp.to_celsius() == 20);
     assert(nonnasa_requests.front().request.mode == NonNasaMode::Heat);
     
     // Edge Case 2: Swing commands before any Cmd20
