@@ -2317,17 +2317,11 @@ void test_non_nasa_swing_cmd20_matching()
     assert(nonnasa_requests.size() == 1);
     assert(nonnasa_requests.front().request.mode == NonNasaMode::Cool);
     
-    // Step 4: Send Cmd20 with matching mode and fan (Cool, High)
-    // This should remove the request (basic fields match)
-    auto cmd20_matching = build_packet(0x00, 0xc8, 0x20, [](std::vector<uint8_t> &data) {
-        data[4] = 77; // target_temp = 22°C (matches request default)
-        data[5] = 80; // room_temp = 25°C
-        data[6] = 23 + 55; // pipe_in = 23°C
-        data[7] = (27 << 3) | 2; // wind_direction = Horizontal (27), fanspeed = High (2)
-        data[8] = 0x02; // mode = Cool (0x02), power = off
-        data[11] = 24 + 55; // pipe_out = 24°C
-    });
-    test_process_data(packet_to_hex(cmd20_matching), target);
+    // Step 4: Send Cmd20 that matches the queued request, which should remove it.
+    // Reuse the same builder as step 1 so the temperatures line up: the request
+    // inherited target_temp 20 from that packet, and publish_request forced power
+    // on because a mode was set. Fanspeed High is 5, not 2.
+    test_process_data(build_cmd20_with_swing(27, 5, 2, true), target);
     
     // Verify request was removed (matching basic fields)
     assert(nonnasa_requests.size() == 0);
