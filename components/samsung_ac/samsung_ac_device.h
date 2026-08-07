@@ -131,6 +131,9 @@ namespace esphome
       sensor::Sensor *outdoor_cumulative_energy{nullptr};
       sensor::Sensor *outdoor_current{nullptr};
       sensor::Sensor *outdoor_voltage{nullptr};
+      // Estimated share of outdoor power (opt-in via YAML)
+      sensor::Sensor *estimated_power{nullptr};
+      sensor::Sensor *estimated_energy{nullptr};
       text_sensor::TextSensor *outdoor_operation_odu_mode_text{nullptr};
       text_sensor::TextSensor *outdoor_operation_heatcool_text{nullptr};
       text_sensor::TextSensor *indoor_real_mode_text{nullptr};
@@ -187,6 +190,47 @@ namespace esphome
       void set_outdoor_cumulative_energy_sensor(sensor::Sensor *sensor)
       {
         outdoor_cumulative_energy = sensor;
+      }
+
+      void set_estimated_power_sensor(sensor::Sensor *sensor)
+      {
+        estimated_power = sensor;
+      }
+
+      void set_estimated_energy_sensor(sensor::Sensor *sensor)
+      {
+        estimated_energy = sensor;
+      }
+
+      bool participates_in_power_allocation() const
+      {
+        return estimated_power != nullptr || estimated_energy != nullptr;
+      }
+
+      void set_capacity_request_raw(float value)
+      {
+        capacity_request_raw_ = value;
+      }
+
+      float get_capacity_request_raw() const { return capacity_request_raw_; }
+
+      void set_thermo_on(bool value) { thermo_on_ = value; }
+
+      bool get_thermo_on() const { return thermo_on_; }
+
+      float get_last_estimated_power_w() const { return last_estimated_power_w_; }
+
+      double get_accumulated_energy_kwh() const { return accumulated_energy_kwh_; }
+
+      void apply_power_allocation(float power_w, double energy_kwh, bool publish_energy)
+      {
+        last_estimated_power_w_ = power_w;
+        accumulated_energy_kwh_ = energy_kwh;
+        if (estimated_power != nullptr)
+          estimated_power->publish_state(power_w);
+        // Publish Wh; YAML filter multiply 0.001 converts to kWh (same as outdoor_cumulative_energy)
+        if (publish_energy && estimated_energy != nullptr)
+          estimated_energy->publish_state(static_cast<float>(energy_kwh * 1000.0));
       }
 
       void set_outdoor_current_sensor(sensor::Sensor *sensor)
@@ -908,6 +952,12 @@ namespace esphome
       bool supports_horizontal_swing_{false};
       bool supports_vertical_swing_{false};
       std::vector<AltModeDesc> alt_modes;
+
+      // Power allocation cache (NASA capacity/thermo; used even without HA sensors)
+      float capacity_request_raw_{0.0f};
+      bool thermo_on_{false};
+      float last_estimated_power_w_{0.0f};
+      double accumulated_energy_kwh_{0.0};
 
       Protocol *protocol{nullptr};
       MessageTarget *target{nullptr};

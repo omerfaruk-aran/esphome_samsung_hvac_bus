@@ -86,6 +86,42 @@ namespace esphome
       devices_.insert({device->address, device});
     }
 
+    void Samsung_AC::recalculate_indoor_power_()
+    {
+      std::vector<IndoorAllocParticipant> participants;
+      participants.reserve(devices_.size());
+
+      for (const auto &pair : devices_)
+      {
+        Samsung_AC_Device *dev = pair.second;
+        if (dev == nullptr || !dev->participates_in_power_allocation())
+          continue;
+        if (get_address_type(dev->address) != AddressType::Indoor)
+          continue;
+
+        IndoorAllocParticipant p;
+        p.address = dev->address;
+        p.capacity_request_raw = dev->get_capacity_request_raw();
+        p.thermo_on = dev->get_thermo_on();
+        p.last_estimated_power_w = dev->get_last_estimated_power_w();
+        p.accumulated_energy_kwh = dev->get_accumulated_energy_kwh();
+        participants.push_back(p);
+      }
+
+      if (participants.empty())
+        return;
+
+      power_allocator_.recalculate(participants, millis());
+
+      for (const auto &p : participants)
+      {
+        Samsung_AC_Device *dev = find_device(p.address);
+        if (dev == nullptr)
+          continue;
+        dev->apply_power_allocation(p.estimated_power_w, p.accumulated_energy_kwh, p.energy_updated);
+      }
+    }
+
     void Samsung_AC::dump_config()
     {
       LOGC("Samsung_AC:");

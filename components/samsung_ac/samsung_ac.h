@@ -12,6 +12,7 @@
 #include "protocol.h"
 #include "log.h"
 #include "device_state_tracker.h"
+#include "power_allocator.h"
 
 namespace esphome
 {
@@ -235,6 +236,20 @@ namespace esphome
       {
         execute_if_device_exists(address, [message_number, value](Samsung_AC_Device *dev)
                                  { dev->update_custom_sensor(message_number, value); });
+
+        // Cache NASA capacity / thermo for indoor power allocation (even if HA sensors are absent)
+        if (message_number == 0x4211)
+        {
+          execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                   { dev->set_capacity_request_raw(value); });
+          recalculate_indoor_power_();
+        }
+        else if (message_number == 0x4028)
+        {
+          execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                   { dev->set_thermo_on(value != 0.0f); });
+          recalculate_indoor_power_();
+        }
       }
 
       void set_error_code(const std::string address, int value) override
@@ -245,7 +260,10 @@ namespace esphome
 
       void set_outdoor_instantaneous_power(const std::string &address, float value)
       {
+        // Always cache for allocation, even when the outdoor HA sensor is not configured
+        power_allocator_.set_outdoor_power(value);
         update_device_sensor(address, &Samsung_AC_Device::outdoor_instantaneous_power, value);
+        recalculate_indoor_power_();
       }
 
       void set_outdoor_cumulative_energy(const std::string &address, float value)
@@ -316,9 +334,12 @@ namespace esphome
         return nullptr;
       }
 
+      void recalculate_indoor_power_();
+
       std::map<std::string, Samsung_AC_Device *> devices_;
       DeviceStateTracker<Mode> state_tracker_{1000};
       std::set<std::string> addresses_;
+      PowerAllocator power_allocator_;
 
       std::deque<OutgoingData> send_queue_;
       std::vector<uint8_t> data_;

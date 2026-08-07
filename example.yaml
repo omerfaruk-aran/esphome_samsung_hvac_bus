@@ -164,6 +164,12 @@ samsung_ac:
         name: "Kitchen PM1.0 Dust"
       indoor_capacity_request:
         name: "Kitchen Capacity Request"
+      # Estimated share of outdoor power (NASA: capacity/thermo weighted; Non-NASA: equal).
+      # Sum of all indoor estimated_power equals outdoor_instantaneous_power.
+      estimated_power:
+        name: "Kitchen Estimated Power"
+      estimated_energy:
+        name: "Kitchen Estimated Energy"
       indoor_real_mode:
         name: "Kitchen Real Mode"
       indoor_real_fan_speed:

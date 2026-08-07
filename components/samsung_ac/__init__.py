@@ -146,6 +146,8 @@ CONF_DEVICE_MODEL_INFORMATION = "model_information"
 CONF_DEVICE_THERMO_STATE = "thermo_state"
 CONF_DEVICE_DEFROST_MODE = "defrost_mode"
 CONF_DEVICE_SILENCE_MODE = "silence_mode"
+CONF_DEVICE_ESTIMATED_POWER = "estimated_power"
+CONF_DEVICE_ESTIMATED_ENERGY = "estimated_energy"
 CONF_DEVICE_OUT_HIGH_PRESSURE = "outdoor_high_pressure"
 CONF_DEVICE_OUT_LOW_PRESSURE = "outdoor_low_pressure"
 CONF_DEVICE_OUT_DISCHARGE_TEMP1 = "outdoor_discharge_temperature1"
@@ -537,6 +539,27 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(
             CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM
         ): sensor.sensor_schema(
+            unit_of_measurement="kWh",
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:counter",
+        ).extend(
+            {
+                cv.Optional(
+                    CONF_FILTERS, default=[{"multiply": 0.001}]
+                ): sensor.validate_filters
+            }
+        ),
+        # Indoor estimated share of outdoor power (capacity-weighted; sum == outdoor)
+        cv.Optional(CONF_DEVICE_ESTIMATED_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:flash",
+        ),
+        cv.Optional(CONF_DEVICE_ESTIMATED_ENERGY): sensor.sensor_schema(
             unit_of_measurement="kWh",
             accuracy_decimals=3,
             device_class=DEVICE_CLASS_ENERGY,
@@ -983,6 +1006,14 @@ async def to_code(config):
             CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM: (
                 sensor.new_sensor,
                 var_dev.set_outdoor_cumulative_energy_sensor,
+            ),
+            CONF_DEVICE_ESTIMATED_POWER: (
+                sensor.new_sensor,
+                var_dev.set_estimated_power_sensor,
+            ),
+            CONF_DEVICE_ESTIMATED_ENERGY: (
+                sensor.new_sensor,
+                var_dev.set_estimated_energy_sensor,
             ),
             CONF_DEVICE_OUT_SENSOR_CT1: (
                 sensor.new_sensor,
