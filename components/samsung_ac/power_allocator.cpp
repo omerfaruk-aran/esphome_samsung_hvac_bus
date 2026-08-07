@@ -21,6 +21,8 @@ namespace esphome
         return 0.0f;
       if (capacity_request_raw <= 0.0f)
         return 0.0f;
+      if (capacity_request_raw >= INVALID_CAPACITY_RAW)
+        return 0.0f;
       return capacity_request_raw;
     }
 
@@ -92,9 +94,10 @@ namespace esphome
       std::vector<float> new_powers;
       allocate_powers(outdoor_power_w_, weights, new_powers);
 
+      const bool first_update = !has_previous_update_;
       bool do_energy = false;
       uint32_t delta_ms = 0;
-      if (has_previous_update_)
+      if (!first_update)
       {
         if (now_ms >= last_update_ms_)
           delta_ms = now_ms - last_update_ms_;
@@ -109,6 +112,10 @@ namespace esphome
         }
       }
 
+      // Keep the integration anchor when the interval was too short. Capacity and
+      // thermo updates can call this far more often than every MIN_DELTA_MS, and
+      // moving the anchor on those calls would stall energy accumulation forever.
+      const bool advance_anchor = first_update || do_energy;
       const double time_hours = static_cast<double>(delta_ms) / 3600000.0;
 
       for (size_t i = 0; i < participants.size(); i++)
@@ -126,11 +133,15 @@ namespace esphome
         }
 
         p.estimated_power_w = new_power;
-        p.last_estimated_power_w = new_power;
+        if (advance_anchor)
+          p.last_estimated_power_w = new_power;
       }
 
-      last_update_ms_ = now_ms;
-      has_previous_update_ = true;
+      if (advance_anchor)
+      {
+        last_update_ms_ = now_ms;
+        has_previous_update_ = true;
+      }
     }
 
   } // namespace samsung_ac

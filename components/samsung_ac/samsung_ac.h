@@ -240,9 +240,14 @@ namespace esphome
         // Cache NASA capacity / thermo for indoor power allocation (even if HA sensors are absent)
         if (message_number == 0x4211)
         {
-          execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
-                                   { dev->set_capacity_request_raw(value); });
-          recalculate_indoor_power_();
+          // Keep the last known capacity when the unit reports the "no value" sentinel,
+          // matching the filter_out on the indoor_capacity_request sensor
+          if (value < PowerAllocator::INVALID_CAPACITY_RAW)
+          {
+            execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                     { dev->set_capacity_request_raw(value); });
+            recalculate_indoor_power_();
+          }
         }
         else if (message_number == 0x4028)
         {

@@ -118,7 +118,8 @@ namespace esphome
         Samsung_AC_Device *dev = find_device(p.address);
         if (dev == nullptr)
           continue;
-        dev->apply_power_allocation(p.estimated_power_w, p.accumulated_energy_kwh, p.energy_updated);
+        dev->apply_power_allocation(p.estimated_power_w, p.last_estimated_power_w,
+                                    p.accumulated_energy_kwh, p.energy_updated);
       }
     }
 

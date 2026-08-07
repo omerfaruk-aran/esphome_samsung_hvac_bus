@@ -15,6 +15,7 @@ namespace esphome
       std::string address;
       float capacity_request_raw = 0.0f;
       bool thermo_on = false;
+      // Power at the last integration point; only advances when energy is integrated
       float last_estimated_power_w = 0.0f;
       double accumulated_energy_kwh = 0.0;
 
@@ -31,6 +32,8 @@ namespace esphome
     public:
       static constexpr uint32_t MIN_DELTA_MS = 100;
       static constexpr uint32_t MAX_DELTA_MS = 3600000; // 1 hour
+      // 0x4211 reports 65535 when no capacity value is available
+      static constexpr float INVALID_CAPACITY_RAW = 65535.0f;
 
       void set_outdoor_power(float power_w);
       float outdoor_power_w() const { return outdoor_power_w_; }

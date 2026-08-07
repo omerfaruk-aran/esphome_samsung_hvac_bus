@@ -24,6 +24,46 @@ static void test_weight_for()
     assert_near(PowerAllocator::weight_for(10.0f, false), 0.0f);
     assert_near(PowerAllocator::weight_for(0.0f, true), 0.0f);
     assert_near(PowerAllocator::weight_for(-1.0f, true), 0.0f);
+    // 65535 is the "no capacity value" sentinel, not a huge capacity
+    assert_near(PowerAllocator::weight_for(65535.0f, true), 0.0f);
+}
+
+static void test_sentinel_capacity_does_not_dominate()
+{
+    cout << "test_sentinel_capacity_does_not_dominate" << endl;
+    PowerAllocator alloc;
+    alloc.set_outdoor_power(1000.0f);
+
+    vector<IndoorAllocParticipant> parts(2);
+    parts[0].capacity_request_raw = 65535.0f; // sentinel
+    parts[0].thermo_on = true;
+    parts[1].capacity_request_raw = 4.0f;
+    parts[1].thermo_on = true;
+
+    alloc.recalculate(parts, 0);
+    assert_near(parts[0].estimated_power_w, 0.0f);
+    assert_near(parts[1].estimated_power_w, 1000.0f);
+}
+
+static void test_frequent_updates_do_not_stall_energy()
+{
+    cout << "test_frequent_updates_do_not_stall_energy" << endl;
+    PowerAllocator alloc;
+    alloc.set_outdoor_power(1000.0f);
+
+    vector<IndoorAllocParticipant> parts(1);
+    parts[0].capacity_request_raw = 1.0f;
+    parts[0].thermo_on = true;
+
+    alloc.recalculate(parts, 0);
+
+    // Capacity/thermo updates arriving every 10ms are below MIN_DELTA_MS, but they
+    // must not move the integration anchor or energy would never accumulate.
+    for (uint32_t t = 10; t <= 3600000; t += 10)
+        alloc.recalculate(parts, t);
+
+    // 1000W held for one hour => 1 kWh
+    assert_near(static_cast<float>(parts[0].accumulated_energy_kwh), 1.0f);
 }
 
 static void test_allocate_capacity_ratio()
@@ -126,6 +166,8 @@ int main()
     test_allocate_single();
     test_recalculate_sum_and_energy();
     test_recalculate_equal_fallback();
+    test_sentinel_capacity_does_not_dominate();
+    test_frequent_updates_do_not_stall_energy();
     cout << "All power allocator tests passed." << endl;
     return 0;
 }

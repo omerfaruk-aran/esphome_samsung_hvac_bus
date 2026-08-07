@@ -222,9 +222,9 @@ namespace esphome
 
       double get_accumulated_energy_kwh() const { return accumulated_energy_kwh_; }
 
-      void apply_power_allocation(float power_w, double energy_kwh, bool publish_energy)
+      void apply_power_allocation(float power_w, float anchor_power_w, double energy_kwh, bool publish_energy)
       {
-        last_estimated_power_w_ = power_w;
+        last_estimated_power_w_ = anchor_power_w;
         accumulated_energy_kwh_ = energy_kwh;
         if (estimated_power != nullptr)
           estimated_power->publish_state(power_w);
