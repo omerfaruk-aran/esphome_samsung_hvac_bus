@@ -94,11 +94,11 @@ namespace esphome
 
             VAR_in_temp_target_f = 0x4201,  // [RW] Zone1 Room Set Temp. / Set Temperature | Celsius | /10 | signed | -41..150
             // Room temperature arrives as two separate messages - keep the pair together.
-            //   0x4203 NASA_CURRENT_TEMP          - raw sensor reading. Exposed as the
-            //          optional `room_temperature_raw` sensor, wired by message number in
-            //          __init__.py rather than by a case in process_messageset().
-            //   0x4204 NASA_MODIFIED_CURRENT_TEMP - compensated value. Drives the climate
+            //   0x4203 NASA_CURRENT_TEMP          - raw sensor reading. Drives the climate
             //          entity's current temperature and the `room_temperature` sensor.
+            //   0x4204 NASA_MODIFIED_CURRENT_TEMP - compensated value. Exposed as the
+            //          optional `room_temperature_modified` sensor, wired by message number
+            //          in __init__.py rather than by a case in process_messageset().
             // Which one matches the wall remote is not confirmed on real hardware;
             // enable both sensors and compare.
             VAR_in_temp_room_f = 0x4203,  // [R] Room Temp. / Temp. Sensor | Celsius | /10 | signed | -41..150

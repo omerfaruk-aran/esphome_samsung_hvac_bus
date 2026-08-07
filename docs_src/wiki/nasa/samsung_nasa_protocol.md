@@ -918,25 +918,23 @@ interchangeable:
 
 | MsgNr | Enum name in `protocol_nasa.h` | Meaning | Where it surfaces |
 | :-- | :-- | :-- | :-- |
-| `0x4204` | `VAR_in_temp_room_modified_f` | `NASA_MODIFIED_CURRENT_TEMP` - compensated value | `room_temperature` sensor **and** the climate entity's current temperature |
-| `0x4203` | `VAR_in_temp_room_f` | `NASA_CURRENT_TEMP` - raw sensor reading | `room_temperature_raw` sensor only |
+| `0x4203` | `VAR_in_temp_room_f` | `NASA_CURRENT_TEMP` - raw sensor reading | `room_temperature` sensor **and** the climate entity's current temperature |
+| `0x4204` | `VAR_in_temp_room_modified_f` | `NASA_MODIFIED_CURRENT_TEMP` - compensated value | `room_temperature_modified` sensor only |
 
 Earlier revisions named the `0x4204` constant `VAR_in_temp_room_f`, which made it look like
 the `0x4203` entry in the tables above. It has been renamed to `VAR_in_temp_room_modified_f`
-so the two are distinguishable; the address it maps to and the behaviour are unchanged.
+so the two are distinguishable; the address it maps to is unchanged.
 
-The climate entity keeps using the compensated value, which is the right default -
-`MODIFIED` is what a unit uses for its own thermostat control, so it is the value the
-wall remote agrees with. The raw reading is available alongside it for comparison and
-diagnostics:
+The climate entity uses the raw sensor reading (`0x4203`). The compensated
+(`MODIFIED`) value is available alongside it for comparison and diagnostics:
 
 ```yaml
 devices:
   - address: "20.00.00"
-    room_temperature:                 # 0x4204, compensated - also drives the climate entity
+    room_temperature:                 # 0x4203, raw - also drives the climate entity
       name: "Room temperature"
-    room_temperature_raw:             # 0x4203, raw sensor reading
-      name: "Room temperature (raw)"
+    room_temperature_modified:        # 0x4204, compensated value
+      name: "Room temperature (modified)"
 ```
 
 Both are plain optional sensors; scaling (signed, x0.1) is applied automatically. If the

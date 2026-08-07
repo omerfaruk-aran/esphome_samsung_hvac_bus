@@ -91,7 +91,7 @@ void test_nasa_room_temperature()
     packet.command.dataType = DataType::Notification;
     packet.command.packetNumber = 1;
     
-    MessageSet room_temp_msg(MessageNumber::VAR_in_temp_room_modified_f);
+    MessageSet room_temp_msg(MessageNumber::VAR_in_temp_room_f);
     room_temp_msg.value = 245; // 24.5°C * 10
     packet.messages.push_back(room_temp_msg);
     
@@ -113,7 +113,7 @@ void test_nasa_room_temperature()
     assert(target.last_set_room_temperature_address == "20.00.00");
     assert(abs(target.last_set_room_temperature_value - 18.0f) < 0.01f);
     
-    // Note: VAR_in_temp_room_modified_f is for indoor room temperature, which is never negative in practice
+    // Note: VAR_in_temp_room_f is for indoor room temperature, which is never negative in practice
     // The handler correctly uses: double temp = (double)message.value / (double)10;
     // No int16_t cast is needed since indoor temps are always positive
 }
@@ -1270,7 +1270,7 @@ void test_nasa_edge_cases()
     packet.command.packetNumber = 1;
     
     // Test maximum practical temperature (50°C = 500)
-    MessageSet max_temp(MessageNumber::VAR_in_temp_room_modified_f);
+    MessageSet max_temp(MessageNumber::VAR_in_temp_room_f);
     max_temp.value = 500; // 50.0°C
     packet.messages.clear();
     packet.messages.push_back(max_temp);
@@ -1280,7 +1280,7 @@ void test_nasa_edge_cases()
     
     // Test minimum temperature (0°C)
     target = DebugTarget();
-    MessageSet min_temp(MessageNumber::VAR_in_temp_room_modified_f);
+    MessageSet min_temp(MessageNumber::VAR_in_temp_room_f);
     min_temp.value = 0; // 0.0°C
     packet.messages.clear();
     packet.messages.push_back(min_temp);
@@ -1400,7 +1400,7 @@ void test_nasa_sequence()
     packet.command.packetNumber = 1;
     
     // Sequence 1: Room temperature update
-    MessageSet room_temp(MessageNumber::VAR_in_temp_room_modified_f);
+    MessageSet room_temp(MessageNumber::VAR_in_temp_room_f);
     room_temp.value = 245; // 24.5°C
     packet.messages.clear();
     packet.messages.push_back(room_temp);
@@ -1524,7 +1524,7 @@ void test_protocol_detection()
     protocol_processing = ProtocolProcessing::Auto;
     target = DebugTarget();
     Address da = Address::parse("20.00.00");
-    Packet nasa_packet = Packet::create(da, DataType::Notification, MessageNumber::VAR_in_temp_room_modified_f, 245);
+    Packet nasa_packet = Packet::create(da, DataType::Notification, MessageNumber::VAR_in_temp_room_f, 245);
     auto nasa_bytes = nasa_packet.encode();
     result = process_data(nasa_bytes, &target);
     assert(result.type == DecodeResultType::Processed);
@@ -1578,7 +1578,7 @@ void test_protocol_detection()
     // When protocol_processing is NonNASA, Non-NASA decoder attempts first
     // If it fails (Discard), it returns Discard without falling through to NASA
     // This is by design: once protocol is detected, it's locked
-    nasa_packet = Packet::create(da, DataType::Notification, MessageNumber::VAR_in_temp_room_modified_f, 245);
+    nasa_packet = Packet::create(da, DataType::Notification, MessageNumber::VAR_in_temp_room_f, 245);
     nasa_bytes = nasa_packet.encode();
     result = process_data(nasa_bytes, &target);
     // Non-NASA decoder will fail to decode NASA packet and return Discard

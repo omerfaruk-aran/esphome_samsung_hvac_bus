@@ -81,7 +81,7 @@ CLIMATE_SCHEMA = climate.climate_schema(Samsung_AC_Climate)
 CONF_DEVICE_ID = "samsung_ac_device_id"
 CONF_DEVICE_ADDRESS = "address"
 CONF_DEVICE_ROOM_TEMPERATURE = "room_temperature"
-CONF_DEVICE_ROOM_TEMPERATURE_RAW = "room_temperature_raw"
+CONF_DEVICE_ROOM_TEMPERATURE_MODIFIED = "room_temperature_modified"
 CONF_DEVICE_ROOM_TEMPERATURE_OFFSET = "room_temperature_offset"
 CONF_DEVICE_ROOM_TEMPERATURE_OFFSET_NUMBER = "room_temperature_offset_number"
 CONF_DEVICE_TARGET_TEMPERATURE = "target_temperature"
@@ -469,7 +469,7 @@ DEVICE_SCHEMA = cv.Schema(
         cv.GenerateID(CONF_DEVICE_ID): cv.declare_id(Samsung_AC_Device),
         cv.Optional(CONF_CAPABILITIES): CAPABILITIES_SCHEMA,
         cv.Required(CONF_DEVICE_ADDRESS): cv.string,
-        # Compensated room temperature (0x4204). This is what drives the climate
+        # Raw room sensor reading (0x4203). This is what drives the climate
         # entity's current temperature.
         cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE): sensor.sensor_schema(
             unit_of_measurement=UNIT_CELSIUS,
@@ -477,10 +477,10 @@ DEVICE_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_TEMPERATURE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-        # Raw room sensor reading (0x4203), reported as-is. Diagnostic only - it does
-        # not feed the climate entity; useful for comparing against the compensated value.
-        cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE_RAW): temperature_sensor_schema(
-            0x4203, entity_category="diagnostic"
+        # Compensated room temperature (0x4204), reported as-is. Diagnostic only - it does
+        # not feed the climate entity; useful for comparing against the raw sensor reading.
+        cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE_MODIFIED): temperature_sensor_schema(
+            0x4204, entity_category="diagnostic"
         ),
         cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE_OFFSET): cv.float_,
         cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE_OFFSET_NUMBER): NUMBER_SCHEMA,
@@ -764,7 +764,7 @@ DEVICE_SCHEMA = cv.Schema(
 )
 
 CUSTOM_SENSOR_KEYS = [
-    CONF_DEVICE_ROOM_TEMPERATURE_RAW,
+    CONF_DEVICE_ROOM_TEMPERATURE_MODIFIED,
     CONF_DEVICE_WATER_TEMPERATURE,
     CONF_DEVICE_PM10,
     CONF_DEVICE_PM25,

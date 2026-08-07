@@ -757,10 +757,10 @@ namespace esphome
 
             switch (message.messageNumber)
             {
-            case MessageNumber::VAR_in_temp_room_modified_f: // unit = 'Celsius' from XML
+            case MessageNumber::VAR_in_temp_room_f: // unit = 'Celsius' from XML
             {
                 double temp = (double)message.value / (double)10;
-                LOG_MESSAGE(VAR_in_temp_room_modified_f, temp, source, dest);
+                LOG_MESSAGE(VAR_in_temp_room_f, temp, source, dest);
                 target->set_room_temperature(source, temp);
                 break;
             }
