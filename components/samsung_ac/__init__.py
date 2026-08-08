@@ -133,6 +133,8 @@ CONF_DEVICE_PM10 = "pm10"
 CONF_DEVICE_PM25 = "pm25"
 CONF_DEVICE_PM1_0 = "pm1_0"
 CONF_DEVICE_INDOOR_CAPACITY_REQUEST = "indoor_capacity_request"
+CONF_DEVICE_INDOOR_CAPACITY_ABSOLUTE = "indoor_capacity_absolute"
+CONF_DEVICE_INDOOR_CAPACITY_PERCENT = "indoor_capacity_percent"
 CONF_DEVICE_INDOOR_REAL_MODE_TEXT = "indoor_real_mode"
 CONF_DEVICE_INDOOR_REAL_FAN_SPEED_TEXT = "indoor_real_fan_speed"
 CONF_DEVICE_INDOOR_REAL_ALT_MODE_TEXT = "indoor_real_alt_mode"
@@ -333,13 +335,26 @@ def dust_sensor_schema(message: int, device_class=cv.UNDEFINED):
 
 
 def capacity_sensor_schema(message: int):
+    # NASA 0x4211 / 0x4212 are capacity in kW with scale factor 8.6
     return custom_sensor_schema(
         message=message,
-        unit_of_measurement="%",
-        accuracy_decimals=0,
+        unit_of_measurement="kW",
+        accuracy_decimals=1,
         state_class=STATE_CLASS_MEASUREMENT,
         icon="mdi:gauge",
-        raw_filters=[{"filter_out": 65535}],
+        raw_filters=[
+            {"filter_out": 65535},
+            {"lambda": Lambda("return x / 8.6f;")},
+        ],
+    )
+
+
+def capacity_percent_sensor_schema():
+    return sensor.sensor_schema(
+        unit_of_measurement=UNIT_PERCENT,
+        accuracy_decimals=0,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon="mdi:percent",
     )
 
 
@@ -613,6 +628,8 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_PM25): dust_sensor_schema(0x42D2, device_class="pm25"),
         cv.Optional(CONF_DEVICE_PM1_0): dust_sensor_schema(0x42D3),
         cv.Optional(CONF_DEVICE_INDOOR_CAPACITY_REQUEST): capacity_sensor_schema(0x4211),
+        cv.Optional(CONF_DEVICE_INDOOR_CAPACITY_ABSOLUTE): capacity_sensor_schema(0x4212),
+        cv.Optional(CONF_DEVICE_INDOOR_CAPACITY_PERCENT): capacity_percent_sensor_schema(),
         cv.Optional(CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP): outdoor_temp_sensor_schema(0x8280),
         cv.Optional(CONF_DEVICE_OUT_PIPE_OUT1_TEMP): outdoor_temp_sensor_schema(0x8264),
         cv.Optional(CONF_DEVICE_OUT_PIPE_OUT2_TEMP): outdoor_temp_sensor_schema(0x8265),
@@ -793,6 +810,7 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_PM25,
     CONF_DEVICE_PM1_0,
     CONF_DEVICE_INDOOR_CAPACITY_REQUEST,
+    CONF_DEVICE_INDOOR_CAPACITY_ABSOLUTE,
     CONF_DEVICE_OUT_COMPRESSOR_TOP_TEMP,
     CONF_DEVICE_OUT_PIPE_OUT1_TEMP,
     CONF_DEVICE_OUT_PIPE_OUT2_TEMP,
@@ -1014,6 +1032,10 @@ async def to_code(config):
             CONF_DEVICE_ESTIMATED_ENERGY: (
                 sensor.new_sensor,
                 var_dev.set_estimated_energy_sensor,
+            ),
+            CONF_DEVICE_INDOOR_CAPACITY_PERCENT: (
+                sensor.new_sensor,
+                var_dev.set_indoor_capacity_percent_sensor,
             ),
             CONF_DEVICE_OUT_SENSOR_CT1: (
                 sensor.new_sensor,

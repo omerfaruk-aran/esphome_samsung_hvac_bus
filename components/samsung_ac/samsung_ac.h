@@ -250,6 +250,14 @@ namespace esphome
             recalculate_indoor_power_();
           }
         }
+        else if (message_number == 0x4212)
+        {
+          if (value < PowerAllocator::INVALID_CAPACITY_RAW)
+          {
+            execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                     { dev->set_capacity_absolute_raw(value); });
+          }
+        }
         else if (message_number == 0x4028)
         {
           execute_if_device_exists(address, [value](Samsung_AC_Device *dev)

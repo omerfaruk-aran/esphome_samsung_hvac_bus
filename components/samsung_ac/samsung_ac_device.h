@@ -134,6 +134,8 @@ namespace esphome
       // Estimated share of outdoor power (opt-in via YAML)
       sensor::Sensor *estimated_power{nullptr};
       sensor::Sensor *estimated_energy{nullptr};
+      // Computed: indoor_capacity_request / indoor_capacity_absolute * 100
+      sensor::Sensor *indoor_capacity_percent{nullptr};
       text_sensor::TextSensor *outdoor_operation_odu_mode_text{nullptr};
       text_sensor::TextSensor *outdoor_operation_heatcool_text{nullptr};
       text_sensor::TextSensor *indoor_real_mode_text{nullptr};
@@ -202,6 +204,11 @@ namespace esphome
         estimated_energy = sensor;
       }
 
+      void set_indoor_capacity_percent_sensor(sensor::Sensor *sensor)
+      {
+        indoor_capacity_percent = sensor;
+      }
+
       bool participates_in_power_allocation() const
       {
         return estimated_power != nullptr || estimated_energy != nullptr;
@@ -210,9 +217,20 @@ namespace esphome
       void set_capacity_request_raw(float value)
       {
         capacity_request_raw_ = value;
+        has_capacity_request_ = true;
+        publish_capacity_percent_();
       }
 
       float get_capacity_request_raw() const { return capacity_request_raw_; }
+
+      void set_capacity_absolute_raw(float value)
+      {
+        capacity_absolute_raw_ = value;
+        has_capacity_absolute_ = true;
+        publish_capacity_percent_();
+      }
+
+      float get_capacity_absolute_raw() const { return capacity_absolute_raw_; }
 
       void set_thermo_on(bool value) { thermo_on_ = value; }
 
@@ -971,11 +989,28 @@ namespace esphome
 
       // Power allocation cache (NASA capacity/thermo/runtime; used even without HA sensors)
       float capacity_request_raw_{0.0f};
-      bool thermo_on_{false};
+      bool has_capacity_request_{false};
+      float capacity_absolute_raw_{0.0f};
+      bool has_capacity_absolute_{false};
       float operation_time_h_{0.0f};
       bool has_operation_time_{false};
       float last_estimated_power_w_{0.0f};
       double accumulated_energy_kwh_{0.0};
+      bool thermo_on_{false};
+
+      void publish_capacity_percent_()
+      {
+        if (indoor_capacity_percent == nullptr)
+          return;
+        if (!has_capacity_request_ || !has_capacity_absolute_)
+          return;
+        if (capacity_absolute_raw_ <= 0.0f || capacity_absolute_raw_ >= 65535.0f)
+          return;
+        if (capacity_request_raw_ < 0.0f || capacity_request_raw_ >= 65535.0f)
+          return;
+        indoor_capacity_percent->publish_state(
+            (capacity_request_raw_ / capacity_absolute_raw_) * 100.0f);
+      }
 
       Protocol *protocol{nullptr};
       MessageTarget *target{nullptr};

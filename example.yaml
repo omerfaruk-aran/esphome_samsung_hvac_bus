@@ -163,7 +163,11 @@ samsung_ac:
       pm1_0:
         name: "Kitchen PM1.0 Dust"
       indoor_capacity_request:
-        name: "Kitchen Capacity Request"
+        name: "Kitchen Capacity Request"   # kW = raw / 8.6
+      indoor_capacity_absolute:
+        name: "Kitchen Capacity Absolute"  # design capacity kW = raw / 8.6
+      indoor_capacity_percent:
+        name: "Kitchen Capacity Percent"   # request / absolute * 100
       # Estimated share of outdoor power/energy.
       # Power: capacity/thermo weighted (sum == outdoor_instantaneous_power).
       # Energy: prefer outdoor_cumulative_energy (seed by operation time, then delta split).
