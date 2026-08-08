@@ -218,18 +218,34 @@ namespace esphome
 
       bool get_thermo_on() const { return thermo_on_; }
 
+      void set_operation_time_h(float value)
+      {
+        if (value < 0.0f)
+          value = 0.0f;
+        operation_time_h_ = value;
+        has_operation_time_ = true;
+      }
+
+      float get_operation_time_h() const { return operation_time_h_; }
+
+      bool has_operation_time() const { return has_operation_time_; }
+
       float get_last_estimated_power_w() const { return last_estimated_power_w_; }
 
       double get_accumulated_energy_kwh() const { return accumulated_energy_kwh_; }
 
-      void apply_power_allocation(float power_w, float anchor_power_w, double energy_kwh, bool publish_energy)
+      void apply_estimated_power(float power_w, float anchor_power_w)
       {
         last_estimated_power_w_ = anchor_power_w;
-        accumulated_energy_kwh_ = energy_kwh;
         if (estimated_power != nullptr)
           estimated_power->publish_state(power_w);
+      }
+
+      void apply_estimated_energy(double energy_kwh)
+      {
+        accumulated_energy_kwh_ = energy_kwh;
         // Publish Wh; YAML filter multiply 0.001 converts to kWh (same as outdoor_cumulative_energy)
-        if (publish_energy && estimated_energy != nullptr)
+        if (estimated_energy != nullptr)
           estimated_energy->publish_state(static_cast<float>(energy_kwh * 1000.0));
       }
 
@@ -953,9 +969,11 @@ namespace esphome
       bool supports_vertical_swing_{false};
       std::vector<AltModeDesc> alt_modes;
 
-      // Power allocation cache (NASA capacity/thermo; used even without HA sensors)
+      // Power allocation cache (NASA capacity/thermo/runtime; used even without HA sensors)
       float capacity_request_raw_{0.0f};
       bool thermo_on_{false};
+      float operation_time_h_{0.0f};
+      bool has_operation_time_{false};
       float last_estimated_power_w_{0.0f};
       double accumulated_energy_kwh_{0.0};
 

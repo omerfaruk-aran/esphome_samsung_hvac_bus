@@ -6,6 +6,7 @@
 #include <map>
 #include <optional>
 #include <queue>
+#include <vector>
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "samsung_ac_device.h"
@@ -255,6 +256,17 @@ namespace esphome
                                    { dev->set_thermo_on(value != 0.0f); });
           recalculate_indoor_power_();
         }
+        else if (message_number == 0x4222)
+        {
+          // Cumulative operation time (hours) — used to seed estimated_energy after reboot.
+          // Same "no value" sentinel as capacity, so keep the last known runtime instead.
+          if (value < PowerAllocator::INVALID_OPERATION_TIME_H)
+          {
+            execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                     { dev->set_operation_time_h(value); });
+            recalculate_indoor_energy_();
+          }
+        }
       }
 
       void set_error_code(const std::string address, int value) override
@@ -273,7 +285,10 @@ namespace esphome
 
       void set_outdoor_cumulative_energy(const std::string &address, float value)
       {
+        // Raw value is Wh (YAML filter converts the outdoor sensor to kWh)
+        power_allocator_.set_outdoor_energy_wh(value);
         update_device_sensor(address, &Samsung_AC_Device::outdoor_cumulative_energy, value);
+        recalculate_indoor_energy_();
       }
 
       void set_outdoor_current(const std::string &address, float value)
@@ -340,6 +355,8 @@ namespace esphome
       }
 
       void recalculate_indoor_power_();
+      void recalculate_indoor_energy_();
+      void collect_indoor_alloc_participants_(std::vector<IndoorAllocParticipant> &participants);
 
       std::map<std::string, Samsung_AC_Device *> devices_;
       DeviceStateTracker<Mode> state_tracker_{1000};

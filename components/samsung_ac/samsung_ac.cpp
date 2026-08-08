@@ -86,9 +86,9 @@ namespace esphome
       devices_.insert({device->address, device});
     }
 
-    void Samsung_AC::recalculate_indoor_power_()
+    void Samsung_AC::collect_indoor_alloc_participants_(std::vector<IndoorAllocParticipant> &participants)
     {
-      std::vector<IndoorAllocParticipant> participants;
+      participants.clear();
       participants.reserve(devices_.size());
 
       for (const auto &pair : devices_)
@@ -103,23 +103,52 @@ namespace esphome
         p.address = dev->address;
         p.capacity_request_raw = dev->get_capacity_request_raw();
         p.thermo_on = dev->get_thermo_on();
+        p.operation_time_h = dev->get_operation_time_h();
+        p.has_operation_time = dev->has_operation_time();
         p.last_estimated_power_w = dev->get_last_estimated_power_w();
         p.accumulated_energy_kwh = dev->get_accumulated_energy_kwh();
         participants.push_back(p);
       }
+    }
 
+    void Samsung_AC::recalculate_indoor_power_()
+    {
+      std::vector<IndoorAllocParticipant> participants;
+      collect_indoor_alloc_participants_(participants);
       if (participants.empty())
         return;
 
-      power_allocator_.recalculate(participants, millis());
+      power_allocator_.recalculate_power(participants, millis());
 
       for (const auto &p : participants)
       {
         Samsung_AC_Device *dev = find_device(p.address);
         if (dev == nullptr)
           continue;
-        dev->apply_power_allocation(p.estimated_power_w, p.last_estimated_power_w,
-                                    p.accumulated_energy_kwh, p.energy_updated);
+        dev->apply_estimated_power(p.estimated_power_w, p.last_estimated_power_w);
+        if (p.energy_updated)
+          dev->apply_estimated_energy(p.accumulated_energy_kwh);
+      }
+    }
+
+    void Samsung_AC::recalculate_indoor_energy_()
+    {
+      std::vector<IndoorAllocParticipant> participants;
+      collect_indoor_alloc_participants_(participants);
+      if (participants.empty())
+        return;
+
+      if (!power_allocator_.apply_outdoor_energy(participants, millis()))
+        return;
+
+      for (const auto &p : participants)
+      {
+        if (!p.energy_updated)
+          continue;
+        Samsung_AC_Device *dev = find_device(p.address);
+        if (dev == nullptr)
+          continue;
+        dev->apply_estimated_energy(p.accumulated_energy_kwh);
       }
     }
 
