@@ -202,12 +202,8 @@ namespace esphome
       if (!read_data())
         return;
 
-      // If there is no data we use the time to send
-      // And if written, break the loop
-      if (write_data())
-        return;
-
-      // Allow device protocols to perform recurring tasks when idle (at most every 20ms)
+      // Move pending requests from protocol queues to send queue first,
+      // so that write_data() can send them in the same loop cycle.
       const uint32_t now = millis();
       if (now - last_protocol_update_ >= 20)
       {
@@ -218,6 +214,9 @@ namespace esphome
           device->protocol_update(this);
         }
       }
+
+      // Now try to send queued data (silenceInterval still guards bus access)
+      write_data();
     }
 
     bool Samsung_AC::read_data()
@@ -261,7 +260,11 @@ namespace esphome
         data_.resize(data_.size() - result.bytes);
       }
       last_transmission_ = now;
-      return false;
+      // When all buffered bytes have been consumed, allow protocol_update
+      // and write_data to proceed in this same loop cycle. The silenceInterval
+      // check in write_data() still prevents premature bus access.
+      // If partial data remains (next packet incomplete), keep blocking.
+      return data_.empty();
     }
 
     bool Samsung_AC::write_data()
