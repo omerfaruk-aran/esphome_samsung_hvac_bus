@@ -4,6 +4,7 @@
 #include <optional>
 #include <algorithm>
 #include "esphome/core/helpers.h"
+#include "esphome/components/button/button.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
@@ -95,6 +96,19 @@ namespace esphome
       }
     };
 
+    class Samsung_AC_Button : public button::Button
+    {
+    public:
+      std::function<void()> press_action_;
+
+    protected:
+      void press_action() override
+      {
+        if (press_action_)
+          press_action_();
+      }
+    };
+
     struct Samsung_AC_Sensor
     {
       uint16_t message_number;
@@ -136,6 +150,7 @@ namespace esphome
       Samsung_AC_Number *target_water_temperature{nullptr};
       Samsung_AC_Switch *power{nullptr};
       Samsung_AC_Switch *automatic_cleaning{nullptr};
+      Samsung_AC_Button *filter_reset{nullptr};
       Samsung_AC_Switch *water_heater_power{nullptr};
       Samsung_AC_Mode_Select *mode{nullptr};
       Samsung_AC_Water_Heater_Mode_Select *waterheatermode{nullptr};
@@ -264,6 +279,17 @@ namespace esphome
         {
           ProtocolRequest request;
           request.automatic_cleaning = value;
+          publish_request(request);
+        };
+      }
+
+      void set_filter_reset_button(Samsung_AC_Button *button)
+      {
+        filter_reset = button;
+        filter_reset->press_action_ = [this]()
+        {
+          ProtocolRequest request;
+          request.filter_reset = true;
           publish_request(request);
         };
       }

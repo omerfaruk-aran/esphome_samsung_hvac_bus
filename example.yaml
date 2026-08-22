@@ -138,6 +138,10 @@ samsung_ac:
       automatic_cleaning:
         name: "Kitchen automatic clean"
 
+      # NASA only: momentary action that sends the filter-clean reset command (0x4025).
+      filter_reset:
+        name: "Kitchen reset filter"
+
       # If your AC sits near or inside the ceiling, the reported room temperature is often a little bit heigher then whats 
       # measured below. This property can be used to correct that value.
       room_temperature_offset: -1.4
@@ -169,6 +173,14 @@ samsung_ac:
       custom_sensor:
         - name: "Kitchen custom value"
           message: 0x1234
+
+        # NASA only: filter warning message (0x4027), exposed through the
+        # existing generic binary custom sensor functionality.
+        - name: "Kitchen filter warning"
+          message: 0x4027
+          type: binary
+          device_class: problem
+          entity_category: diagnostic
 
         # Set type: binary to expose a bus message as a binary_sensor.
         # Binary custom sensors publish false when the decoded value is 0,

@@ -4,6 +4,7 @@ from esphome.components import (
     uart,
     sensor,
     binary_sensor,
+    button,
     switch,
     select,
     number,
@@ -37,7 +38,7 @@ from esphome import pins
 
 CODEOWNERS = ["matthias882", "lanwin", "omerfaruk-aran"]
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor", "binary_sensor", "switch", "select", "number", "climate", "text_sensor"]
+AUTO_LOAD = ["sensor", "binary_sensor", "button", "switch", "select", "number", "climate", "text_sensor"]
 MULTI_CONF = False
 
 CONF_SAMSUNG_AC_ID = "samsung_ac_id"
@@ -45,6 +46,7 @@ CONF_SAMSUNG_AC_ID = "samsung_ac_id"
 samsung_ac = cg.esphome_ns.namespace("samsung_ac")
 Samsung_AC = samsung_ac.class_("Samsung_AC", cg.PollingComponent, uart.UARTDevice)
 Samsung_AC_Device = samsung_ac.class_("Samsung_AC_Device")
+Samsung_AC_Button = samsung_ac.class_("Samsung_AC_Button", button.Button)
 Samsung_AC_Switch = samsung_ac.class_("Samsung_AC_Switch", switch.Switch)
 Samsung_AC_Mode_Select = samsung_ac.class_("Samsung_AC_Mode_Select", select.Select)
 Samsung_AC_Water_Heater_Mode_Select = samsung_ac.class_(
@@ -95,6 +97,7 @@ CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
 CONF_MAP_AUTO_TO_HEAT_COOL = "map_auto_to_heat_cool"
 CONF_DEBUG_LOG_MESSAGES_ON_CHANGE = "debug_log_messages_on_change"
 CONF_NON_NASA_TX_DELAY_MS = "non_nasa_tx_delay_ms"
+CONF_DEVICE_FILTER_RESET = "filter_reset"
 
 CONF_CAPABILITIES = "capabilities"
 CONF_CAPABILITIES_FAN_MODES = "fan_modes"
@@ -241,6 +244,12 @@ def error_code_sensor_schema(message: int):
     )
 
 
+def validate_device(config):
+    if CONF_DEVICE_FILTER_RESET in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
+        raise cv.Invalid("filter_reset is only supported for NASA devices")
+    return config
+
+
 DEVICE_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_DEVICE_ID): cv.declare_id(Samsung_AC_Device),
@@ -280,6 +289,9 @@ DEVICE_SCHEMA = cv.Schema(
         ),
         cv.Optional(CONF_DEVICE_AUTOMATIC_CLEANING): switch.switch_schema(
             Samsung_AC_Switch, icon="mdi:broom"
+        ),
+        cv.Optional(CONF_DEVICE_FILTER_RESET): button.button_schema(
+            Samsung_AC_Button, icon="mdi:air-filter"
         ),
         cv.Optional(CONF_DEVICE_WATER_HEATER_POWER): switch.switch_schema(
             Samsung_AC_Switch
@@ -357,6 +369,7 @@ DEVICE_SCHEMA = cv.Schema(
         ),
     }
 )
+DEVICE_SCHEMA = cv.All(DEVICE_SCHEMA, validate_device)
 
 CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_WATER_TEMPERATURE,
@@ -488,6 +501,10 @@ async def to_code(config):
             CONF_DEVICE_AUTOMATIC_CLEANING: (
                 switch.new_switch,
                 var_dev.set_automatic_cleaning_switch,
+            ),
+            CONF_DEVICE_FILTER_RESET: (
+                button.new_button,
+                var_dev.set_filter_reset_button,
             ),
             CONF_DEVICE_WATER_HEATER_POWER: (
                 switch.new_switch,
