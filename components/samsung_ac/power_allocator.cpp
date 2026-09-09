@@ -25,7 +25,7 @@ namespace esphome
 
     bool PowerAllocator::has_usable_runtime(const IndoorAllocParticipant &p)
     {
-      return p.has_operation_time && p.operation_time_h < INVALID_OPERATION_TIME_H;
+      return p.has_operation_time && p.operation_time_h < MIN_INVALID_OPERATION_TIME_H;
     }
 
     float PowerAllocator::weight_for(float capacity_request_raw, bool thermo_on)
@@ -34,7 +34,7 @@ namespace esphome
         return 0.0f;
       if (capacity_request_raw <= 0.0f)
         return 0.0f;
-      if (capacity_request_raw >= INVALID_CAPACITY_RAW)
+      if (capacity_request_raw >= MIN_INVALID_CAPACITY_RAW)
         return 0.0f;
       return capacity_request_raw;
     }

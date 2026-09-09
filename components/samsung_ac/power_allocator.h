@@ -38,10 +38,11 @@ namespace esphome
     class PowerAllocator
     {
     public:
-      // 0x4211 reports 65535 when no capacity value is available
-      static constexpr float INVALID_CAPACITY_RAW = 65535.0f;
-      // 0x4222 uses the same sentinel for "no runtime available"
-      static constexpr float INVALID_OPERATION_TIME_H = 65535.0f;
+      // Indoor units reserve the top of the uint16 range for status codes rather than
+      // values: 0xFFFF = no value available, 0xFFFE = value not ready yet (seen right
+      // after power on). Anything at or above this is not a measurement.
+      static constexpr float MIN_INVALID_CAPACITY_RAW = 65534.0f;
+      static constexpr float MIN_INVALID_OPERATION_TIME_H = 65534.0f;
       // How long to wait for indoor runtimes before seeding without them
       static constexpr uint32_t SEED_GRACE_MS = 300000; // 5 minutes
       static constexpr uint32_t MIN_DELTA_MS = 100;

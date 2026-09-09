@@ -34,6 +34,8 @@ static void test_weight_for()
     assert_near(PowerAllocator::weight_for(0.0f, true), 0.0f);
     assert_near(PowerAllocator::weight_for(-1.0f, true), 0.0f);
     assert_near(PowerAllocator::weight_for(65535.0f, true), 0.0f);
+    // 0xFFFE is the "not ready yet" sentinel reported right after power on
+    assert_near(PowerAllocator::weight_for(65534.0f, true), 0.0f);
 }
 
 static void test_allocate_capacity_ratio()
@@ -150,6 +152,8 @@ static void test_runtime_sentinel_is_not_a_runtime()
     IndoorAllocParticipant p;
     p.has_operation_time = true;
     p.operation_time_h = 65535.0f;
+    assert(!PowerAllocator::has_usable_runtime(p));
+    p.operation_time_h = 65534.0f;
     assert(!PowerAllocator::has_usable_runtime(p));
     p.operation_time_h = 120.0f;
     assert(PowerAllocator::has_usable_runtime(p));

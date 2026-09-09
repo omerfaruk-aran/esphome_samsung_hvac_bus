@@ -248,7 +248,7 @@ namespace esphome
         {
           // Keep the last known capacity when the unit reports the "no value" sentinel,
           // matching the filter_out on the indoor_capacity_request sensor
-          if (value < PowerAllocator::INVALID_CAPACITY_RAW)
+          if (value < PowerAllocator::MIN_INVALID_CAPACITY_RAW)
           {
             execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
                                      { dev->set_capacity_request_raw(value); });
@@ -257,7 +257,7 @@ namespace esphome
         }
         else if (message_number == 0x4212)
         {
-          if (value < PowerAllocator::INVALID_CAPACITY_RAW)
+          if (value < PowerAllocator::MIN_INVALID_CAPACITY_RAW)
           {
             execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
                                      { dev->set_capacity_absolute_raw(value); });
@@ -273,7 +273,7 @@ namespace esphome
         {
           // Cumulative operation time (hours) — used to seed estimated_energy after reboot.
           // Same "no value" sentinel as capacity, so keep the last known runtime instead.
-          if (value < PowerAllocator::INVALID_OPERATION_TIME_H)
+          if (value < PowerAllocator::MIN_INVALID_OPERATION_TIME_H)
           {
             execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
                                      { dev->set_operation_time_h(value); });

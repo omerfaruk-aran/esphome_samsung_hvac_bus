@@ -324,6 +324,12 @@ def error_code_sensor_schema(message: int):
     )
 
 
+# Indoor units reserve the top of the uint16 range for status codes rather than values:
+# 0xFFFF = no value available, 0xFFFE = value not ready yet (seen right after power on).
+# Only valid for unsigned quantities - signed ones (temperatures) read 0xFFFE as -0.2 degC.
+UNSIGNED_SENTINELS = [{"filter_out": 65535}, {"filter_out": 65534}]
+
+
 def dust_sensor_schema(message: int, device_class=cv.UNDEFINED):
     return custom_sensor_schema(
         message=message,
@@ -332,7 +338,7 @@ def dust_sensor_schema(message: int, device_class=cv.UNDEFINED):
         device_class=device_class,
         state_class=STATE_CLASS_MEASUREMENT,
         icon="mdi:blur",
-        raw_filters=[{"filter_out": 65535}],
+        raw_filters=[*UNSIGNED_SENTINELS],
     )
 
 
@@ -345,7 +351,7 @@ def capacity_sensor_schema(message: int):
         state_class=STATE_CLASS_MEASUREMENT,
         icon="mdi:gauge",
         raw_filters=[
-            {"filter_out": 65535},
+            *UNSIGNED_SENTINELS,
             {"lambda": Lambda("return x / 8.6f;")},
         ],
     )
@@ -385,6 +391,7 @@ def co2_sensor_schema(message: int):
         device_class=DEVICE_CLASS_CARBON_DIOXIDE,
         state_class=STATE_CLASS_MEASUREMENT,
         icon="mdi:molecule-co2",
+        raw_filters=[*UNSIGNED_SENTINELS],
     )
 
 
@@ -697,6 +704,7 @@ DEVICE_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_TOTAL_INCREASING,
             icon="mdi:timer-sand",
             entity_category="diagnostic",
+            raw_filters=[*UNSIGNED_SENTINELS],
         ),
         cv.Optional(CONF_DEVICE_OUT_HIGH_PRESSURE): outdoor_pressure_sensor_schema(
             0x8206

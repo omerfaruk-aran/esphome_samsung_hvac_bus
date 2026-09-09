@@ -15,6 +15,7 @@
 #include "esphome/components/climate/climate.h"
 #include "protocol.h"
 #include "samsung_ac.h"
+#include "power_allocator.h"
 #include "conversions.h"
 
 namespace esphome
@@ -1024,9 +1025,11 @@ namespace esphome
           return;
         if (!has_capacity_request_ || !has_capacity_absolute_)
           return;
-        if (capacity_absolute_raw_ <= 0.0f || capacity_absolute_raw_ >= 65535.0f)
+        if (capacity_absolute_raw_ <= 0.0f ||
+            capacity_absolute_raw_ >= PowerAllocator::MIN_INVALID_CAPACITY_RAW)
           return;
-        if (capacity_request_raw_ < 0.0f || capacity_request_raw_ >= 65535.0f)
+        if (capacity_request_raw_ < 0.0f ||
+            capacity_request_raw_ >= PowerAllocator::MIN_INVALID_CAPACITY_RAW)
           return;
         indoor_capacity_percent->publish_state(
             (capacity_request_raw_ / capacity_absolute_raw_) * 100.0f);
