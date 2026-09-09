@@ -92,6 +92,9 @@ namespace esphome
 
             ENUM_in_operation_automatic_cleaning = 0x4111,  // no vendor definition (community-sourced)
 
+            ENUM_in_use_plasma_ion = 0x4023,     // NASA_USE_SPI: whether S-Plasma Ion is fitted (read-only)
+            ENUM_in_control_plasma_ion = 0x4043, // NASA_CONTROL_SPI: S-Plasma Ion on/off
+
             VAR_in_temp_target_f = 0x4201,  // [RW] Zone1 Room Set Temp. / Set Temperature | Celsius | /10 | signed | -41..150
             // Room temperature arrives as two separate messages - keep the pair together.
             //   0x4203 NASA_CURRENT_TEMP          - raw sensor reading. Drives the climate

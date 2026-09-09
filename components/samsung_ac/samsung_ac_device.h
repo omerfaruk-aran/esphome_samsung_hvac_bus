@@ -150,6 +150,7 @@ namespace esphome
       Samsung_AC_Number *room_temperature_offset_number{nullptr};
       Samsung_AC_Switch *power{nullptr};
       Samsung_AC_Switch *automatic_cleaning{nullptr};
+      Samsung_AC_Switch *plasma_ion{nullptr};
       Samsung_AC_Switch *water_heater_power{nullptr};
       Samsung_AC_Mode_Select *mode{nullptr};
       Samsung_AC_Water_Heater_Mode_Select *waterheatermode{nullptr};
@@ -372,6 +373,17 @@ namespace esphome
         };
       }
 
+      void set_plasma_ion_switch(Samsung_AC_Switch *switch_)
+      {
+        plasma_ion = switch_;
+        plasma_ion->write_state_ = [this](bool value)
+        {
+          ProtocolRequest request;
+          request.plasma_ion = value;
+          publish_request(request);
+        };
+      }
+
       void set_water_heater_power_switch(Samsung_AC_Switch *switch_)
       {
         water_heater_power = switch_;
@@ -481,6 +493,7 @@ namespace esphome
 
       optional<bool> _cur_power;
       optional<bool> _cur_automatic_cleaning;
+      optional<bool> _cur_plasma_ion;
       optional<bool> _cur_water_heater_power;
       optional<Mode> _cur_mode;
       optional<WaterHeaterMode> _cur_water_heater_mode;
@@ -501,6 +514,13 @@ namespace esphome
           automatic_cleaning->publish_state(value);
         if (climate != nullptr)
           calc_and_publish_mode();
+      }
+
+      void update_plasma_ion(bool value)
+      {
+        _cur_plasma_ion = value;
+        if (plasma_ion != nullptr)
+          plasma_ion->publish_state(value);
       }
 
       void update_water_heater_power(bool value)

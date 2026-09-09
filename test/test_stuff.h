@@ -102,6 +102,15 @@ public:
         last_set_automatic_cleaning_value = value;
     }
 
+    std::string last_set_plasma_ion_address;
+    bool last_set_plasma_ion_value;
+    void set_plasma_ion(const std::string address, bool value) override
+    {
+        cout << "> " << address << " set_plasma_ion=" << to_string(value) << endl;
+        last_set_plasma_ion_address = address;
+        last_set_plasma_ion_value = value;
+    }
+
     std::string last_set_water_heater_power_address;
     bool last_set_water_heater_power_value;
     void set_water_heater_power(const std::string address, bool value) override

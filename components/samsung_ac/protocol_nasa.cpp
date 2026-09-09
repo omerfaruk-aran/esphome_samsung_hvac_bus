@@ -540,6 +540,13 @@ namespace esphome
                     packet.messages.push_back(automatic_cleaning);
                 }
 
+                if (request.plasma_ion)
+                {
+                    MessageSet plasma_ion(MessageNumber::ENUM_in_control_plasma_ion);
+                    plasma_ion.value = request.plasma_ion.value() ? 1 : 0;
+                    packet.messages.push_back(plasma_ion);
+                }
+
                 if (request.water_heater_power)
                 {
                     MessageSet waterheaterpower(MessageNumber::ENUM_in_water_heater_power);
@@ -624,6 +631,9 @@ namespace esphome
 
             if (request.automatic_cleaning)
                 queued.automatic_cleaning = request.automatic_cleaning;
+
+            if (request.plasma_ion)
+                queued.plasma_ion = request.plasma_ion;
 
             if (request.water_heater_power)
                 queued.water_heater_power = request.water_heater_power;
@@ -801,6 +811,12 @@ namespace esphome
             {
                 LOG_MESSAGE(ENUM_in_operation_automatic_cleaning, (double)message.value, source, dest);
                 target->set_automatic_cleaning(source, message.value != 0);
+                break;
+            }
+            case MessageNumber::ENUM_in_control_plasma_ion:
+            {
+                LOG_MESSAGE(ENUM_in_control_plasma_ion, (double)message.value, source, dest);
+                target->set_plasma_ion(source, message.value != 0);
                 break;
             }
             case MessageNumber::ENUM_in_water_heater_power:

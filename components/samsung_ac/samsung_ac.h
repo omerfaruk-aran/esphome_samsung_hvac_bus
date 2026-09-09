@@ -190,6 +190,11 @@ namespace esphome
         execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
                                  { dev->update_automatic_cleaning(value); });
       }
+      void set_plasma_ion(const std::string address, bool value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_plasma_ion(value); });
+      }
 
       void set_water_heater_power(const std::string address, bool value) override
       {

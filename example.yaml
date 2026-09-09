@@ -198,6 +198,13 @@ samsung_ac:
       # Silent/quiet mode status
       silence_mode:
         name: "Kitchen Silence"
+      # Whether this indoor unit is fitted with S-Plasma Ion (read-only capability flag)
+      plasma_ion_supported:
+        name: "Kitchen Plasma Ion Supported"
+      # S-Plasma Ion on/off control - shown as "청정"(Purify) in the SmartThings app
+      # (only useful if plasma_ion_supported is on)
+      plasma_ion:
+        name: "Kitchen Purify"
 
       # Only supported on NASA-based heat pumps
       water_temperature:

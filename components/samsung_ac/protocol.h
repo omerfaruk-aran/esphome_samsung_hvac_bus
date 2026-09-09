@@ -81,6 +81,7 @@ namespace esphome
             virtual void register_address(const std::string address) = 0;
             virtual void set_power(const std::string address, bool value) = 0;
             virtual void set_automatic_cleaning(const std::string address, bool value) = 0;
+            virtual void set_plasma_ion(const std::string address, bool value) = 0;
             virtual void set_water_heater_power(const std::string address, bool value) = 0;
             virtual void set_room_temperature(const std::string address, float value) = 0;
             virtual void set_room_humidity(const std::string address, float value) = 0;
@@ -116,6 +117,7 @@ namespace esphome
         public:
             optional<bool> power;
             optional<bool> automatic_cleaning;
+            optional<bool> plasma_ion;
             optional<bool> water_heater_power;
             optional<Mode> mode;
             optional<WaterHeaterMode> waterheatermode;

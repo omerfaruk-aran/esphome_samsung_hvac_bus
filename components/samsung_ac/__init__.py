@@ -97,6 +97,7 @@ CONF_DEVICE_WATER_TEMPERATURE = "water_temperature"
 CONF_DEVICE_WATER_TARGET_TEMPERATURE = "water_target_temperature"
 CONF_DEVICE_POWER = "power"
 CONF_DEVICE_AUTOMATIC_CLEANING = "automatic_cleaning"
+CONF_DEVICE_PLASMA_ION = "plasma_ion"
 CONF_DEVICE_WATER_HEATER_POWER = "water_heater_power"
 CONF_DEVICE_MODE = "mode"
 CONF_DEVICE_WATER_HEATER_MODE = "water_heater_mode"
@@ -148,6 +149,7 @@ CONF_DEVICE_MODEL_INFORMATION = "model_information"
 CONF_DEVICE_THERMO_STATE = "thermo_state"
 CONF_DEVICE_DEFROST_MODE = "defrost_mode"
 CONF_DEVICE_SILENCE_MODE = "silence_mode"
+CONF_DEVICE_PLASMA_ION_SUPPORTED = "plasma_ion_supported"
 CONF_DEVICE_ESTIMATED_POWER = "estimated_power"
 CONF_DEVICE_ESTIMATED_ENERGY = "estimated_energy"
 CONF_DEVICE_OUT_HIGH_PRESSURE = "outdoor_high_pressure"
@@ -529,6 +531,9 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_AUTOMATIC_CLEANING): switch.switch_schema(
             Samsung_AC_Switch, icon="mdi:broom"
         ),
+        cv.Optional(CONF_DEVICE_PLASMA_ION): switch.switch_schema(
+            Samsung_AC_Switch, icon="mdi:leaf"
+        ),
         cv.Optional(CONF_DEVICE_WATER_HEATER_POWER): switch.switch_schema(
             Samsung_AC_Switch
         ),
@@ -677,6 +682,11 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_SILENCE_MODE): binary_custom_sensor_schema(
             0x4046,
             icon="mdi:volume-off",
+        ),
+        cv.Optional(CONF_DEVICE_PLASMA_ION_SUPPORTED): binary_custom_sensor_schema(
+            0x4023,
+            icon="mdi:leaf",
+            entity_category="diagnostic",
         ),
         cv.Optional(
             CONF_DEVICE_CUMULATIVE_OPERATION_TIME
@@ -855,6 +865,7 @@ CUSTOM_BINARY_SENSOR_KEYS = [
     CONF_DEVICE_THERMO_STATE,
     CONF_DEVICE_DEFROST_MODE,
     CONF_DEVICE_SILENCE_MODE,
+    CONF_DEVICE_PLASMA_ION_SUPPORTED,
     CONF_DEVICE_OUT_COMP1_STATE,
     CONF_DEVICE_OUT_COMP2_STATE,
     CONF_DEVICE_OUT_HOT_GAS_VALVE,
@@ -991,6 +1002,10 @@ async def to_code(config):
             CONF_DEVICE_AUTOMATIC_CLEANING: (
                 switch.new_switch,
                 var_dev.set_automatic_cleaning_switch,
+            ),
+            CONF_DEVICE_PLASMA_ION: (
+                switch.new_switch,
+                var_dev.set_plasma_ion_switch,
             ),
             CONF_DEVICE_WATER_HEATER_POWER: (
                 switch.new_switch,
