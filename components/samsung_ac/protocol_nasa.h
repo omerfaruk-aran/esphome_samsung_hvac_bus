@@ -95,7 +95,15 @@ namespace esphome
             ENUM_in_use_plasma_ion = 0x4023,     // NASA_USE_SPI: whether S-Plasma Ion is fitted (read-only)
             ENUM_in_control_plasma_ion = 0x4043, // NASA_CONTROL_SPI: S-Plasma Ion on/off
 
+            // NASA_FILTER_WARNING. Set by the indoor unit when the filter is due, cleared by
+            // a remote-controller filter reset. The elapsed-hours counter behind it is never
+            // broadcast - 232 undefined addresses across the Enum, Variable and LongVariable
+            // ranges were swept without finding one.
+            ENUM_in_filter_warning = 0x4027,  // no vendor definition (community-sourced) | 0=Off; 1=Due
+
             VAR_in_temp_target_f = 0x4201,  // [RW] Zone1 Room Set Temp. / Set Temperature | Celsius | /10 | signed | -41..150
+            VAR_in_fan_rpm = 0x421c,  // no vendor definition (community-sourced) | indoor fan actual speed | RPM
+            VAR_in_fan_rpm_target = 0x429d,  // no vendor definition (community-sourced) | indoor fan target speed | RPM
             // Room temperature arrives as two separate messages - keep the pair together.
             //   0x4203 NASA_CURRENT_TEMP          - raw sensor reading. Drives the climate
             //          entity's current temperature and the `room_temperature` sensor.
@@ -476,6 +484,13 @@ namespace esphome
 
             // LongVariable
             LVAR_In_Device_staus_Heatpump_Boiler = 0x440a,  // [R] Flow Switch | & 0x00000002
+
+            // Indoor runtime counters, both in minutes. 0x4424 only advances while the unit
+            // is actually running, which makes it the true operating time - 0x4222
+            // (cumulative_operation_time) keeps counting while the unit is idle, so it
+            // tracks time since power-on rather than time spent running.
+            LVAR_in_operating_time = 0x4424,  // no vendor definition (community-sourced) | minutes running
+            LVAR_in_time_since_install = 0x4423,  // no vendor definition (community-sourced) | minutes since install
 
 
         };

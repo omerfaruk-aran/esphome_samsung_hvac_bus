@@ -273,10 +273,26 @@ namespace esphome
         {
           // Cumulative operation time (hours) — used to seed estimated_energy after reboot.
           // Same "no value" sentinel as capacity, so keep the last known runtime instead.
+          // This clock also advances while the unit is idle, so 0x4424 wins when present;
+          // the device keeps this value only until a real running time shows up.
           if (value < PowerAllocator::MIN_INVALID_OPERATION_TIME_H)
           {
             execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
                                      { dev->set_operation_time_h(value); });
+            recalculate_indoor_energy_();
+          }
+        }
+        else if (message_number == 0x4424)
+        {
+          // Running time in minutes. Unlike 0x4222 this only advances while the unit runs,
+          // so it splits the outdoor meter's history by actual usage instead of by how long
+          // each indoor unit has been powered — which is near-identical across a system and
+          // would hand every unit an equal share.
+          const float hours = value / 60.0f;
+          if (hours < PowerAllocator::MIN_INVALID_OPERATION_TIME_H)
+          {
+            execute_if_device_exists(address, [hours](Samsung_AC_Device *dev)
+                                     { dev->set_operation_time_from_runtime_h(hours); });
             recalculate_indoor_energy_();
           }
         }

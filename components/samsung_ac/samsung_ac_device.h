@@ -238,12 +238,21 @@ namespace esphome
 
       bool get_thermo_on() const { return thermo_on_; }
 
+      // 0x4222 keeps counting while the unit sits idle, so it measures time since
+      // power-on, not time spent running. 0x4424 only advances while the unit runs.
+      // Both feed the same field; once a real running time arrives the idle clock is
+      // ignored, otherwise units that never report 0x4424 would lose their seed.
       void set_operation_time_h(float value)
       {
-        if (value < 0.0f)
-          value = 0.0f;
-        operation_time_h_ = value;
-        has_operation_time_ = true;
+        if (operation_time_from_runtime_)
+          return;
+        store_operation_time_h_(value);
+      }
+
+      void set_operation_time_from_runtime_h(float value)
+      {
+        operation_time_from_runtime_ = true;
+        store_operation_time_h_(value);
       }
 
       float get_operation_time_h() const { return operation_time_h_; }
@@ -1015,9 +1024,18 @@ namespace esphome
       bool has_capacity_absolute_{false};
       float operation_time_h_{0.0f};
       bool has_operation_time_{false};
+      bool operation_time_from_runtime_{false};
       float last_estimated_power_w_{0.0f};
       double accumulated_energy_kwh_{0.0};
       bool thermo_on_{false};
+
+      void store_operation_time_h_(float value)
+      {
+        if (value < 0.0f)
+          value = 0.0f;
+        operation_time_h_ = value;
+        has_operation_time_ = true;
+      }
 
       void publish_capacity_percent_()
       {

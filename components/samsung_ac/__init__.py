@@ -22,6 +22,7 @@ from esphome.const import (
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_RUNNING,
     DEVICE_CLASS_CARBON_DIOXIDE,
+    DEVICE_CLASS_PROBLEM,
     DEVICE_CLASS_FREQUENCY,
     UNIT_CELSIUS,
     UNIT_PERCENT,
@@ -150,6 +151,7 @@ CONF_DEVICE_THERMO_STATE = "thermo_state"
 CONF_DEVICE_DEFROST_MODE = "defrost_mode"
 CONF_DEVICE_SILENCE_MODE = "silence_mode"
 CONF_DEVICE_PLASMA_ION_SUPPORTED = "plasma_ion_supported"
+CONF_DEVICE_FILTER_WARNING = "filter_warning"
 CONF_DEVICE_ESTIMATED_POWER = "estimated_power"
 CONF_DEVICE_ESTIMATED_ENERGY = "estimated_energy"
 CONF_DEVICE_OUT_HIGH_PRESSURE = "outdoor_high_pressure"
@@ -188,6 +190,9 @@ CONF_DEVICE_OUT_SAT_TEMP_HIGH_PRESSURE = "outdoor_saturated_temperature_high_pre
 CONF_DEVICE_OUT_SAT_TEMP_LOW_PRESSURE = "outdoor_saturated_temperature_low_pressure"
 CONF_DEVICE_OUT_DISCHARGE_SUPERHEAT = "outdoor_discharge_superheat"
 CONF_DEVICE_CUMULATIVE_OPERATION_TIME = "cumulative_operation_time"
+CONF_DEVICE_INDOOR_OPERATING_TIME = "indoor_operating_time"
+CONF_DEVICE_INDOOR_FAN_RPM = "indoor_fan_rpm"
+CONF_DEVICE_INDOOR_FAN_RPM_TARGET = "indoor_fan_rpm_target"
 
 
 def preset_entry(name: str, value: int, displayName: str):
@@ -690,11 +695,22 @@ DEVICE_SCHEMA = cv.Schema(
             0x4046,
             icon="mdi:volume-off",
         ),
+        # Raised by the indoor unit when the filter is due; a remote-controller filter
+        # reset clears it. The elapsed-hours counter behind it is not on the bus.
+        cv.Optional(CONF_DEVICE_FILTER_WARNING): binary_custom_sensor_schema(
+            0x4027,
+            icon="mdi:air-filter",
+            device_class=DEVICE_CLASS_PROBLEM,
+            entity_category="diagnostic",
+        ),
         cv.Optional(CONF_DEVICE_PLASMA_ION_SUPPORTED): binary_custom_sensor_schema(
             0x4023,
             icon="mdi:leaf",
             entity_category="diagnostic",
         ),
+        # 0x4222 keeps counting while the unit is idle, so it reports time since
+        # power-on rather than time spent running. `indoor_operating_time` below only
+        # advances while the unit actually runs.
         cv.Optional(
             CONF_DEVICE_CUMULATIVE_OPERATION_TIME
         ): custom_sensor_schema(
@@ -703,6 +719,33 @@ DEVICE_SCHEMA = cv.Schema(
             accuracy_decimals=0,
             state_class=STATE_CLASS_TOTAL_INCREASING,
             icon="mdi:timer-sand",
+            entity_category="diagnostic",
+            raw_filters=[*UNSIGNED_SENTINELS],
+        ),
+        cv.Optional(CONF_DEVICE_INDOOR_OPERATING_TIME): custom_sensor_schema(
+            0x4424,
+            unit_of_measurement="h",
+            accuracy_decimals=1,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+            icon="mdi:timer-play",
+            entity_category="diagnostic",
+            raw_filters=[{"filter_out": 4294967295}, {"multiply": 1.0 / 60.0}],
+        ),
+        cv.Optional(CONF_DEVICE_INDOOR_FAN_RPM): custom_sensor_schema(
+            0x421C,
+            unit_of_measurement="RPM",
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:fan",
+            entity_category="diagnostic",
+            raw_filters=[*UNSIGNED_SENTINELS],
+        ),
+        cv.Optional(CONF_DEVICE_INDOOR_FAN_RPM_TARGET): custom_sensor_schema(
+            0x429D,
+            unit_of_measurement="RPM",
+            accuracy_decimals=0,
+            state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:fan-clock",
             entity_category="diagnostic",
             raw_filters=[*UNSIGNED_SENTINELS],
         ),
@@ -846,6 +889,9 @@ CUSTOM_SENSOR_KEYS = [
     CONF_DEVICE_OUT_IPM1_TEMP,
     CONF_DEVICE_OUT_CAPACITY_HP,
     CONF_DEVICE_CUMULATIVE_OPERATION_TIME,
+    CONF_DEVICE_INDOOR_OPERATING_TIME,
+    CONF_DEVICE_INDOOR_FAN_RPM,
+    CONF_DEVICE_INDOOR_FAN_RPM_TARGET,
     CONF_DEVICE_INDOOR_DISCHARGE_TEMPERATURE,
     CONF_DEVICE_INDOOR_EEV,
     CONF_DEVICE_INDOOR_ERROR_CODE,
@@ -874,6 +920,7 @@ CUSTOM_BINARY_SENSOR_KEYS = [
     CONF_DEVICE_DEFROST_MODE,
     CONF_DEVICE_SILENCE_MODE,
     CONF_DEVICE_PLASMA_ION_SUPPORTED,
+    CONF_DEVICE_FILTER_WARNING,
     CONF_DEVICE_OUT_COMP1_STATE,
     CONF_DEVICE_OUT_COMP2_STATE,
     CONF_DEVICE_OUT_HOT_GAS_VALVE,
