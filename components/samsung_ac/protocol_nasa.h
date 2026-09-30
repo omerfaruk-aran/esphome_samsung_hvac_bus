@@ -82,6 +82,8 @@ namespace esphome
             ENUM_in_louver_hl_swing = 0x4011,
             ENUM_in_louver_lr_swing = 0x407e,
 
+            NASA_FILTER_CLEAN = 0x4025,
+
             ENUM_in_state_humidity_percent = 0x4038,
 
             ENUM_in_alt_mode = 0x4060,
