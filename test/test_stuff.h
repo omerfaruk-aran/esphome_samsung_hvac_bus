@@ -253,6 +253,24 @@ public:
         last_set_error_code_value = error_code;
     }
 
+    std::string last_set_outdoor_operation_odu_mode_text_sensor_address;
+    int last_set_outdoor_operation_odu_mode_text_sensor_value;
+    void set_outdoor_operation_odu_mode_text_sensor(const std::string &address, int value) override
+    {
+        cout << "> " << address << " set_outdoor_operation_odu_mode_text_sensor=" << to_string(value) << endl;
+        last_set_outdoor_operation_odu_mode_text_sensor_address = address;
+        last_set_outdoor_operation_odu_mode_text_sensor_value = value;
+    }
+
+    std::string last_set_outdoor_operation_heatcool_text_sensor_address;
+    int last_set_outdoor_operation_heatcool_text_sensor_value;
+    void set_outdoor_operation_heatcool_text_sensor(const std::string &address, int value) override
+    {
+        cout << "> " << address << " set_outdoor_operation_heatcool_text_sensor=" << to_string(value) << endl;
+        last_set_outdoor_operation_heatcool_text_sensor_address = address;
+        last_set_outdoor_operation_heatcool_text_sensor_value = value;
+    }
+
         void assert_only_address(const std::string address)
         {
             assert(last_register_address == address);
