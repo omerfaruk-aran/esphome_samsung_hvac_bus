@@ -674,22 +674,25 @@ namespace esphome
 
         void NonNasaProtocol::publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request)
         {
-            auto req = NonNasaRequest::create(address);
+            // Merge into a single pending request per address (same approach as NasaProtocol).
+            // Home Assistant scenes send one call per attribute in quick succession; queueing each
+            // as its own full-state B0 frame let them overwrite one another.
+            ProtocolRequest &queued = outgoing_queue_[address];
 
             if (request.mode)
             {
                 request.power = true; // ensure system turns on when mode is set
-                req.mode = mode_to_nonnasa_mode(request.mode.value());
+                queued.mode = request.mode;
             }
 
             if (request.power)
-                req.power = request.power.value();
+                queued.power = request.power;
 
             if (request.target_temp)
-                req.target_temp.set_from_celsius(request.target_temp.value());
+                queued.target_temp = request.target_temp;
 
             if (request.fan_mode)
-                req.fanspeed = fanmode_to_nonnasa_fanspeed(request.fan_mode.value());
+                queued.fan_mode = request.fan_mode;
 
             if (request.alt_mode)
             {
@@ -697,25 +700,7 @@ namespace esphome
             }
 
             if (request.swing_mode)
-            {
-                NonNasaWindDirection wind_dir = swingmode_to_wind_direction(request.swing_mode.value());
-                req.wind_direction = wind_dir;
-            }
-
-            // Add to the queue with the current time
-            NonNasaRequestQueueItem reqItem = NonNasaRequestQueueItem();
-            reqItem.request = req;
-            reqItem.time = millis();
-            reqItem.time_sent = 0;
-            reqItem.retry_count = 0;
-            reqItem.resend_count = 0;
-
-            // Safety check the length of the queue (in case something is spamming control
-            // requests we don't want the queue to get too large).
-            if (nonnasa_requests.size() < 10)
-            {
-                nonnasa_requests.push_back(reqItem);
-            }
+                queued.swing_mode = request.swing_mode;
         }
 
         Mode nonnasa_mode_to_mode(NonNasaMode value)
@@ -1049,6 +1034,69 @@ namespace esphome
 
         void NonNasaProtocol::protocol_update(MessageTarget *target)
         {
+            // Convert pending requests into B0 control frames for the next request_control poll.
+            // B0 frames always carry the complete state, so build on the request already queued for
+            // this address if there is one (sent or not), rather than the last Cmd20, which lags
+            // behind commands that are still in flight.
+            for (const auto &pair : outgoing_queue_)
+            {
+                const std::string &address = pair.first;
+                const ProtocolRequest &request = pair.second;
+
+                if (!request.mode && !request.power && !request.target_temp && !request.fan_mode && !request.swing_mode)
+                    continue;
+
+                NonNasaRequestQueueItem *pending = nullptr;
+                for (auto &item : nonnasa_requests)
+                {
+                    if (item.request.dst == address)
+                        pending = &item;
+                }
+
+                auto req = pending != nullptr ? pending->request : NonNasaRequest::create(address);
+
+                if (request.mode)
+                    req.mode = mode_to_nonnasa_mode(request.mode.value());
+
+                if (request.power)
+                    req.power = request.power.value();
+
+                if (request.target_temp)
+                    req.target_temp.set_from_celsius(request.target_temp.value());
+
+                if (request.fan_mode)
+                    req.fanspeed = fanmode_to_nonnasa_fanspeed(request.fan_mode.value());
+
+                if (request.swing_mode)
+                    req.wind_direction = swingmode_to_wind_direction(request.swing_mode.value());
+
+                if (pending != nullptr)
+                {
+                    // Replace the pending request with the merged state and (re)send it
+                    pending->request = req;
+                    pending->time = millis();
+                    pending->time_sent = 0;
+                    pending->resend_count = 0;
+                    continue;
+                }
+
+                // Add to the queue with the current time
+                NonNasaRequestQueueItem reqItem = NonNasaRequestQueueItem();
+                reqItem.request = req;
+                reqItem.time = millis();
+                reqItem.time_sent = 0;
+                reqItem.retry_count = 0;
+                reqItem.resend_count = 0;
+
+                // Safety check the length of the queue (in case something is spamming control
+                // requests we don't want the queue to get too large).
+                if (nonnasa_requests.size() < 10)
+                {
+                    nonnasa_requests.push_back(reqItem);
+                }
+            }
+            outgoing_queue_.clear();
+
             // non-blocking keepalive send (scheduled from broadcast request).
             // Uses try_send_register_controller() to enforce the shared 10-second rate limit
             // so the keepalive cannot fire back-to-back with an initial registration or wake-up send.
