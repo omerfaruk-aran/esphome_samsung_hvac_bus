@@ -92,6 +92,8 @@ CONF_DEVICE_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM = "outdoor_instantaneous_power"
 CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = "outdoor_cumulative_energy"
 CONF_DEVICE_OUT_SENSOR_CT1 = "outdoor_current"
 CONF_DEVICE_OUT_SENSOR_VOLTAGE = "outdoor_voltage"
+CONF_DEVICE_OUT_OPERATION_ODU_MODE_TEXT = "outdoor_operation_mode_text"
+CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT = "outdoor_operation_heatcool_text"
 
 CONF_DEVICE_PIPE_IN3_TEMPERATURE = "pipe_in3_temperature"
 CONF_DEVICE_PIPE_IN4_TEMPERATURE = "pipe_in4_temperature"
@@ -107,6 +109,10 @@ CONF_DEVICE_CAPACITY_REQUEST = "capacity_request"
 CONF_CAPABILITIES = "capabilities"
 CONF_CAPABILITIES_HORIZONTAL_SWING = "horizontal_swing"
 CONF_CAPABILITIES_VERTICAL_SWING = "vertical_swing"
+CONF_CAPABILITIES_FAN_MODES = "fan_modes"
+
+CONF_MAP_AUTO_TO_HEAT_COOL = "map_auto_to_heat_cool"
+CONF_NON_NASA_TX_DELAY_MS = "non_nasa_tx_delay_ms"
 
 CONF_PRESETS = "presets"
 CONF_PRESET_NAME = "name"
@@ -729,11 +735,6 @@ async def to_code(config):
         # setup capabilities
         capabilities = device.get(CONF_CAPABILITIES, config.get(CONF_CAPABILITIES, {}))
 
-        cg.add(
-            var_dev.set_supports_fan_modes(
-                capabilities.get(CONF_CAPABILITIES_FAN_MODES, True)
-            )
-        )
 
 
         if CONF_CAPABILITIES_VERTICAL_SWING in capabilities:
@@ -936,12 +937,6 @@ async def to_code(config):
             await climate.register_climate(var_cli, conf)
             cg.add(var_dev.set_climate(var_cli))
 
-            # Optional UI mapping: expose Samsung Auto as HA Heat/Cool
-            cg.add(
-                var_dev.set_map_auto_to_heat_cool(
-                    device.get(CONF_MAP_AUTO_TO_HEAT_COOL, False)
-                )
-            )
 
 
         if CONF_DEVICE_CUSTOM in device:
