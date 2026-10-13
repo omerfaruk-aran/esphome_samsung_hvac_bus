@@ -151,13 +151,31 @@ namespace esphome
         // Requests confirmed by a Cmd54 control acknowledgement that the indoor unit hasn't reported
         // in a Cmd20 yet. Used as the base for follow-up commands, so a command arriving in that window
         // (up to one Cmd20 interval) doesn't revert the acknowledged change with stale Cmd20 values.
+        // Dropped as soon as Cmd20 shows the request, or shows any change from the state it reported
+        // when the request was acknowledged (e.g. "off" is reported differently, or the remote was
+        // used), since Cmd20 is then up to date again.
         struct NonNasaAcknowledgedRequest
         {
             NonNasaRequest request;
             uint32_t time;
+            bool has_status_at_ack;
+            NonNasaCommand20 status_at_ack;
         };
         static std::map<std::string, NonNasaAcknowledgedRequest> acknowledged_requests_;
         static const uint32_t ACKNOWLEDGED_REQUEST_TIMEOUT_MS = 5000;
+
+        // Most recent Cmd20 per address (last_command20s_ isn't updated while a request is pending).
+        static std::map<std::string, NonNasaCommand20> latest_command20s_;
+
+        static bool command20_control_equal(const NonNasaCommand20 &a, const NonNasaCommand20 &b)
+        {
+            return a.target_temp.unit == b.target_temp.unit &&
+                   a.target_temp.temperature == b.target_temp.temperature &&
+                   a.fanspeed == b.fanspeed &&
+                   a.mode == b.mode &&
+                   a.power == b.power &&
+                   a.wind_direction == b.wind_direction;
+        }
 
         static bool request_matches_command20(const NonNasaRequest &request, const NonNasaCommand20 &command20)
         {
@@ -891,13 +909,17 @@ namespace esphome
                          before_size - after_size, nonpacket_.src.c_str());
                 }
 
-                // The unit now reports the acknowledged state, so Cmd20 is an up to date base again.
+                // Once the unit reports the acknowledged state, or any change since it was acknowledged,
+                // Cmd20 is an up to date base again.
                 auto acknowledged = acknowledged_requests_.find(nonpacket_.src);
                 if (acknowledged != acknowledged_requests_.end() &&
-                    request_matches_command20(acknowledged->second.request, nonpacket_.command20))
+                    (request_matches_command20(acknowledged->second.request, nonpacket_.command20) ||
+                     (acknowledged->second.has_status_at_ack &&
+                      !command20_control_equal(acknowledged->second.status_at_ack, nonpacket_.command20))))
                 {
                     acknowledged_requests_.erase(acknowledged);
                 }
+                latest_command20s_[nonpacket_.src] = nonpacket_.command20;
 
                 // If a state update comes through after a control message has been sent, but before it
                 // has been acknowledged, it should be ignored. This prevents the UI status bouncing
@@ -1039,15 +1061,22 @@ namespace esphome
             {
                 // We have received a control_acknowledgement message. This message will come from an
                 // indoor unit in reply to a control message from us, allowing us to confirm the control
-                // message was successfully sent. The data portion contains the same data we sent, so only
-                // remove the request it matches: a delayed acknowledgement for an earlier version of a
-                // request (since replaced by a merged one) must not remove the newer request.
+                // message was successfully sent. The data portion contains the same data we sent. If an
+                // earlier version of a request was sent before it was replaced by a merged one, only accept
+                // an acknowledgement that matches the current version, so a delayed acknowledgement for the
+                // earlier one can't remove it. Otherwise accept any acknowledgement from the device.
                 for (auto it = nonnasa_requests.begin(); it != nonnasa_requests.end();)
                 {
                     if (it->time_sent > 0 && nonpacket_.src == it->request.dst &&
-                        request_matches_command54(it->request, nonpacket_.commandRaw))
+                        (!it->replaced_after_send || request_matches_command54(it->request, nonpacket_.commandRaw)))
                     {
-                        acknowledged_requests_[it->request.dst] = {it->request, millis()};
+                        NonNasaAcknowledgedRequest &acknowledged = acknowledged_requests_[it->request.dst];
+                        acknowledged.request = it->request;
+                        acknowledged.time = millis();
+                        auto latest = latest_command20s_.find(it->request.dst);
+                        acknowledged.has_status_at_ack = latest != latest_command20s_.end();
+                        if (acknowledged.has_status_at_ack)
+                            acknowledged.status_at_ack = latest->second;
                         it = nonnasa_requests.erase(it);
                     }
                     else
@@ -1127,6 +1156,8 @@ namespace esphome
                 if (pending != nullptr)
                 {
                     // Replace the pending request with the merged state and (re)send it
+                    if (pending->time_sent > 0 || pending->resend_count > 0)
+                        pending->replaced_after_send = true;
                     pending->request = req;
                     pending->time = millis();
                     pending->time_sent = 0;
@@ -1141,6 +1172,7 @@ namespace esphome
                 reqItem.time_sent = 0;
                 reqItem.retry_count = 0;
                 reqItem.resend_count = 0;
+                reqItem.replaced_after_send = false;
 
                 // Safety check the length of the queue (in case something is spamming control
                 // requests we don't want the queue to get too large).
