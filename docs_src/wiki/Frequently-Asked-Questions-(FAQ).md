@@ -14,7 +14,7 @@ It’s not mandatory to turn off the devices, but it is advised. The F1/F2 conne
 Without the F1/F2 connectors, this integration will not work. You may want to consult your device manual or manufacturer for further assistance.
 
 ### How can I confirm if my AC unit uses the NASA or Non-NASA protocol?
-You can use the [Samsung AC Model Checker](http://git.samsung-hvac.aran.net.tr/model-checker/) to automatically check the classification of your Samsung AC model (NASA, Non-NASA, or Other).
+You can use the [Samsung AC Model Checker](https://docs.samsung-hvac.aran.net.tr/wiki/model-checker/) to automatically check the classification of your Samsung AC model (NASA, Non-NASA, or Other).
 
 ### My ESP device is not receiving messages, what should I do?
 - Double-check the wiring connections, as loose connections can cause communication issues.

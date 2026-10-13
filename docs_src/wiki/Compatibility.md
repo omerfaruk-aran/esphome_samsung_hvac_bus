@@ -6,9 +6,9 @@ The ESPHome Samsung HVAC component supports Samsung units that communicate using
 
 ### Automatic Model Checker
 
-To identify the protocol used by your Samsung AC unit (NASA, NonNASA, or Other), please use our [Samsung AC Model Checker](http://git.samsung-hvac.aran.net.tr/model-checker/).
+To identify the protocol used by your Samsung AC unit (NASA, NonNASA, or Other), please use our [Samsung AC Model Checker](https://docs.samsung-hvac.aran.net.tr/wiki/model-checker/).
 
-[![Model Checker](https://github.com/user-attachments/assets/8b237bb5-ebbd-492a-921a-f46f6315fe5e)](http://git.samsung-hvac.aran.net.tr/model-checker/)
+[![Model Checker](https://github.com/user-attachments/assets/8b237bb5-ebbd-492a-921a-f46f6315fe5e)](https://docs.samsung-hvac.aran.net.tr/wiki/model-checker/)
 
 ## Confirmed Working Models
 
