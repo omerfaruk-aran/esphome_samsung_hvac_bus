@@ -229,7 +229,6 @@ namespace esphome
             uint32_t time_sent;
             uint8_t retry_count;
             uint8_t resend_count;
-            bool replaced_after_send; // a different version of this request has been sent before
         };
 
         extern std::list<NonNasaRequestQueueItem> nonnasa_requests;

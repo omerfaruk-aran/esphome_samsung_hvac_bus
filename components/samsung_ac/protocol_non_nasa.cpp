@@ -1,5 +1,6 @@
 #include <queue>
 #include <algorithm>
+#include <array>
 #include <map>
 #include <cmath>
 #include <string>
@@ -148,18 +149,63 @@ namespace esphome
         }
         std::list<NonNasaRequestQueueItem> nonnasa_requests;
 
-        // Requests confirmed by a Cmd54 control acknowledgement that the indoor unit hasn't reported
-        // in a Cmd20 yet. Used as the base for follow-up commands, so a command arriving in that window
-        // (up to one Cmd20 interval) doesn't revert the acknowledged change with stale Cmd20 values.
-        // Dropped as soon as Cmd20 shows the request, or shows any change from the state it reported
-        // when the request was acknowledged (e.g. "off" is reported differently, or the remote was
-        // used), since Cmd20 is then up to date again.
+        // Control fields carried by both B0 requests and Cmd20 status messages.
+        enum NonNasaControlField : uint8_t
+        {
+            CONTROL_FIELD_TARGET_TEMP = 1,
+            CONTROL_FIELD_FANSPEED = 2,
+            CONTROL_FIELD_MODE = 4,
+            CONTROL_FIELD_POWER = 8,
+            CONTROL_FIELD_WIND_DIRECTION = 16,
+            CONTROL_FIELD_ALL = 31
+        };
+
+        static uint8_t command20_changed_fields(const NonNasaCommand20 &a, const NonNasaCommand20 &b)
+        {
+            uint8_t changed = 0;
+            if (a.target_temp.unit != b.target_temp.unit || a.target_temp.temperature != b.target_temp.temperature)
+                changed |= CONTROL_FIELD_TARGET_TEMP;
+            if (a.fanspeed != b.fanspeed)
+                changed |= CONTROL_FIELD_FANSPEED;
+            if (a.mode != b.mode)
+                changed |= CONTROL_FIELD_MODE;
+            if (a.power != b.power)
+                changed |= CONTROL_FIELD_POWER;
+            if (a.wind_direction != b.wind_direction)
+                changed |= CONTROL_FIELD_WIND_DIRECTION;
+            return changed;
+        }
+
+        static uint8_t request_matching_fields(const NonNasaRequest &request, const NonNasaCommand20 &command20)
+        {
+            uint8_t matching = 0;
+            if (request.target_temp.unit == command20.target_temp.unit && request.target_temp.temperature == command20.target_temp.temperature)
+                matching |= CONTROL_FIELD_TARGET_TEMP;
+            if (request.fanspeed == command20.fanspeed)
+                matching |= CONTROL_FIELD_FANSPEED;
+            if (request.mode == command20.mode)
+                matching |= CONTROL_FIELD_MODE;
+            if (request.power == command20.power)
+                matching |= CONTROL_FIELD_POWER;
+            if (request.wind_direction == command20.wind_direction)
+                matching |= CONTROL_FIELD_WIND_DIRECTION;
+            return matching;
+        }
+
+        // Requests confirmed by a Cmd54 control acknowledgement that the indoor unit hasn't fully
+        // reported in a Cmd20 yet. Used as the base for follow-up commands, so a command arriving in that
+        // window (up to one Cmd20 interval) doesn't revert the acknowledged change with stale Cmd20 values.
+        // Tracked per field: once Cmd20 shows a field changing from the state it reported when the request
+        // was acknowledged (the change being applied, the unit reporting it differently, or another
+        // controller changing it), Cmd20 is up to date for that field and is used for it instead. Fields
+        // Cmd20 hasn't changed yet (e.g. an intermediate state) keep the acknowledged value.
         struct NonNasaAcknowledgedRequest
         {
             NonNasaRequest request;
             uint32_t time;
             bool has_status_at_ack;
             NonNasaCommand20 status_at_ack;
+            uint8_t cmd20_fields; // fields for which Cmd20 is up to date again
         };
         static std::map<std::string, NonNasaAcknowledgedRequest> acknowledged_requests_;
         static const uint32_t ACKNOWLEDGED_REQUEST_TIMEOUT_MS = 5000;
@@ -167,14 +213,56 @@ namespace esphome
         // Most recent Cmd20 per address (last_command20s_ isn't updated while a request is pending).
         static std::map<std::string, NonNasaCommand20> latest_command20s_;
 
-        static bool command20_control_equal(const NonNasaCommand20 &a, const NonNasaCommand20 &b)
+        // Data bytes 4-11 of control messages recently sent to each address. Cmd54 echoes these, so an
+        // acknowledgement that matches one of them, but not the request awaiting acknowledgement, is a
+        // delayed or duplicate acknowledgement for an earlier message.
+        typedef std::array<uint8_t, 8> NonNasaControlPayload;
+        struct NonNasaSentPayload
         {
-            return a.target_temp.unit == b.target_temp.unit &&
-                   a.target_temp.temperature == b.target_temp.temperature &&
-                   a.fanspeed == b.fanspeed &&
-                   a.mode == b.mode &&
-                   a.power == b.power &&
-                   a.wind_direction == b.wind_direction;
+            NonNasaControlPayload data;
+            uint32_t time;
+        };
+        static std::map<std::string, std::vector<NonNasaSentPayload>> recent_sent_payloads_;
+        static const uint32_t RECENT_SENT_PAYLOAD_MS = 15000;
+        static const size_t RECENT_SENT_PAYLOAD_MAX = 8;
+
+        static NonNasaControlPayload request_payload(const NonNasaRequest &request)
+        {
+            NonNasaRequest copy = request;
+            auto data = copy.encode();
+            NonNasaControlPayload payload;
+            std::copy(data.begin() + 4, data.begin() + 12, payload.begin());
+            return payload;
+        }
+
+        static void forget_old_sent_payloads(std::vector<NonNasaSentPayload> &sent, uint32_t now)
+        {
+            sent.erase(std::remove_if(sent.begin(), sent.end(), [&](const NonNasaSentPayload &p)
+                                      { return now - p.time > RECENT_SENT_PAYLOAD_MS; }),
+                       sent.end());
+        }
+
+        static void remember_sent_payload(const std::string &address, const NonNasaControlPayload &payload, uint32_t now)
+        {
+            auto &sent = recent_sent_payloads_[address];
+            forget_old_sent_payloads(sent, now);
+            sent.push_back({payload, now});
+            if (sent.size() > RECENT_SENT_PAYLOAD_MAX)
+                sent.erase(sent.begin());
+        }
+
+        static bool recently_sent(const std::string &address, const NonNasaControlPayload &payload, uint32_t now)
+        {
+            auto it = recent_sent_payloads_.find(address);
+            if (it == recent_sent_payloads_.end())
+                return false;
+            forget_old_sent_payloads(it->second, now);
+            for (const auto &p : it->second)
+            {
+                if (p.data == payload)
+                    return true;
+            }
+            return false;
         }
 
         static bool request_matches_command20(const NonNasaRequest &request, const NonNasaCommand20 &command20)
@@ -185,14 +273,6 @@ namespace esphome
                    request.mode == command20.mode &&
                    request.power == command20.power &&
                    request.wind_direction == command20.wind_direction;
-        }
-
-        // A Cmd54 control acknowledgement echoes data bytes 4-11 of the control message it acknowledges.
-        static bool request_matches_command54(const NonNasaRequest &request, const NonNasaCommandRaw &command54)
-        {
-            NonNasaRequest copy = request;
-            auto sent = copy.encode();
-            return command54.length >= 8 && std::equal(sent.begin() + 4, sent.begin() + 12, command54.data);
         }
 
         bool controller_registered = false;
@@ -814,6 +894,7 @@ namespace esphome
                 if (item.time_sent == 0)
                 {
                     item.time_sent = now;
+                    remember_sent_payload(item.request.dst, request_payload(item.request), now);
                     target->publish_data(0, item.request.encode());
                 }
             }
@@ -909,15 +990,22 @@ namespace esphome
                          before_size - after_size, nonpacket_.src.c_str());
                 }
 
-                // Once the unit reports the acknowledged state, or any change since it was acknowledged,
-                // Cmd20 is an up to date base again.
+                // Note which fields Cmd20 is up to date for since the last acknowledged request. Once the
+                // unit reports the whole request (or every field has changed), Cmd20 is the base again.
                 auto acknowledged = acknowledged_requests_.find(nonpacket_.src);
-                if (acknowledged != acknowledged_requests_.end() &&
-                    (request_matches_command20(acknowledged->second.request, nonpacket_.command20) ||
-                     (acknowledged->second.has_status_at_ack &&
-                      !command20_control_equal(acknowledged->second.status_at_ack, nonpacket_.command20))))
+                if (acknowledged != acknowledged_requests_.end())
                 {
-                    acknowledged_requests_.erase(acknowledged);
+                    NonNasaAcknowledgedRequest &ack = acknowledged->second;
+                    if (ack.has_status_at_ack)
+                        ack.cmd20_fields |= command20_changed_fields(ack.status_at_ack, nonpacket_.command20);
+                    else
+                        ack.cmd20_fields |= request_matching_fields(ack.request, nonpacket_.command20);
+
+                    if (ack.cmd20_fields == CONTROL_FIELD_ALL ||
+                        request_matches_command20(ack.request, nonpacket_.command20))
+                    {
+                        acknowledged_requests_.erase(acknowledged);
+                    }
                 }
                 latest_command20s_[nonpacket_.src] = nonpacket_.command20;
 
@@ -1061,28 +1149,59 @@ namespace esphome
             {
                 // We have received a control_acknowledgement message. This message will come from an
                 // indoor unit in reply to a control message from us, allowing us to confirm the control
-                // message was successfully sent. The data portion contains the same data we sent. If an
-                // earlier version of a request was sent before it was replaced by a merged one, only accept
-                // an acknowledgement that matches the current version, so a delayed acknowledgement for the
-                // earlier one can't remove it. Otherwise accept any acknowledgement from the device.
-                for (auto it = nonnasa_requests.begin(); it != nonnasa_requests.end();)
+                // message was successfully sent. The data portion echoes the data we sent:
+                //  - matches the request awaiting acknowledgement: it's acknowledged
+                //  - matches an earlier message we sent: a delayed or duplicate acknowledgement for that
+                //    message, so it must not remove the current request
+                //  - matches nothing we sent: the unit doesn't echo, so accept it for the request awaiting
+                //    acknowledgement (as before)
+                const uint32_t now = millis();
+                NonNasaControlPayload payload{};
+                const bool has_payload = nonpacket_.commandRaw.length >= payload.size();
+                if (has_payload)
+                    std::copy(nonpacket_.commandRaw.data, nonpacket_.commandRaw.data + payload.size(), payload.begin());
+
+                auto acknowledged_item = nonnasa_requests.end();
+                for (auto it = nonnasa_requests.begin(); it != nonnasa_requests.end(); ++it)
                 {
                     if (it->time_sent > 0 && nonpacket_.src == it->request.dst &&
-                        (!it->replaced_after_send || request_matches_command54(it->request, nonpacket_.commandRaw)))
+                        has_payload && request_payload(it->request) == payload)
                     {
-                        NonNasaAcknowledgedRequest &acknowledged = acknowledged_requests_[it->request.dst];
-                        acknowledged.request = it->request;
-                        acknowledged.time = millis();
-                        auto latest = latest_command20s_.find(it->request.dst);
-                        acknowledged.has_status_at_ack = latest != latest_command20s_.end();
-                        if (acknowledged.has_status_at_ack)
-                            acknowledged.status_at_ack = latest->second;
-                        it = nonnasa_requests.erase(it);
+                        acknowledged_item = it;
+                        break;
+                    }
+                }
+
+                if (acknowledged_item == nonnasa_requests.end())
+                {
+                    if (has_payload && recently_sent(nonpacket_.src, payload, now))
+                    {
+                        LOGD("Cmd54: Ignoring acknowledgement for an earlier control message to %s", nonpacket_.src.c_str());
                     }
                     else
                     {
-                        ++it;
+                        for (auto it = nonnasa_requests.begin(); it != nonnasa_requests.end(); ++it)
+                        {
+                            if (it->time_sent > 0 && nonpacket_.src == it->request.dst)
+                            {
+                                acknowledged_item = it;
+                                break;
+                            }
+                        }
                     }
+                }
+
+                if (acknowledged_item != nonnasa_requests.end())
+                {
+                    NonNasaAcknowledgedRequest &acknowledged = acknowledged_requests_[acknowledged_item->request.dst];
+                    acknowledged.request = acknowledged_item->request;
+                    acknowledged.time = now;
+                    acknowledged.cmd20_fields = 0;
+                    auto latest = latest_command20s_.find(acknowledged_item->request.dst);
+                    acknowledged.has_status_at_ack = latest != latest_command20s_.end();
+                    if (acknowledged.has_status_at_ack)
+                        acknowledged.status_at_ack = latest->second;
+                    nonnasa_requests.erase(acknowledged_item);
                 }
             }
             else if (nonpacket_.src == "c8" && nonpacket_.dst == "ad" && (nonpacket_.commandRaw.data[0] & 1) == 1)
@@ -1134,7 +1253,25 @@ namespace esphome
                     req = pending->request;
                 else if (acknowledged != acknowledged_requests_.end() &&
                          millis() - acknowledged->second.time < ACKNOWLEDGED_REQUEST_TIMEOUT_MS)
+                {
                     req = acknowledged->second.request;
+                    auto latest = latest_command20s_.find(address);
+                    const uint8_t cmd20_fields = acknowledged->second.cmd20_fields;
+                    if (latest != latest_command20s_.end() && cmd20_fields != 0)
+                    {
+                        const NonNasaCommand20 &status = latest->second;
+                        if (cmd20_fields & CONTROL_FIELD_TARGET_TEMP)
+                            req.target_temp = status.target_temp;
+                        if (cmd20_fields & CONTROL_FIELD_FANSPEED)
+                            req.fanspeed = status.fanspeed;
+                        if (cmd20_fields & CONTROL_FIELD_MODE)
+                            req.mode = status.mode;
+                        if (cmd20_fields & CONTROL_FIELD_POWER)
+                            req.power = status.power;
+                        if (cmd20_fields & CONTROL_FIELD_WIND_DIRECTION)
+                            req.wind_direction = status.wind_direction;
+                    }
+                }
                 else
                     req = NonNasaRequest::create(address);
 
@@ -1156,8 +1293,6 @@ namespace esphome
                 if (pending != nullptr)
                 {
                     // Replace the pending request with the merged state and (re)send it
-                    if (pending->time_sent > 0 || pending->resend_count > 0)
-                        pending->replaced_after_send = true;
                     pending->request = req;
                     pending->time = millis();
                     pending->time_sent = 0;
@@ -1172,7 +1307,6 @@ namespace esphome
                 reqItem.time_sent = 0;
                 reqItem.retry_count = 0;
                 reqItem.resend_count = 0;
-                reqItem.replaced_after_send = false;
 
                 // Safety check the length of the queue (in case something is spamming control
                 // requests we don't want the queue to get too large).
