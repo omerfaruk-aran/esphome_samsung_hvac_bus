@@ -104,6 +104,7 @@ CONF_CAPABILITIES_FAN_MODES = "fan_modes"
 CONF_CAPABILITIES_HORIZONTAL_SWING = "horizontal_swing"
 CONF_CAPABILITIES_VERTICAL_SWING = "vertical_swing"
 CONF_CAPABILITIES_TURBO_MODE = "turbo_mode"
+CONF_CAPABILITIES_FAN_MODE_MEDIUM = "fan_mode_medium"
 
 CONF_PRESETS = "presets"
 CONF_PRESET_NAME = "name"
@@ -145,6 +146,7 @@ CAPABILITIES_SCHEMA = cv.Schema(
         cv.Optional(CONF_CAPABILITIES_HORIZONTAL_SWING, default=False): cv.boolean,
         cv.Optional(CONF_CAPABILITIES_VERTICAL_SWING, default=False): cv.boolean,
         cv.Optional(CONF_CAPABILITIES_TURBO_MODE, default=True): cv.boolean,
+        cv.Optional(CONF_CAPABILITIES_FAN_MODE_MEDIUM, default=False): cv.boolean,
         cv.Optional(CONF_PRESETS): cv.Schema(
             dict(
                 [
@@ -447,6 +449,12 @@ async def to_code(config):
         cg.add(
             var_dev.set_supports_turbo_mode(
                 capabilities.get(CONF_CAPABILITIES_TURBO_MODE, True)
+            )
+        )
+
+        cg.add(
+            var_dev.set_fan_mode_medium(
+                capabilities.get(CONF_CAPABILITIES_FAN_MODE_MEDIUM, False)
             )
         )
 

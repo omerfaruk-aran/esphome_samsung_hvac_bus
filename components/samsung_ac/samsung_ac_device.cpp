@@ -28,8 +28,12 @@ namespace esphome
                                   climate::CLIMATE_MODE_HEAT});
 
       if (device->supports_fan_modes()) {
+        // ESPHome lists standard fan modes in enum order, so "middle" ends up after
+        // "high" in Home Assistant. fan_mode_medium exposes "medium" instead, which
+        // sorts as auto, low, medium, high. Off by default to keep "middle" working.
         traits.set_supported_fan_modes({climate::CLIMATE_FAN_HIGH,
-                                        climate::CLIMATE_FAN_MIDDLE,
+                                        device->fan_mode_medium() ? climate::CLIMATE_FAN_MEDIUM
+                                                                  : climate::CLIMATE_FAN_MIDDLE,
                                         climate::CLIMATE_FAN_LOW,
                                         climate::CLIMATE_FAN_AUTO});
 
@@ -170,6 +174,8 @@ namespace esphome
       auto fanmode = fanmode_to_climatefanmode(value);
       if (fanmode.has_value())
       {
+        if (*fanmode == climate::CLIMATE_FAN_MIDDLE && device->fan_mode_medium())
+          fanmode = climate::CLIMATE_FAN_MEDIUM;
         this->set_fan_mode_(*fanmode);
         this->clear_custom_fan_mode_();
       }
