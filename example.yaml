@@ -81,9 +81,11 @@ samsung_ac:
   # Capabilities: Define which features your AC system supports.
   # - fan_modes is enabled by default (fan speed controls will be shown in HA)
   # - vertical_swing and horizontal_swing are disabled by default
+  # - turbo_mode is enabled by default; set it to false if your unit has no Turbo fan speed
   # You can set these globally here, or override per indoor unit under `devices:`
   capabilities:
     fan_modes: true
+    turbo_mode: true
     vertical_swing: true
     horizontal_swing: true
     # Presets define special AC modes like Windfree, Eco, and so on. 
