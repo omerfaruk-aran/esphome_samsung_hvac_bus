@@ -491,6 +491,11 @@ namespace esphome
         return supports_fan_modes_;
       }
 
+      bool supports_turbo_mode()
+      {
+        return supports_turbo_mode_;
+      }
+
       bool fan_mode_medium()
       {
         return fan_mode_medium_;
@@ -509,6 +514,11 @@ namespace esphome
       void set_supports_fan_modes(bool value)
       {
         supports_fan_modes_ = value;
+      }
+
+      void set_supports_turbo_mode(bool value)
+      {
+        supports_turbo_mode_ = value;
       }
 
       void set_fan_mode_medium(bool value)
@@ -725,6 +735,7 @@ namespace esphome
 
     protected:
       bool supports_fan_modes_{true};
+      bool supports_turbo_mode_{true};
       bool fan_mode_medium_{false};
       bool map_auto_to_heat_cool_{false};
 

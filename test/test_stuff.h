@@ -21,11 +21,16 @@ public:
     }
 
     std::string last_publish_data;
+    std::vector<std::string> all_publish_data;
     void publish_data(uint8_t id, std::vector<uint8_t> &&data) override
     {
         last_publish_data = bytes_to_hex(data);
+        all_publish_data.push_back(last_publish_data);
         cout << "> publish_data " << last_publish_data << endl;
     }
+
+    void set_outdoor_operation_odu_mode_text_sensor(const std::string &address, int value) override {}
+    void set_outdoor_operation_heatcool_text_sensor(const std::string &address, int value) override {}
 
     void ack_data(uint8_t id) override
     {

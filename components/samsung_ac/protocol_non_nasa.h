@@ -2,6 +2,7 @@
 
 #include <list>
 #include <vector>
+#include <map>
 #include <optional>
 #include "protocol.h"
 #include "util.h"
@@ -247,6 +248,9 @@ namespace esphome
 
             void publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request) override;
             void protocol_update(MessageTarget *target) override;
+
+        protected:
+            std::map<std::string, ProtocolRequest> outgoing_queue_; // std::string address -> ProtocolRequest
         };
     } // namespace samsung_ac
 } // namespace esphome
