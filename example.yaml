@@ -147,6 +147,11 @@ samsung_ac:
       filter_reset:
         name: "Kitchen reset filter"
 
+      # NASA only: quiet/silence mode of the indoor unit (0x4046). Same as the Quiet button on
+      # Samsung wired controllers; it is reported when changed there and can be combined with presets.
+      quiet_mode:
+        name: "Kitchen quiet mode"
+
       # If your AC sits near or inside the ceiling, the reported room temperature is often a little bit heigher then whats 
       # measured below. This property can be used to correct that value.
       room_temperature_offset: -1.4

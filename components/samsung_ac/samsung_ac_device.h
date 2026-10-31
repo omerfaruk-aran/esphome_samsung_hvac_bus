@@ -150,6 +150,7 @@ namespace esphome
       Samsung_AC_Number *target_water_temperature{nullptr};
       Samsung_AC_Switch *power{nullptr};
       Samsung_AC_Switch *automatic_cleaning{nullptr};
+      Samsung_AC_Switch *quiet_mode{nullptr};
       Samsung_AC_Button *filter_reset{nullptr};
       Samsung_AC_Switch *water_heater_power{nullptr};
       Samsung_AC_Mode_Select *mode{nullptr};
@@ -283,6 +284,17 @@ namespace esphome
         };
       }
 
+      void set_quiet_mode_switch(Samsung_AC_Switch *switch_)
+      {
+        quiet_mode = switch_;
+        quiet_mode->write_state_ = [this](bool value)
+        {
+          ProtocolRequest request;
+          request.quiet_mode = value;
+          publish_request(request);
+        };
+      }
+
       void set_filter_reset_button(Samsung_AC_Button *button)
       {
         filter_reset = button;
@@ -403,6 +415,12 @@ namespace esphome
           power->publish_state(value);
         if (climate != nullptr)
           calc_and_publish_mode();
+      }
+
+      void update_quiet_mode(bool value)
+      {
+        if (quiet_mode != nullptr)
+          quiet_mode->publish_state(value);
       }
 
       void update_automatic_cleaning(bool value)
