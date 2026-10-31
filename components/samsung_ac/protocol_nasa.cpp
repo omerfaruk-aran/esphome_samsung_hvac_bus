@@ -535,11 +535,11 @@ namespace esphome
                     automatic_cleaning.value = request.automatic_cleaning.value() ? 1 : 0;
                     packet.messages.push_back(automatic_cleaning);
                 }
-                if (request.quiet_mode)
+                if (request.silence_mode)
                 {
-                    MessageSet quiet_mode(MessageNumber::ENUM_in_quiet_mode);
-                    quiet_mode.value = request.quiet_mode.value() ? 1 : 0;
-                    packet.messages.push_back(quiet_mode);
+                    MessageSet silence_mode(MessageNumber::ENUM_in_silence_mode);
+                    silence_mode.value = request.silence_mode.value() ? 1 : 0;
+                    packet.messages.push_back(silence_mode);
                 }
                 if (request.filter_reset)
                 {
@@ -632,8 +632,8 @@ namespace esphome
             if (request.automatic_cleaning)
                 queued.automatic_cleaning = request.automatic_cleaning;
 
-            if (request.quiet_mode)
-                queued.quiet_mode = request.quiet_mode;
+            if (request.silence_mode)
+                queued.silence_mode = request.silence_mode;
 
             if (request.filter_reset)
                 queued.filter_reset = request.filter_reset;
@@ -812,10 +812,10 @@ namespace esphome
                 target->set_automatic_cleaning(source, message.value != 0);
                 break;
             }
-            case MessageNumber::ENUM_in_quiet_mode:
+            case MessageNumber::ENUM_in_silence_mode:
             {
-                LOG_MESSAGE(ENUM_in_quiet_mode, (double)message.value, source, dest);
-                target->set_quiet_mode(source, message.value != 0);
+                LOG_MESSAGE(ENUM_in_silence_mode, (double)message.value, source, dest);
+                target->set_silence_mode(source, message.value != 0);
                 break;
             }
             case MessageNumber::ENUM_in_water_heater_power:

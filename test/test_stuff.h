@@ -55,9 +55,9 @@ public:
 
     std::string last_set_automatic_cleaning_address;
     bool last_set_automatic_cleaning_value;
-    void set_quiet_mode(const std::string address, bool value) override
+    void set_silence_mode(const std::string address, bool value) override
     {
-        cout << "> " << address << " set_quiet_mode=" << to_string(value) << endl;
+        cout << "> " << address << " set_silence_mode=" << to_string(value) << endl;
     }
     void set_automatic_cleaning(const std::string address, bool value) override
     {
