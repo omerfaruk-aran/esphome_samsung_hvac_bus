@@ -491,6 +491,11 @@ namespace esphome
         return supports_fan_modes_;
       }
 
+      bool supports_turbo_mode()
+      {
+        return supports_turbo_mode_;
+      }
+
       bool supports_horizontal_swing()
       {
         return supports_horizontal_swing_;
@@ -504,6 +509,11 @@ namespace esphome
       void set_supports_fan_modes(bool value)
       {
         supports_fan_modes_ = value;
+      }
+
+      void set_supports_turbo_mode(bool value)
+      {
+        supports_turbo_mode_ = value;
       }
 
       void set_supports_horizontal_swing(bool value)
@@ -715,6 +725,7 @@ namespace esphome
 
     protected:
       bool supports_fan_modes_{true};
+      bool supports_turbo_mode_{true};
       bool map_auto_to_heat_cool_{false};
 
       bool supports_horizontal_swing_{false};
