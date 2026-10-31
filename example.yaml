@@ -149,7 +149,7 @@ samsung_ac:
       filter_reset:
         name: "Kitchen reset filter"
 
-      # NASA only: silence mode of the indoor unit (0x4046, NASA_USE_SILENCE). This is what the Quiet
+      # NASA only: silence mode of the indoor unit (0x4046, NASA_CONTROL_SILENCE). This is what the Quiet
       # button on Samsung wired controllers uses; it is reported when changed there and can be combined
       # with presets. Not the same as the "quiet" preset above (0x4060 = 2).
       silence_mode:
