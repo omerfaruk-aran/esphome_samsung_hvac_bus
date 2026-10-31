@@ -142,6 +142,7 @@ namespace esphome
       case climate::ClimateFanMode::CLIMATE_FAN_LOW:
         return FanMode::Low;
       case climate::ClimateFanMode::CLIMATE_FAN_MIDDLE:
+      case climate::ClimateFanMode::CLIMATE_FAN_MEDIUM:
         return FanMode::Mid;
       case climate::ClimateFanMode::CLIMATE_FAN_HIGH:
         return FanMode::High;

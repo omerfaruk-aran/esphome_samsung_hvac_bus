@@ -81,9 +81,12 @@ samsung_ac:
   # Capabilities: Define which features your AC system supports.
   # - fan_modes is enabled by default (fan speed controls will be shown in HA)
   # - vertical_swing and horizontal_swing are disabled by default
+  # - fan_mode_medium (default false) names the middle speed "medium" instead of "middle",
+  #   so Home Assistant lists auto, low, medium, high (with "middle" it shows after "high")
   # You can set these globally here, or override per indoor unit under `devices:`
   capabilities:
     fan_modes: true
+    #fan_mode_medium: true
     vertical_swing: true
     horizontal_swing: true
     # Presets define special AC modes like Windfree, Eco, and so on. 
