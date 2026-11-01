@@ -215,11 +215,11 @@ Below tables show the available information from these files in a concise layout
 | 0x4018 | ENUM*IN*?? | NASA\*USE_WIREDREMOTE  | | |
 | 0x4019 | ENUM_IN\*??     | NASA\*USE_DISCHARGE_TEMP | | This value is a value that cannot be controlled by the upper controller. |
 | 0x401B | ENUM_IN\*??     | NASA\*USE_CENTUAL_CONTROL  | | Income from InstallOption information. |
-| 0x4023 | ENUM_IN\*??     | NASA\*USE_SPI     | | |
+| 0x4023 | ENUM_IN\*??     | NASA\*USE_SPI     | SPI ionizer (Virus Doctor) installed | 0 on AC052RNMDKG, which has no ionizer |
 | 0x4024 | ENUM_IN\*??     | NASA\*USE_FILTER_WARNING_TIME  | | |
 | 0x4025 | NASA_FILTER_CLEAN    | | | |
-| 0x4027 | ENUM_IN\*??     | NASA\*FILTER_WARNING   | | |
-| 0x4028 | ENUM_IN_STATE_THERMO | | Thermo On/Off  | 0 Off, 1 On |
+| 0x4027 | ENUM_IN\*??     | NASA\*FILTER_WARNING   | Filter warning | 0 Off, 1 On. Matches the filter icon of Samsung wired controllers; reset with 0x4025 |
+| 0x4028 | ENUM_IN_STATE_THERMO | | Thermo On/Off  | 0 Off, 1 On. 1 while the unit demands heating/cooling, 0 once the set point is reached (may take a few minutes because of the compressor minimum run time) |
 | 0x4029 | ENUM_IN\*??     | | | seen in NASA data from EHS Mono HT Quiet |
 | 0x402A | ENUM*IN*?? | | | seen in NASA data from EHS Mono HT Quiet |
 | 0x402B | ENUM*IN*?? | | | seen in NASA data from EHS Mono HT Quiet |
@@ -235,9 +235,9 @@ Below tables show the available information from these files in a concise layout
 | 0x4040 | NASA_USE_HUMIDIFICATION  | | | |
 | 0x4041 | NASA_CONTROL_HUMIDIFICATION  | | | |
 | 0x4042 | NASA_CONTROL_AUTO_CLEAN  | | | |
-| 0x4043 | ENUM_IN\*??     | NASA\*CONTROL_SPI | | |
-| 0x4045 | NASA_USE_SILENCE     | | | |
-| 0x4046 | ENUM_IN_SILENCE | NASA_CONTROL_SILENCE   | Silence mode   | 0 Off, 1 On |
+| 0x4043 | ENUM_IN\*??     | NASA\*CONTROL_SPI | SPI ionizer (Virus Doctor) on/off | 0 Off, 1 On. A unit without ionizer (0x4023 = 0) answers 0 when 1 is written |
+| 0x4045 | NASA_USE_SILENCE     | | Silence mode supported | 1 on AC052RNMDKG |
+| 0x4046 | ENUM_IN_SILENCE | NASA_CONTROL_SILENCE   | Silence mode   | 0 Off, 1 On. Used by the Quiet button of Samsung wired controllers; readable and writable |
 | 0x4047 | ENUM_IN\*??     | | | seen in NASA data from EHS Mono HT Quiet |
 | 0x4048 | ENUM*IN*?? | | | seen in NASA data from EHS Mono HT Quiet |
 | 0x404F | ENUM*IN*?? | | | seen in NASA data from EHS Mono HT Quiet |
@@ -249,7 +249,7 @@ Below tables show the available information from these files in a concise layout
 | 0x405D | NASA_USE_DESIRED_HUMIDITY    | | | |
 | 0x405E | NASA_CONTROL_DESIRED_HUMIDITY   | | | |
 | 0x405F | ENUM_IN\*??     | | | seen in NASA data from EHS Mono HT Quiet |
-| 0x4060 | ENUM\*IN_ALTERNATIVE_MODE    | NASA_ALTERNATIVE_MODE  | | 0 Off, 9 On |
+| 0x4060 | ENUM\*IN_ALTERNATIVE_MODE    | NASA_ALTERNATIVE_MODE  | Alternative mode (presets) | 0 Off, 1 Sleep, 2 Quiet, 3 Fast, 6 Long reach, 7 Eco, 9 WindFree (values used by the component presets). The Sleep button of Samsung wired controllers is a 6 h off timer kept in the controller and leaves this at 0 |
 | 0x4063 | NASA_EHS_INDOOR_POWER  | | | |
 | 0x4064 | NASA_EHS_INDOOR_OPMODE | | | |
 | 0x4065 | ENUM_IN_WATER_HEATER_POWER   | NASA_DHW_POWER    | Water heater power  | 0 Off, 1 On |
@@ -260,8 +260,8 @@ Below tables show the available information from these files in a concise layout
 | 0x406A | ENUM_IN_THERMOSTAT2  | | Hydro_ExternalThermostat2  | 0 Off, 1 Cool, 2 Heat  |
 | 0x406B | ENUM_IN\*??     | NASA\*SMART_GRID  | | |
 | 0x406C | ENUM_IN_BACKUP_HEATER  | | Backup heater mode  | 0 Off, 1 Step 1, 2 Step 2  |
-| 0x406D | ENUM_IN_OUTING_MODE  | NASA_INDOOR_OUT_GOING  | Outing mode | 0 Off, 1 On |
-| 0x406E | ENUM_IN_QUIET_MODE   | | | |
+| 0x406D | ENUM_IN_OUTING_MODE  | NASA_INDOOR_OUT_GOING  | Outing mode | 0 Off, 1 On. On AC052RNMDKG with a Samsung wired controller, Outing is handled by the controller: this message is never sent on F1/F2 and the unit does not answer it |
+| 0x406E | ENUM_IN_QUIET_MODE   | | | Never sent by AC052RNMDKG; the wired controller Quiet button uses 0x4046 |
 | 0x406F | ENUM_IN_REFERENCE_EHS_TEMP   | NASA_DHW_REFERENCE_TEMP  | Hydro_ControlChoice_RoomTemp | 0 Room, 1 Water out. Variable isEhsSetTempWaterOut  |
 | 0x4070 | ENUM_IN_DISCHAGE_TEMP_CONTROL   | NASA_DISCHARGE_TEMP_ENABLE | 0 Off, 1 On | (rem: "DISCHAGE" is typo in NASA.ptc)  |
 | 0x4073 | ENUM_IN\*??     | | | seen in NASA data from EHS Mono HT Quiet |
