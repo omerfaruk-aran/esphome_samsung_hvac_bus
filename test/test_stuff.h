@@ -55,6 +55,18 @@ public:
 
     std::string last_set_automatic_cleaning_address;
     bool last_set_automatic_cleaning_value;
+    void set_thermo_state(const std::string address, bool value) override
+    {
+        cout << "> " << address << " set_thermo_state=" << to_string(value) << endl;
+    }
+    void set_defrost_state(const std::string address, bool value) override
+    {
+        cout << "> " << address << " set_defrost_state=" << to_string(value) << endl;
+    }
+    void set_operation_mode_real(const std::string address, int value) override
+    {
+        cout << "> " << address << " set_operation_mode_real=" << to_string(value) << endl;
+    }
     void set_silence_mode(const std::string address, bool value) override
     {
         cout << "> " << address << " set_silence_mode=" << to_string(value) << endl;

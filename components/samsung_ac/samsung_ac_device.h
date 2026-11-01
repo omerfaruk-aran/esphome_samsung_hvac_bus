@@ -408,6 +408,33 @@ namespace esphome
       optional<Mode> _cur_mode;
       optional<WaterHeaterMode> _cur_water_heater_mode;
 
+      void update_thermo_state(bool value)
+      {
+        if (_cur_thermo.has_value() && _cur_thermo.value() == value)
+          return;
+        _cur_thermo = value;
+        if (climate != nullptr)
+          calc_and_publish_mode();
+      }
+
+      void update_defrost_state(bool value)
+      {
+        if (_cur_defrost.has_value() && _cur_defrost.value() == value)
+          return;
+        _cur_defrost = value;
+        if (climate != nullptr)
+          calc_and_publish_mode();
+      }
+
+      void update_operation_mode_real(int value)
+      {
+        if (_cur_mode_real.has_value() && _cur_mode_real.value() == value)
+          return;
+        _cur_mode_real = value;
+        if (climate != nullptr)
+          calc_and_publish_mode();
+      }
+
       void update_power(bool value)
       {
         _cur_power = value;
@@ -537,6 +564,16 @@ namespace esphome
       void set_supports_turbo_mode(bool value)
       {
         supports_turbo_mode_ = value;
+      }
+
+      void set_hvac_action(bool value)
+      {
+        hvac_action_ = value;
+      }
+
+      void set_defrosting_action(bool value)
+      {
+        defrosting_action_ = value;
       }
 
       void set_fan_mode_medium(bool value)
@@ -755,6 +792,8 @@ namespace esphome
       bool supports_fan_modes_{true};
       bool supports_turbo_mode_{true};
       bool fan_mode_medium_{false};
+      bool hvac_action_{false};
+      bool defrosting_action_{false};
       bool map_auto_to_heat_cool_{false};
 
       bool supports_horizontal_swing_{false};
@@ -790,7 +829,45 @@ namespace esphome
           }
         }
 
+        if (supports_action())
+          climate->action = calc_action();
+
         climate->publish_state();
+      }
+
+    public:
+      // hvac_action is opt-in and only reported for NASA units, which send the thermo state (0x4028)
+      bool supports_action()
+      {
+        return hvac_action_ && is_nasa_address(address);
+      }
+
+    protected:
+      optional<bool> _cur_thermo;
+      optional<bool> _cur_defrost;
+      optional<int> _cur_mode_real;
+
+      climate::ClimateAction calc_action()
+      {
+        switch (samsung_ac::calc_action(_cur_power.value(), _cur_mode.value(), _cur_thermo, _cur_defrost,
+                                        _cur_mode_real, defrosting_action_))
+        {
+        case Action::Heating:
+          return climate::CLIMATE_ACTION_HEATING;
+        case Action::Cooling:
+          return climate::CLIMATE_ACTION_COOLING;
+        case Action::Drying:
+          return climate::CLIMATE_ACTION_DRYING;
+        case Action::Fan:
+          return climate::CLIMATE_ACTION_FAN;
+        case Action::Idle:
+          return climate::CLIMATE_ACTION_IDLE;
+        case Action::Defrosting:
+          return climate::CLIMATE_ACTION_DEFROSTING;
+        case Action::Off:
+        default:
+          return climate::CLIMATE_ACTION_OFF;
+        }
       }
     };
   } // namespace samsung_ac

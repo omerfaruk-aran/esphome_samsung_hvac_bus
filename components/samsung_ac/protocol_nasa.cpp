@@ -818,6 +818,24 @@ namespace esphome
                 target->set_silence_mode(source, message.value != 0);
                 break;
             }
+            case MessageNumber::ENUM_in_state_thermo:
+            {
+                LOG_MESSAGE(ENUM_in_state_thermo, (double)message.value, source, dest);
+                target->set_thermo_state(source, message.value != 0);
+                break;
+            }
+            case MessageNumber::ENUM_in_state_defrost:
+            {
+                LOG_MESSAGE(ENUM_in_state_defrost, (double)message.value, source, dest);
+                target->set_defrost_state(source, message.value != 0);
+                break;
+            }
+            case MessageNumber::ENUM_in_operation_mode_real:
+            {
+                LOG_MESSAGE(ENUM_in_operation_mode_real, (double)message.value, source, dest);
+                target->set_operation_mode_real(source, (int)message.value);
+                break;
+            }
             case MessageNumber::ENUM_in_water_heater_power:
             {
                 LOG_MESSAGE(ENUM_in_water_heater_power, (double)message.value, source, dest);

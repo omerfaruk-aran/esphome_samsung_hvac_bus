@@ -180,6 +180,21 @@ namespace esphome
         execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
                                  { dev->update_automatic_cleaning(value); });
       }
+      void set_thermo_state(const std::string address, bool value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_thermo_state(value); });
+      }
+      void set_defrost_state(const std::string address, bool value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_defrost_state(value); });
+      }
+      void set_operation_mode_real(const std::string address, int value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_operation_mode_real(value); });
+      }
       void set_silence_mode(const std::string address, bool value) override
       {
         execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
