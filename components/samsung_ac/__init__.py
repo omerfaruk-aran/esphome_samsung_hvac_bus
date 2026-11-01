@@ -81,6 +81,7 @@ CONF_DEVICE_WATER_TEMPERATURE = "water_temperature"
 CONF_DEVICE_WATER_TARGET_TEMPERATURE = "water_target_temperature"
 CONF_DEVICE_POWER = "power"
 CONF_DEVICE_AUTOMATIC_CLEANING = "automatic_cleaning"
+CONF_DEVICE_SILENCE_MODE = "silence_mode"
 CONF_DEVICE_WATER_HEATER_POWER = "water_heater_power"
 CONF_DEVICE_MODE = "mode"
 CONF_DEVICE_WATER_HEATER_MODE = "water_heater_mode"
@@ -260,6 +261,8 @@ def error_code_sensor_schema(message: int):
 def validate_device(config):
     if CONF_DEVICE_FILTER_RESET in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
         raise cv.Invalid("filter_reset is only supported for NASA devices")
+    if CONF_DEVICE_SILENCE_MODE in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
+        raise cv.Invalid("silence_mode is only supported for NASA devices")
     for key in NASA_BINARY_SENSORS:
         if key in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
             raise cv.Invalid(f"{key} is only supported for NASA devices")
@@ -305,6 +308,9 @@ DEVICE_SCHEMA = cv.Schema(
         ),
         cv.Optional(CONF_DEVICE_AUTOMATIC_CLEANING): switch.switch_schema(
             Samsung_AC_Switch, icon="mdi:broom"
+        ),
+        cv.Optional(CONF_DEVICE_SILENCE_MODE): switch.switch_schema(
+            Samsung_AC_Switch, icon="mdi:volume-off"
         ),
         cv.Optional(CONF_DEVICE_FILTER_WARNING): binary_sensor.binary_sensor_schema(
             device_class=DEVICE_CLASS_PROBLEM,
@@ -538,6 +544,10 @@ async def to_code(config):
             CONF_DEVICE_AUTOMATIC_CLEANING: (
                 switch.new_switch,
                 var_dev.set_automatic_cleaning_switch,
+            ),
+            CONF_DEVICE_SILENCE_MODE: (
+                switch.new_switch,
+                var_dev.set_silence_mode_switch,
             ),
             CONF_DEVICE_FILTER_RESET: (
                 button.new_button,
