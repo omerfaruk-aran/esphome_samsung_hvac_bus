@@ -535,6 +535,12 @@ namespace esphome
                     automatic_cleaning.value = request.automatic_cleaning.value() ? 1 : 0;
                     packet.messages.push_back(automatic_cleaning);
                 }
+                if (request.silence_mode)
+                {
+                    MessageSet silence_mode(MessageNumber::ENUM_in_silence_mode);
+                    silence_mode.value = request.silence_mode.value() ? 1 : 0;
+                    packet.messages.push_back(silence_mode);
+                }
                 if (request.filter_reset)
                 {
                     MessageSet filter_reset(MessageNumber::NASA_FILTER_CLEAN);
@@ -625,6 +631,9 @@ namespace esphome
 
             if (request.automatic_cleaning)
                 queued.automatic_cleaning = request.automatic_cleaning;
+
+            if (request.silence_mode)
+                queued.silence_mode = request.silence_mode;
 
             if (request.filter_reset)
                 queued.filter_reset = request.filter_reset;
@@ -801,6 +810,12 @@ namespace esphome
             {
                 LOG_MESSAGE(ENUM_in_operation_automatic_cleaning, (double)message.value, source, dest);
                 target->set_automatic_cleaning(source, message.value != 0);
+                break;
+            }
+            case MessageNumber::ENUM_in_silence_mode:
+            {
+                LOG_MESSAGE(ENUM_in_silence_mode, (double)message.value, source, dest);
+                target->set_silence_mode(source, message.value != 0);
                 break;
             }
             case MessageNumber::ENUM_in_water_heater_power:

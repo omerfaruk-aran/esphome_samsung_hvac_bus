@@ -93,6 +93,8 @@ samsung_ac:
     horizontal_swing: true
     # Presets define special AC modes like Windfree, Eco, and so on. 
     # The following modes are available: sleep, quiet, fast, longreach, windfree, eco.
+    # Note: the "quiet" preset (0x4060 = 2) is not the silence mode of Samsung wired controllers;
+    # for that use the per-device silence_mode switch (NASA only).
     presets: 
       # Short version - a quick and simple way to enable presets.
       quiet: true
@@ -146,6 +148,12 @@ samsung_ac:
       # NASA only: momentary action that sends the filter-clean reset command (0x4025).
       filter_reset:
         name: "Kitchen reset filter"
+
+      # NASA only: silence mode of the indoor unit (0x4046, NASA_CONTROL_SILENCE). This is what the Quiet
+      # button on Samsung wired controllers uses; it is reported when changed there and can be combined
+      # with presets. Not the same as the "quiet" preset above (0x4060 = 2).
+      silence_mode:
+        name: "Kitchen silence mode"
 
       # If your AC sits near or inside the ceiling, the reported room temperature is often a little bit heigher then whats 
       # measured below. This property can be used to correct that value.
