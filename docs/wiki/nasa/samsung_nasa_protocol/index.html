@@ -2288,8 +2288,8 @@ It is primarily based on community research and reverse-engineering work capture
 <td style="text-align: left;">0x4023</td>
 <td style="text-align: left;">ENUM_IN*??</td>
 <td style="text-align: left;">NASA*USE_SPI</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">SPI ionizer (Virus Doctor) installed</td>
+<td style="text-align: left;">0 on AC052RNMDKG, which has no ionizer</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x4024</td>
@@ -2309,15 +2309,15 @@ It is primarily based on community research and reverse-engineering work capture
 <td style="text-align: left;">0x4027</td>
 <td style="text-align: left;">ENUM_IN*??</td>
 <td style="text-align: left;">NASA*FILTER_WARNING</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">Filter warning</td>
+<td style="text-align: left;">0 Off, 1 On; reset with 0x4025. Observed on AC052RNMDKG: matches the filter icon of the Samsung wired controller</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x4028</td>
 <td style="text-align: left;">ENUM_IN_STATE_THERMO</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">Thermo On/Off</td>
-<td style="text-align: left;">0 Off, 1 On</td>
+<td style="text-align: left;">0 Off, 1 On. Observed on AC052RNMDKG (heating): 1 while the unit demands heat, 0 once the set point is reached, a few minutes later (compressor minimum run time)</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x4029</td>
@@ -2428,22 +2428,22 @@ It is primarily based on community research and reverse-engineering work capture
 <td style="text-align: left;">0x4043</td>
 <td style="text-align: left;">ENUM_IN*??</td>
 <td style="text-align: left;">NASA*CONTROL_SPI</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">SPI ionizer (Virus Doctor) on/off</td>
+<td style="text-align: left;">0 Off, 1 On. A unit without ionizer (0x4023 = 0) answers 0 when 1 is written</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x4045</td>
 <td style="text-align: left;">NASA_USE_SILENCE</td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">Silence mode supported</td>
+<td style="text-align: left;">1 on AC052RNMDKG</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x4046</td>
 <td style="text-align: left;">ENUM_IN_SILENCE</td>
 <td style="text-align: left;">NASA_CONTROL_SILENCE</td>
 <td style="text-align: left;">Silence mode</td>
-<td style="text-align: left;">0 Off, 1 On</td>
+<td style="text-align: left;">0 Off, 1 On. Readable and writable. Observed on AC052RNMDKG: used by the Quiet button of the Samsung wired controller</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x4047</td>
@@ -2526,8 +2526,8 @@ It is primarily based on community research and reverse-engineering work capture
 <td style="text-align: left;">0x4060</td>
 <td style="text-align: left;">ENUM*IN_ALTERNATIVE_MODE</td>
 <td style="text-align: left;">NASA_ALTERNATIVE_MODE</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">0 Off, 9 On</td>
+<td style="text-align: left;">Alternative mode (presets)</td>
+<td style="text-align: left;">0 Off, 1 Sleep, 2 Quiet, 3 Fast, 6 Long reach, 7 Eco, 9 WindFree (values used by the component presets). Observed on AC052RNMDKG with a Samsung wired controller: its Sleep button is a 6 h off timer kept in the controller and leaves this at 0</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x4063</td>
@@ -2604,14 +2604,14 @@ It is primarily based on community research and reverse-engineering work capture
 <td style="text-align: left;">ENUM_IN_OUTING_MODE</td>
 <td style="text-align: left;">NASA_INDOOR_OUT_GOING</td>
 <td style="text-align: left;">Outing mode</td>
-<td style="text-align: left;">0 Off, 1 On</td>
+<td style="text-align: left;">0 Off, 1 On. On AC052RNMDKG with a Samsung wired controller, Outing is handled by the controller: this message is never sent on F1/F2 and the unit does not answer it</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x406E</td>
 <td style="text-align: left;">ENUM_IN_QUIET_MODE</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">Never sent by AC052RNMDKG; the wired controller Quiet button uses 0x4046</td>
 </tr>
 <tr>
 <td style="text-align: left;">0x406F</td>
