@@ -120,6 +120,57 @@ namespace esphome
             return address.size() != 2;
         }
 
+        Action calc_action(bool power, Mode mode, optional<bool> thermo, optional<bool> defrost,
+                           optional<int> mode_real, bool defrosting_action)
+        {
+            if (!power)
+                return Action::Off;
+            if (mode == Mode::Fan)
+                return Action::Fan;
+            // CLIMATE_ACTION_DEFROSTING makes the climate entity "unknown" in Home Assistant versions
+            // without home-assistant/core#189776, so it is opt-in (defrosting_action) and idle otherwise.
+            if (defrost.value_or(false))
+                return defrosting_action ? Action::Defrosting : Action::Idle;
+
+            if (mode == Mode::Auto)
+            {
+                int real = mode_real.value_or(-1);
+                // Auto fan does not demand heating/cooling, so it doesn't depend on the thermo state
+                if (real == 3 || real == 13)
+                    return Action::Fan;
+                if (!thermo.value_or(false))
+                    return Action::Idle;
+                switch (real)
+                {
+                case 1:
+                case 11:
+                    return Action::Cooling;
+                case 2:
+                case 12:
+                    return Action::Drying;
+                case 4:
+                case 14:
+                    return Action::Heating;
+                default:
+                    return Action::Idle;
+                }
+            }
+
+            if (!thermo.value_or(false))
+                return Action::Idle;
+            switch (mode)
+            {
+            case Mode::Heat:
+                return Action::Heating;
+            case Mode::Cool:
+                return Action::Cooling;
+            case Mode::Dry:
+                return Action::Drying;
+            default:
+                return Action::Idle;
+            }
+        }
+
         AddressType get_address_type(const std::string &address)
         {
             if (address == "c8" || address.rfind("10.", 0) == 0)

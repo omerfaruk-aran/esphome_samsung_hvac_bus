@@ -34,6 +34,18 @@ namespace esphome
             Heat = 4,
         };
 
+        // What the unit is doing, reported as the climate hvac_action
+        enum class Action
+        {
+            Off,
+            Heating,
+            Cooling,
+            Drying,
+            Fan,
+            Idle,
+            Defrosting,
+        };
+
         enum class WaterHeaterMode
         {
             Unknown = -1,
@@ -147,6 +159,10 @@ namespace esphome
         Protocol *get_protocol(const std::string &address);
 
         bool is_nasa_address(const std::string &address);
+
+        // thermo: 0x4028, defrost: 0x402E, mode_real: 0x4002 (11 auto cool, 12 auto dry, 13 auto fan, 14 auto heat)
+        Action calc_action(bool power, Mode mode, optional<bool> thermo, optional<bool> defrost,
+                           optional<int> mode_real, bool defrosting_action);
 
         enum class AddressType
         {

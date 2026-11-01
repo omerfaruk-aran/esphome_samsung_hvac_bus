@@ -849,44 +849,24 @@ namespace esphome
 
       climate::ClimateAction calc_action()
       {
-        if (climate->mode == climate::CLIMATE_MODE_OFF)
-          return climate::CLIMATE_ACTION_OFF;
-        if (climate->mode == climate::CLIMATE_MODE_FAN_ONLY)
-          return climate::CLIMATE_ACTION_FAN;
-        // CLIMATE_ACTION_DEFROSTING makes the climate entity "unknown" in Home Assistant versions
-        // without home-assistant/core#189776, so it is opt-in (defrosting_action) and idle otherwise.
-        if (_cur_defrost.value_or(false))
-          return defrosting_action_ ? climate::CLIMATE_ACTION_DEFROSTING : climate::CLIMATE_ACTION_IDLE;
-        if (!_cur_thermo.value_or(false))
-          return climate::CLIMATE_ACTION_IDLE;
-
-        switch (climate->mode)
+        switch (samsung_ac::calc_action(_cur_power.value(), _cur_mode.value(), _cur_thermo, _cur_defrost,
+                                        _cur_mode_real, defrosting_action_))
         {
-        case climate::CLIMATE_MODE_HEAT:
+        case Action::Heating:
           return climate::CLIMATE_ACTION_HEATING;
-        case climate::CLIMATE_MODE_COOL:
+        case Action::Cooling:
           return climate::CLIMATE_ACTION_COOLING;
-        case climate::CLIMATE_MODE_DRY:
+        case Action::Drying:
           return climate::CLIMATE_ACTION_DRYING;
+        case Action::Fan:
+          return climate::CLIMATE_ACTION_FAN;
+        case Action::Idle:
+          return climate::CLIMATE_ACTION_IDLE;
+        case Action::Defrosting:
+          return climate::CLIMATE_ACTION_DEFROSTING;
+        case Action::Off:
         default:
-          // Auto: use the real operation mode (0x4002): 11 auto cool, 12 auto dry, 13 auto fan, 14 auto heat
-          switch (_cur_mode_real.value_or(-1))
-          {
-          case 1:
-          case 11:
-            return climate::CLIMATE_ACTION_COOLING;
-          case 2:
-          case 12:
-            return climate::CLIMATE_ACTION_DRYING;
-          case 3:
-          case 13:
-            return climate::CLIMATE_ACTION_FAN;
-          case 4:
-          case 14:
-            return climate::CLIMATE_ACTION_HEATING;
-          default:
-            return climate::CLIMATE_ACTION_IDLE;
-          }
+          return climate::CLIMATE_ACTION_OFF;
         }
       }
     };
