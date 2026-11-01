@@ -566,6 +566,11 @@ namespace esphome
         supports_turbo_mode_ = value;
       }
 
+      void set_defrosting_action(bool value)
+      {
+        defrosting_action_ = value;
+      }
+
       void set_fan_mode_medium(bool value)
       {
         fan_mode_medium_ = value;
@@ -782,6 +787,7 @@ namespace esphome
       bool supports_fan_modes_{true};
       bool supports_turbo_mode_{true};
       bool fan_mode_medium_{false};
+      bool defrosting_action_{false};
       bool map_auto_to_heat_cool_{false};
 
       bool supports_horizontal_swing_{false};
@@ -841,10 +847,10 @@ namespace esphome
           return climate::CLIMATE_ACTION_OFF;
         if (climate->mode == climate::CLIMATE_MODE_FAN_ONLY)
           return climate::CLIMATE_ACTION_FAN;
-        // Reported as idle until Home Assistant maps CLIMATE_ACTION_DEFROSTING (home-assistant/core#189776);
-        // the defrosting binary sensor shows it meanwhile.
+        // CLIMATE_ACTION_DEFROSTING makes the climate entity "unknown" in Home Assistant versions
+        // without home-assistant/core#189776, so it is opt-in (defrosting_action) and idle otherwise.
         if (_cur_defrost.value_or(false))
-          return climate::CLIMATE_ACTION_IDLE;
+          return defrosting_action_ ? climate::CLIMATE_ACTION_DEFROSTING : climate::CLIMATE_ACTION_IDLE;
         if (!_cur_thermo.value_or(false))
           return climate::CLIMATE_ACTION_IDLE;
 
