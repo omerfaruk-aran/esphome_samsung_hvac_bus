@@ -31,6 +31,7 @@ from esphome.const import (
     CONF_FILTERS,
     CONF_FLOW_CONTROL_PIN,
     ENTITY_CATEGORY_DIAGNOSTIC,
+    DEVICE_CLASS_PROBLEM,
 )
 from esphome.core import CORE, Lambda
 from esphome.cpp_helpers import gpio_pin_expression
@@ -99,6 +100,14 @@ CONF_MAP_AUTO_TO_HEAT_COOL = "map_auto_to_heat_cool"
 CONF_DEBUG_LOG_MESSAGES_ON_CHANGE = "debug_log_messages_on_change"
 CONF_NON_NASA_TX_DELAY_MS = "non_nasa_tx_delay_ms"
 CONF_DEVICE_FILTER_RESET = "filter_reset"
+CONF_DEVICE_FILTER_WARNING = "filter_warning"
+CONF_DEVICE_DEFROSTING = "defrosting"
+
+# Named binary sensors backed by a NASA message (NASA only)
+NASA_BINARY_SENSORS = {
+    CONF_DEVICE_FILTER_WARNING: 0x4027,  # NASA_FILTER_WARNING, cleared by filter_reset (0x4025)
+    CONF_DEVICE_DEFROSTING: 0x402E,  # ENUM_IN_STATE_DEFROST_MODE
+}
 
 CONF_CAPABILITIES = "capabilities"
 CONF_CAPABILITIES_FAN_MODES = "fan_modes"
@@ -254,6 +263,9 @@ def validate_device(config):
         raise cv.Invalid("filter_reset is only supported for NASA devices")
     if CONF_DEVICE_SILENCE_MODE in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
         raise cv.Invalid("silence_mode is only supported for NASA devices")
+    for key in NASA_BINARY_SENSORS:
+        if key in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
+            raise cv.Invalid(f"{key} is only supported for NASA devices")
     return config
 
 
@@ -299,6 +311,15 @@ DEVICE_SCHEMA = cv.Schema(
         ),
         cv.Optional(CONF_DEVICE_SILENCE_MODE): switch.switch_schema(
             Samsung_AC_Switch, icon="mdi:volume-off"
+        ),
+        cv.Optional(CONF_DEVICE_FILTER_WARNING): binary_sensor.binary_sensor_schema(
+            device_class=DEVICE_CLASS_PROBLEM,
+            icon="mdi:air-filter",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ),
+        cv.Optional(CONF_DEVICE_DEFROSTING): binary_sensor.binary_sensor_schema(
+            icon="mdi:snowflake-melt",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_DEVICE_FILTER_RESET): button.button_schema(
             Samsung_AC_Button, icon="mdi:air-filter"
@@ -644,6 +665,11 @@ async def to_code(config):
                     device.get(CONF_MAP_AUTO_TO_HEAT_COOL, False)
                 )
             )
+
+        for key, message in NASA_BINARY_SENSORS.items():
+            if key in device:
+                sens = await binary_sensor.new_binary_sensor(device[key])
+                cg.add(var_dev.add_custom_binary_sensor(message, sens))
 
         if CONF_DEVICE_CUSTOM in device:
             for cust_sens in device[CONF_DEVICE_CUSTOM]:
