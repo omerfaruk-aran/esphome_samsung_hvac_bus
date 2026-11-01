@@ -92,6 +92,8 @@ namespace esphome
 
             ENUM_in_operation_automatic_cleaning = 0x4111,
             ENUM_in_silence_mode = 0x4046, // ENUM_IN_SILENCE / NASA_CONTROL_SILENCE
+            ENUM_in_state_thermo = 0x4028,  // ENUM_IN_STATE_THERMO: 1 while the unit demands heating/cooling
+            ENUM_in_state_defrost = 0x402e, // ENUM_IN_STATE_DEFROST_MODE
 
             VAR_in_temp_target_f = 0x4201,
             VAR_in_temp_room_f = 0x4204,

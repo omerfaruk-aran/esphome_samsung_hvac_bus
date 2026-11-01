@@ -408,6 +408,33 @@ namespace esphome
       optional<Mode> _cur_mode;
       optional<WaterHeaterMode> _cur_water_heater_mode;
 
+      void update_thermo_state(bool value)
+      {
+        if (_cur_thermo.has_value() && _cur_thermo.value() == value)
+          return;
+        _cur_thermo = value;
+        if (climate != nullptr)
+          calc_and_publish_mode();
+      }
+
+      void update_defrost_state(bool value)
+      {
+        if (_cur_defrost.has_value() && _cur_defrost.value() == value)
+          return;
+        _cur_defrost = value;
+        if (climate != nullptr)
+          calc_and_publish_mode();
+      }
+
+      void update_operation_mode_real(int value)
+      {
+        if (_cur_mode_real.has_value() && _cur_mode_real.value() == value)
+          return;
+        _cur_mode_real = value;
+        if (climate != nullptr)
+          calc_and_publish_mode();
+      }
+
       void update_power(bool value)
       {
         _cur_power = value;
@@ -790,7 +817,65 @@ namespace esphome
           }
         }
 
+        if (supports_action())
+          climate->action = calc_action();
+
         climate->publish_state();
+      }
+
+    public:
+      // hvac_action is only reported for NASA units, which send the thermo state (0x4028)
+      bool supports_action()
+      {
+        return is_nasa_address(address);
+      }
+
+    protected:
+      optional<bool> _cur_thermo;
+      optional<bool> _cur_defrost;
+      optional<int> _cur_mode_real;
+
+      climate::ClimateAction calc_action()
+      {
+        if (climate->mode == climate::CLIMATE_MODE_OFF)
+          return climate::CLIMATE_ACTION_OFF;
+        if (climate->mode == climate::CLIMATE_MODE_FAN_ONLY)
+          return climate::CLIMATE_ACTION_FAN;
+        // Reported as idle until Home Assistant maps CLIMATE_ACTION_DEFROSTING (home-assistant/core#189776);
+        // the defrosting binary sensor shows it meanwhile.
+        if (_cur_defrost.value_or(false))
+          return climate::CLIMATE_ACTION_IDLE;
+        if (!_cur_thermo.value_or(false))
+          return climate::CLIMATE_ACTION_IDLE;
+
+        switch (climate->mode)
+        {
+        case climate::CLIMATE_MODE_HEAT:
+          return climate::CLIMATE_ACTION_HEATING;
+        case climate::CLIMATE_MODE_COOL:
+          return climate::CLIMATE_ACTION_COOLING;
+        case climate::CLIMATE_MODE_DRY:
+          return climate::CLIMATE_ACTION_DRYING;
+        default:
+          // Auto: use the real operation mode (0x4002): 11 auto cool, 12 auto dry, 13 auto fan, 14 auto heat
+          switch (_cur_mode_real.value_or(-1))
+          {
+          case 1:
+          case 11:
+            return climate::CLIMATE_ACTION_COOLING;
+          case 2:
+          case 12:
+            return climate::CLIMATE_ACTION_DRYING;
+          case 3:
+          case 13:
+            return climate::CLIMATE_ACTION_FAN;
+          case 4:
+          case 14:
+            return climate::CLIMATE_ACTION_HEATING;
+          default:
+            return climate::CLIMATE_ACTION_IDLE;
+          }
+        }
       }
     };
   } // namespace samsung_ac

@@ -81,6 +81,9 @@ namespace esphome
             virtual void set_power(const std::string address, bool value) = 0;
             virtual void set_automatic_cleaning(const std::string address, bool value) = 0;
             virtual void set_silence_mode(const std::string address, bool value) = 0;
+            virtual void set_thermo_state(const std::string address, bool value) = 0;
+            virtual void set_defrost_state(const std::string address, bool value) = 0;
+            virtual void set_operation_mode_real(const std::string address, int value) = 0;
             virtual void set_water_heater_power(const std::string address, bool value) = 0;
             virtual void set_room_temperature(const std::string address, float value) = 0;
             virtual void set_target_temperature(const std::string address, float value) = 0;
