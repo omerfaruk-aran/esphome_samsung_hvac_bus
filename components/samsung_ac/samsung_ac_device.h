@@ -566,6 +566,11 @@ namespace esphome
         supports_turbo_mode_ = value;
       }
 
+      void set_hvac_action(bool value)
+      {
+        hvac_action_ = value;
+      }
+
       void set_defrosting_action(bool value)
       {
         defrosting_action_ = value;
@@ -787,6 +792,7 @@ namespace esphome
       bool supports_fan_modes_{true};
       bool supports_turbo_mode_{true};
       bool fan_mode_medium_{false};
+      bool hvac_action_{false};
       bool defrosting_action_{false};
       bool map_auto_to_heat_cool_{false};
 
@@ -830,10 +836,10 @@ namespace esphome
       }
 
     public:
-      // hvac_action is only reported for NASA units, which send the thermo state (0x4028)
+      // hvac_action is opt-in and only reported for NASA units, which send the thermo state (0x4028)
       bool supports_action()
       {
-        return is_nasa_address(address);
+        return hvac_action_ && is_nasa_address(address);
       }
 
     protected:

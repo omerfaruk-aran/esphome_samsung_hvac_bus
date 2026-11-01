@@ -84,7 +84,9 @@ samsung_ac:
   # - turbo_mode is enabled by default; set it to false if your unit has no Turbo fan speed
   # - fan_mode_medium (default false) names the middle speed "medium" instead of "middle",
   #   so Home Assistant lists auto, low, medium, high (with "middle" it shows after "high")
-  # - defrosting_action (default false, NASA only) reports "defrosting" as hvac_action while the unit
+  # - hvac_action (default false, NASA only) reports what the unit is doing (heating, cooling, idle...)
+  #   based on the thermo state (0x4028). Tested on AC052RNMDKG; please report how it works on yours.
+  # - defrosting_action (default false, NASA only, needs hvac_action) reports "defrosting" while the unit
   #   defrosts; otherwise it is reported as "idle". Only enable it if your Home Assistant maps the
   #   ESPHome defrosting action (home-assistant/core#189776), or the climate entity becomes unknown.
   # You can set these globally here, or override per indoor unit under `devices:`
@@ -92,6 +94,7 @@ samsung_ac:
     fan_modes: true
     turbo_mode: true
     #fan_mode_medium: true
+    #hvac_action: true
     #defrosting_action: true
     vertical_swing: true
     horizontal_swing: true
