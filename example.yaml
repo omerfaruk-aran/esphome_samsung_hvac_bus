@@ -143,6 +143,15 @@ samsung_ac:
       automatic_cleaning:
         name: "Kitchen automatic clean"
 
+      # NASA only: on while the unit asks for the filter to be cleaned (0x4027), like the filter
+      # icon on Samsung wired controllers. Cleared by filter_reset below.
+      filter_warning:
+        name: "Kitchen filter warning"
+
+      # NASA only: on while the unit is defrosting (0x402E).
+      defrosting:
+        name: "Kitchen defrosting"
+
       # NASA only: momentary action that sends the filter-clean reset command (0x4025).
       filter_reset:
         name: "Kitchen reset filter"
