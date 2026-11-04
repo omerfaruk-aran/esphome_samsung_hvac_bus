@@ -14,6 +14,10 @@ proves that the unit has returned to its physical sensor. Unattended/production 
 is blocked by the absence of a proven fallback and physical regulation tests.
 Do not configure automations to enable this switch or re-enable it after faults.
 
+See [Internal sensor restoration investigation](External-Temperature-Recovery.md)
+for the evidence matrix, threat model, research exclusions and physical recovery
+prerequisites. No model-independent release method has been verified.
+
 ## Evidence and protocol boundaries
 
 The primary investigation is [issue #338](https://github.com/omerfaruk-aran/esphome_samsung_hvac_bus/issues/338),

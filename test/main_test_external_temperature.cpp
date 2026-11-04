@@ -471,6 +471,90 @@ static void operating_fields_before_evidence()
     }
 }
 
+static void stopping_is_not_restoration()
+{
+    Fixture f;
+    f.send();
+    f.echo();
+    f.report();
+    assert(f.model.state().phase == ExternalTemperaturePhase::Following);
+    f.model.enable(false);
+    assert(!f.model.state().reported_match);
+    assert(string(f.model.state().reason) == "manual_disable_fallback_unverified");
+    // Last physical state is unknown: retain last TX/report, never fabricate an NTC reading.
+    assert(f.model.state().transmitted == 20 && f.model.state().reported == 20);
+    for (unsigned i = 0; i < 10; ++i)
+    {
+        f.target.now += 60000;
+        f.model.receive_sample(21);
+        f.status();
+        f.model.update();
+    }
+    assert(f.target.sent.size() == 1 && f.target.pending.empty());
+    // Reboot only the sender, keeping the transport's record of the previous write.
+    ExternalRoomTemperature reboot(&f.target, "20.00.01", "50.00.00");
+    reboot.begin();
+    reboot.receive_sample(21);
+    reboot.update();
+    f.target.now += 300000;
+    reboot.update();
+    assert(!reboot.state().enabled && std::isnan(reboot.state().transmitted));
+    assert(f.target.sent.size() == 1 && f.target.pending.empty());
+}
+
+static void stale_after_success_has_no_fallback()
+{
+    Fixture f;
+    f.send();
+    f.echo();
+    f.report();
+    // Stand-in for Zigbee report loss / HA silence, not a real sensor/network simulation.
+    f.target.now += 120001;
+    f.model.update();
+    f.reason("sensor_stale");
+    f.model.receive_sample(20);
+    f.status();
+    f.model.update();
+    assert(!f.model.state().enabled); // Freshness returning does not automatically rearm.
+    assert(f.target.sent.size() == 1 && f.target.pending.empty());
+    assert(f.model.state().transmitted == 20);
+}
+
+static void cached_republication_is_not_physical_freshness()
+{
+    Fixture f;
+    // No source-acquisition timestamp/sequence reaches receive_sample(float).
+    // Equal repeated floats could be real measurements OR cached HA data: document the gap.
+    for (unsigned i = 0; i < 10; ++i)
+    {
+        f.target.now += 60000;
+        f.model.receive_sample(20);
+        f.model.update();
+        assert(f.model.state().fresh);
+    }
+    assert(!f.model.state().enabled && f.target.sent.empty() && f.target.pending.empty());
+    f.target.now += 120001;
+    f.model.update();
+    assert(!f.model.state().fresh);
+}
+
+static void invalidation_before_delivery_has_no_release_packet()
+{
+    Fixture f;
+    f.arm();
+    f.model.enable(false);
+    f.target.deliver();
+    f.model.update();
+    assert(f.target.sent.empty() && f.target.pending.empty());
+    // Exercise the bus-unavailable guard; an actual ESP crash cannot run this callback.
+    Fixture loss;
+    loss.arm();
+    loss.target.ready = false;
+    loss.target.deliver();
+    loss.reason("bus_not_ready");
+    assert(loss.target.sent.empty() && loss.target.pending.empty());
+}
+
 static void multi_device_and_decoder()
 {
     Fixture f;
@@ -513,6 +597,10 @@ int main()
         {"controller conflicts/own echo", controller_conflicts}, {"observation/configuration", observation_and_configuration},
         {"session cancellation/reentrancy", session_cancellation_and_reentrancy},
         {"operating fields precede evidence", operating_fields_before_evidence},
+        {"stop/reboot do not claim restoration", stopping_is_not_restoration},
+        {"stale after success/no fallback", stale_after_success_has_no_fallback},
+        {"cached HA freshness limitation", cached_republication_is_not_physical_freshness},
+        {"invalidation/no release packet", invalidation_before_delivery_has_no_release_packet},
         {"multiple units/decoder integration", multi_device_and_decoder},
     };
     for (const auto &test : tests) { test.second(); cout << "PASS " << test.first << endl; }
