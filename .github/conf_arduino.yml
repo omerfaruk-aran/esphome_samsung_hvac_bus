@@ -9,7 +9,7 @@ esp32:
 external_components:
   - source: 
       type: local
-      path: /github/workspace/components
+      path: ../components
     
 uart:
   tx_pin: GPIO19
@@ -31,3 +31,7 @@ samsung_ac:
       name: Test1_target
     power:
       name: Test1_power
+    display_light:
+      name: Test1_display_light
+      state_valid:
+        name: Test1_display_light_state_valid

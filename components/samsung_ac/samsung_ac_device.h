@@ -96,6 +96,35 @@ namespace esphome
       }
     };
 
+    class Samsung_AC_Display_Light_Switch : public switch_::Switch
+    {
+    public:
+      std::function<void(bool)> write_state_;
+      binary_sensor::BinarySensor *state_valid{nullptr};
+
+      // Use a standard toggle; state_valid indicates whether its displayed value is confirmed.
+      bool assumed_state() override { return false; }
+      void set_state_valid_sensor(binary_sensor::BinarySensor *sensor) { state_valid = sensor; }
+      void update_state(optional<bool> value)
+      {
+        state_confirmed_ = value.has_value();
+        if (value.has_value())
+          publish_state(value.value());
+        // A state callback may have issued a new command and invalidated this snapshot.
+        if (state_valid != nullptr)
+          state_valid->publish_state(state_confirmed_);
+      }
+
+    protected:
+      bool state_confirmed_{false};
+      void write_state(bool value) override
+      {
+        // Only a matched Read response may publish the switch state.
+        update_state({});
+        write_state_(value);
+      }
+    };
+
     class Samsung_AC_Button : public button::Button
     {
     public:
@@ -150,6 +179,7 @@ namespace esphome
       Samsung_AC_Number *target_water_temperature{nullptr};
       Samsung_AC_Switch *power{nullptr};
       Samsung_AC_Switch *automatic_cleaning{nullptr};
+      Samsung_AC_Display_Light_Switch *display_light{nullptr};
       Samsung_AC_Switch *silence_mode{nullptr};
       Samsung_AC_Button *filter_reset{nullptr};
       Samsung_AC_Switch *water_heater_power{nullptr};
@@ -271,6 +301,24 @@ namespace esphome
           request.power = value;
           publish_request(request);
         };
+      }
+
+      void set_display_light_switch(Samsung_AC_Display_Light_Switch *switch_)
+      {
+        display_light = switch_;
+        protocol->enable_display_light(address);
+        display_light->write_state_ = [this](bool value)
+        {
+          ProtocolRequest request;
+          request.display_light = value;
+          publish_request(request);
+        };
+      }
+
+      void update_display_light(optional<bool> value)
+      {
+        if (display_light != nullptr)
+          display_light->update_state(value);
       }
 
       void set_automatic_cleaning_switch(Samsung_AC_Switch *switch_)

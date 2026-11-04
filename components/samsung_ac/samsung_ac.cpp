@@ -116,12 +116,21 @@ namespace esphome
       send_queue_.push_back(std::move(outData));
     }
 
+    void Samsung_AC::publish_data_once(uint8_t id, std::vector<uint8_t> &&data, std::function<void()> on_sent)
+    {
+      OutgoingData item{};
+      item.id = id;
+      item.data = std::move(data);
+      item.on_sent = std::move(on_sent);
+      send_queue_.push_back(std::move(item));
+    }
+
     void Samsung_AC::ack_data(uint8_t id)
     {
         if (!send_queue_.empty())
         {
           auto senddata = &send_queue_.front();
-          if (senddata->id == id) {
+          if (!senddata->on_sent && senddata->id == id) {
             send_queue_.pop_front();
           }
         }
@@ -206,7 +215,7 @@ namespace esphome
       auto senddata = &send_queue_.front();
 
       const uint32_t now = millis();
-      if (senddata->timeout <= now && senddata->retries >= minRetries) {
+      if (!senddata->on_sent && senddata->timeout <= now && senddata->retries >= minRetries) {
         LOGE("Packet sending timeout %d after %d retries", senddata->id, senddata->retries);
         send_queue_.pop_front();
         return true;
@@ -227,6 +236,12 @@ namespace esphome
         this->write_array(senddata->data);
         this->flush();
         this->after_write();
+        if (senddata->on_sent)
+        {
+          auto on_sent = std::move(senddata->on_sent);
+          send_queue_.pop_front();
+          on_sent();
+        }
       }
       return true;
     }
