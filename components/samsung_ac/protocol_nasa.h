@@ -80,6 +80,7 @@ namespace esphome
             ENUM_in_fan_mode_real = 0x4007,
 
             ENUM_in_louver_hl_swing = 0x4011,
+            ENUM_in_display_light = 0x4016,
             ENUM_in_louver_lr_swing = 0x407e,
 
             NASA_FILTER_CLEAN = 0x4025,
@@ -260,8 +261,21 @@ namespace esphome
 
             void publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request) override;
             void protocol_update(MessageTarget *target) override;
+            void enable_display_light(const std::string &address) override;
+            bool process_display_packet(MessageTarget *target, Packet &packet);
 
         protected:
+            enum class DisplayPhase { Idle, ReadDue, ReadQueued, Reading, CommandQueued, CommandSent };
+            struct DisplayState
+            {
+                DisplayPhase phase = DisplayPhase::ReadDue;
+                uint8_t packet_number = 0;
+                uint32_t sent_at = 0;
+                optional<bool> power;
+                bool refresh_pending = false;
+            };
+            std::map<std::string, DisplayState> displays_;
+            void update_displays(MessageTarget *target);
             std::map<std::string, ProtocolRequest> outgoing_queue_; // std::string address -> ProtocolRequest
         };
 

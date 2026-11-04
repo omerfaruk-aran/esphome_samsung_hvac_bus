@@ -39,7 +39,7 @@ namespace esphome
 
         if (device->supports_turbo_mode()) {
           static const char *CUSTOM_FAN_MODES[] = {"Turbo"};
-          this->set_supported_custom_fan_modes(CUSTOM_FAN_MODES);
+          traits.set_supported_custom_fan_modes(CUSTOM_FAN_MODES);
         }
       }
 
@@ -64,7 +64,7 @@ namespace esphome
 
           if (!custom_presets.empty())
           {
-            this->set_supported_custom_presets(custom_presets);
+            traits.set_supported_custom_presets(custom_presets);
           }
         }
       }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <set>
+#include <functional>
+#include <utility>
 #include "esphome/core/optional.h"
 #include "util.h"
 
@@ -76,6 +78,13 @@ namespace esphome
         public:
             virtual uint32_t get_miliseconds() = 0;
             virtual void publish_data(uint8_t id, std::vector<uint8_t> &&data) = 0;
+            // One transmission, with the deadline started only after actual UART delivery.
+            virtual void publish_data_once(uint8_t id, std::vector<uint8_t> &&data, std::function<void()> on_sent)
+            {
+                publish_data(id, std::move(data));
+                on_sent();
+            }
+            virtual void set_display_light(const std::string &address, optional<bool> value) {}
             virtual void ack_data(uint8_t id) = 0;
             virtual void register_address(const std::string address) = 0;
             virtual void set_power(const std::string address, bool value) = 0;
@@ -110,6 +119,7 @@ namespace esphome
         public:
             optional<bool> power;
             optional<bool> automatic_cleaning;
+            optional<bool> display_light;
             optional<bool> silence_mode;
             optional<bool> filter_reset;
             optional<bool> water_heater_power;
@@ -128,6 +138,7 @@ namespace esphome
         public:
             virtual void publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request) = 0;
             virtual void protocol_update(MessageTarget *target) = 0;
+            virtual void enable_display_light(const std::string &address) {}
         };
 
         enum class ProtocolProcessing

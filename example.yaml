@@ -164,6 +164,15 @@ samsung_ac:
       silence_mode:
         name: "Kitchen silence mode"
 
+      # Optional NASA indoor display control: ON = illuminated, OFF = dark (0x4016).
+      # Remove this block to disable all display-related commands and reads.
+      # No automatic display manipulation is performed when the AC powers on.
+      # See docs_src/wiki/Display-Light.md for compatibility and state limitations.
+      # display_light:
+      #   name: "Kitchen display light"
+      #   state_valid:
+      #     name: "Kitchen display light state valid"
+
       # If your AC sits near or inside the ceiling, the reported room temperature is often a little bit heigher then whats 
       # measured below. This property can be used to correct that value.
       room_temperature_offset: -1.4

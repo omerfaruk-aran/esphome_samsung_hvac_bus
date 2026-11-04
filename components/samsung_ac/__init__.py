@@ -49,6 +49,9 @@ Samsung_AC = samsung_ac.class_("Samsung_AC", cg.PollingComponent, uart.UARTDevic
 Samsung_AC_Device = samsung_ac.class_("Samsung_AC_Device")
 Samsung_AC_Button = samsung_ac.class_("Samsung_AC_Button", button.Button)
 Samsung_AC_Switch = samsung_ac.class_("Samsung_AC_Switch", switch.Switch)
+Samsung_AC_Display_Light_Switch = samsung_ac.class_(
+    "Samsung_AC_Display_Light_Switch", switch.Switch
+)
 Samsung_AC_Mode_Select = samsung_ac.class_("Samsung_AC_Mode_Select", select.Select)
 Samsung_AC_Water_Heater_Mode_Select = samsung_ac.class_(
     "Samsung_AC_Water_Heater_Mode_Select", select.Select
@@ -82,6 +85,8 @@ CONF_DEVICE_WATER_TARGET_TEMPERATURE = "water_target_temperature"
 CONF_DEVICE_POWER = "power"
 CONF_DEVICE_AUTOMATIC_CLEANING = "automatic_cleaning"
 CONF_DEVICE_SILENCE_MODE = "silence_mode"
+CONF_DEVICE_DISPLAY_LIGHT = "display_light"
+CONF_DISPLAY_STATE_VALID = "state_valid"
 CONF_DEVICE_WATER_HEATER_POWER = "water_heater_power"
 CONF_DEVICE_MODE = "mode"
 CONF_DEVICE_WATER_HEATER_MODE = "water_heater_mode"
@@ -259,6 +264,12 @@ def error_code_sensor_schema(message: int):
 
 
 def validate_device(config):
+    if CONF_DEVICE_DISPLAY_LIGHT in config:
+        import re
+
+        if not re.fullmatch(r"20\.[0-9a-fA-F]{2}\.[0-9a-fA-F]{2}", config[CONF_DEVICE_ADDRESS]):
+            raise cv.Invalid("display_light is only supported for NASA indoor devices (20.cc.aa)")
+        config[CONF_DEVICE_ADDRESS] = config[CONF_DEVICE_ADDRESS].lower()
     if CONF_DEVICE_FILTER_RESET in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
         raise cv.Invalid("filter_reset is only supported for NASA devices")
     if CONF_DEVICE_SILENCE_MODE in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
@@ -311,6 +322,19 @@ DEVICE_SCHEMA = cv.Schema(
         ),
         cv.Optional(CONF_DEVICE_SILENCE_MODE): switch.switch_schema(
             Samsung_AC_Switch, icon="mdi:volume-off"
+        ),
+        cv.Optional(CONF_DEVICE_DISPLAY_LIGHT): switch.switch_schema(
+            Samsung_AC_Display_Light_Switch,
+            block_inverted=True,
+            default_restore_mode="DISABLED",
+            icon="mdi:lightbulb-outline",
+        ).extend(
+            {
+                cv.Optional(CONF_DISPLAY_STATE_VALID): binary_sensor.binary_sensor_schema(
+                    icon="mdi:check-network-outline",
+                    entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+                ),
+            }
         ),
         cv.Optional(CONF_DEVICE_FILTER_WARNING): binary_sensor.binary_sensor_schema(
             device_class=DEVICE_CLASS_PROBLEM,
@@ -539,6 +563,14 @@ async def to_code(config):
         #                cg.add(var_dev.add_alt_mode(alt[CONF_ALT_MODE_NAME], alt[CONF_ALT_MODE_VALUE]))
 
         # Mapping of config keys to their corresponding methods and types
+        if CONF_DEVICE_DISPLAY_LIGHT in device:
+            display_conf = device[CONF_DEVICE_DISPLAY_LIGHT]
+            display = await switch.new_switch(display_conf)
+            if CONF_DISPLAY_STATE_VALID in display_conf:
+                valid = await binary_sensor.new_binary_sensor(display_conf[CONF_DISPLAY_STATE_VALID])
+                cg.add(display.set_state_valid_sensor(valid))
+            cg.add(var_dev.set_display_light_switch(display))
+
         device_actions = {
             CONF_DEVICE_POWER: (switch.new_switch, var_dev.set_power_switch),
             CONF_DEVICE_AUTOMATIC_CLEANING: (

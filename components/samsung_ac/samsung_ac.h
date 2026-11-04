@@ -37,6 +37,7 @@ namespace esphome
       uint32_t nextRetry;
       uint32_t timeout;
       uint8_t retries;
+      std::function<void()> on_sent;
     };
 
     class Samsung_AC : public PollingComponent,
@@ -125,6 +126,13 @@ namespace esphome
       }
 
       void publish_data(uint8_t id, std::vector<uint8_t> &&data);
+      void publish_data_once(uint8_t id, std::vector<uint8_t> &&data, std::function<void()> on_sent) override;
+
+      void set_display_light(const std::string &address, optional<bool> value) override
+      {
+        execute_if_device_exists(address, [value](Samsung_AC_Device *dev)
+                                 { dev->update_display_light(value); });
+      }
 
       void ack_data(uint8_t id);
 

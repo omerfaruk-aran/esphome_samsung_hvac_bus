@@ -497,13 +497,54 @@ namespace esphome
 
         void NasaProtocol::protocol_update(MessageTarget *target)
         {
-            for (const auto &pair : outgoing_queue_)
+            update_displays(target);
+            // State callbacks may enqueue new controls while this batch is being sent.
+            std::map<std::string, ProtocolRequest> batch;
+            batch.swap(outgoing_queue_);
+            for (const auto &pair : batch)
             {
                 const std::string &address = pair.first;
-                const ProtocolRequest &request = pair.second;
+                ProtocolRequest request = pair.second;
+                auto display = displays_.find(address);
+                if (request.display_light.has_value())
+                {
+                    if (display == displays_.end())
+                        request.display_light.reset();
+                    else if (display->second.phase != DisplayPhase::Idle && display->second.phase != DisplayPhase::ReadDue)
+                    {
+                        auto &pending = outgoing_queue_[address];
+                        if (!pending.display_light.has_value())
+                            pending.display_light = request.display_light;
+                        request.display_light.reset();
+                    }
+                }
 
                 Address da = Address::parse(address);
                 if (da.klass == AddressClass::Undefined)
+                    continue;
+
+                if (request.display_light.has_value())
+                {
+                    // Keep climate fields on the existing acknowledged/retried path.
+                    auto light = Packet::create(da, DataType::Request, MessageNumber::ENUM_in_display_light,
+                                                request.display_light.value() ? 1 : 0);
+                    auto &state = display->second;
+                    state.phase = DisplayPhase::CommandQueued;
+                    state.packet_number = light.command.packetNumber;
+                    target->set_display_light(address, {});
+                    LOG_PACKET_SEND("Display light", light);
+                    target->publish_data_once(light.command.packetNumber, light.encode(), [this, target, address]()
+                    {
+                        auto &state = displays_.at(address);
+                        state.phase = DisplayPhase::CommandSent;
+                        state.sent_at = target->get_miliseconds();
+                    });
+                }
+
+                if (!(request.mode || request.power || request.waterheatermode || request.water_heater_power ||
+                      request.automatic_cleaning || request.silence_mode || request.filter_reset || request.target_temp ||
+                      request.water_outlet_target || request.target_water_temp || request.fan_mode || request.alt_mode ||
+                      request.swing_mode))
                     continue;
 
                 Packet packet = Packet::createa_partial(da, DataType::Request);
@@ -607,12 +648,118 @@ namespace esphome
 
                 target->publish_data(packet.command.packetNumber, packet.encode());
             }
-            outgoing_queue_.clear();
+        }
+
+        void NasaProtocol::enable_display_light(const std::string &address)
+        {
+            if (is_nasa_address(address))
+                displays_.emplace(Address::parse(address).to_string(), DisplayState{});
+        }
+
+        void NasaProtocol::update_displays(MessageTarget *target)
+        {
+            for (auto &entry : displays_)
+            {
+                const auto &address = entry.first;
+                auto &state = entry.second;
+                const uint32_t elapsed = target->get_miliseconds() - state.sent_at;
+                const auto queued = outgoing_queue_.find(address);
+                const bool pending_command = queued != outgoing_queue_.end() && queued->second.display_light.has_value();
+                if (state.phase == DisplayPhase::Reading && elapsed >= 2000)
+                {
+                    LOGW("Display light read timed out for %s", address.c_str());
+                    state.phase = DisplayPhase::Idle;
+                    target->set_display_light(address, {});
+                }
+                if (state.phase == DisplayPhase::CommandSent && elapsed >= 500)
+                    state.phase = DisplayPhase::ReadDue;
+                if (state.phase == DisplayPhase::Idle && state.refresh_pending)
+                    state.phase = DisplayPhase::ReadDue;
+                if (state.phase != DisplayPhase::ReadDue || pending_command)
+                    continue;
+
+                state.refresh_pending = false;
+                auto packet = Packet::create(Address::parse(address), DataType::Read, MessageNumber::ENUM_in_display_light, 0);
+                state.phase = DisplayPhase::ReadQueued;
+                state.packet_number = packet.command.packetNumber;
+                target->set_display_light(address, {});
+                target->publish_data_once(packet.command.packetNumber, packet.encode(), [this, target, address]()
+                {
+                    auto &state = displays_.at(address);
+                    state.phase = DisplayPhase::Reading;
+                    state.sent_at = target->get_miliseconds();
+                });
+            }
+        }
+
+        bool NasaProtocol::process_display_packet(MessageTarget *target, Packet &packet)
+        {
+            const auto source = packet.sa.to_string();
+            auto entry = displays_.find(source);
+            if (entry == displays_.end())
+                return false;
+            auto &state = entry->second;
+            const auto type = packet.command.dataType;
+            if (type == DataType::Notification)
+            {
+                for (const auto &message : packet.messages)
+                {
+                    if (message.messageNumber != MessageNumber::ENUM_in_operation_power || message.value > 1)
+                        continue;
+                    const bool power = message.value == 1;
+                    if (!state.power.has_value() || state.power.value() != power)
+                    {
+                        state.power = power;
+                        state.refresh_pending = true;
+                        target->set_display_light(source, {});
+                    }
+                }
+                return false;
+            }
+            if (packet.da.to_string() != Address::get_my_address().to_string() || packet.command.packetNumber != state.packet_number)
+                return false;
+            if (state.phase == DisplayPhase::Idle || state.phase == DisplayPhase::ReadDue)
+                return false;
+            if (type == DataType::Ack)
+                return true; // Receipt is not confirmation of display state.
+            if (type == DataType::Nack)
+            {
+                if (state.phase == DisplayPhase::Reading || state.phase == DisplayPhase::CommandSent)
+                {
+                    state.phase = DisplayPhase::Idle;
+                    state.refresh_pending = false;
+                    target->set_display_light(source, {});
+                    LOGW("Display light request rejected by %s", source.c_str());
+                }
+                return true;
+            }
+            if (type != DataType::Response || state.phase != DisplayPhase::Reading)
+                return false;
+            if (target->get_miliseconds() - state.sent_at >= 2000)
+                return true;
+            for (const auto &message : packet.messages)
+            {
+                if (message.messageNumber != MessageNumber::ENUM_in_display_light)
+                    continue;
+                state.phase = DisplayPhase::Idle;
+                const auto queued = outgoing_queue_.find(source);
+                const bool superseded = state.refresh_pending ||
+                    (queued != outgoing_queue_.end() && queued->second.display_light.has_value());
+                if (!superseded && (message.value == 0 || message.value == 1))
+                    target->set_display_light(source, message.value == 1);
+                else
+                    target->set_display_light(source, {});
+                return true;
+            }
+            return false;
         }
 
         void NasaProtocol::publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request)
         {
             ProtocolRequest &queued = outgoing_queue_[address];
+
+            if (request.display_light.has_value())
+                queued.display_light = request.display_light;
 
             if (request.mode)
             {
@@ -1039,6 +1186,12 @@ namespace esphome
             if (debug_log_undefined_messages)
             {
                 LOG_PACKET_RECV("MSG: %s", packet_);
+            }
+
+            if (static_cast<NasaProtocol *>(get_protocol(source))->process_display_packet(target, packet_))
+            {
+                LOG_PACKET_RECV("Display light", packet_);
+                return;
             }
 
             if (packet_.command.dataType == DataType::Ack)
