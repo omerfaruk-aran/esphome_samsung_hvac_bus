@@ -22,6 +22,24 @@ on:
       - '.github/**'
       
 jobs:
+  protocol-regressions:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install ESPHome validation dependencies
+      run: python -m pip install esphome==2026.10.1
+    - name: Native NASA, display, Non-NASA queue and external temperature regressions
+      run: |
+        sh test/build_and_run.sh test/main_test_nasa.cpp
+        sh test/build_and_run.sh test/main_test_nasa_display.cpp
+        sh test/build_and_run.sh test/main_test_non_nasa_queue.cpp
+        sh test/test_external_temperature.sh
+    - name: Schema, documentation examples and climate code generation
+      run: python -m unittest discover -s test -p 'test_*.py'
+
   framework-arduino:
     runs-on: ubuntu-latest     
     steps:

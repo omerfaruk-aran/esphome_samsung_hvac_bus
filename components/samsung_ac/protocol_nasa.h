@@ -95,6 +95,7 @@ namespace esphome
             ENUM_in_silence_mode = 0x4046, // ENUM_IN_SILENCE / NASA_CONTROL_SILENCE
 
             VAR_in_temp_target_f = 0x4201,
+            VAR_in_temp_external_f = 0x4203, // Experimental F1/F2 external room input, Write only.
             VAR_in_temp_room_f = 0x4204,
             VAR_in_temp_eva_in_f = 0x4205,
             VAR_in_temp_eva_out_f = 0x4206,
@@ -254,6 +255,8 @@ namespace esphome
         DecodeResult try_decode_nasa_packet(std::vector<uint8_t> &data);
         void process_nasa_packet(MessageTarget *target);
 
+        class ExternalRoomTemperature;
+
         class NasaProtocol : public Protocol
         {
         public:
@@ -263,8 +266,11 @@ namespace esphome
             void protocol_update(MessageTarget *target) override;
             void enable_display_light(const std::string &address) override;
             bool process_display_packet(MessageTarget *target, Packet &packet);
+            void register_external_temperature(ExternalRoomTemperature *controller);
+            void process_external_packet(Packet &packet);
 
         protected:
+            std::vector<ExternalRoomTemperature *> external_temperatures_;
             enum class DisplayPhase { Idle, ReadDue, ReadQueued, Reading, CommandQueued, CommandSent };
             struct DisplayState
             {

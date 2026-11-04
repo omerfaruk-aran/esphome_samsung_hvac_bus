@@ -84,6 +84,13 @@ namespace esphome
                 publish_data(id, std::move(data));
                 on_sent();
             }
+            // Unsupported transports fail closed instead of bypassing the send-time guard.
+            virtual bool publish_data_once_guarded(uint8_t id, std::vector<uint8_t> &&data,
+                                                  std::function<bool()> can_send, std::function<void()> on_sent)
+            {
+                return false;
+            }
+            virtual bool is_bus_ready() { return false; }
             virtual void set_display_light(const std::string &address, optional<bool> value) {}
             virtual void ack_data(uint8_t id) = 0;
             virtual void register_address(const std::string address) = 0;

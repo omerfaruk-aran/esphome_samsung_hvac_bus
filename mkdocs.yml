@@ -44,6 +44,7 @@ nav:
       - Compatibility: Compatibility.md
       - Installation Guide: Installation-Guide.md
       - Display Light (NASA): Display-Light.md
+      - External Room Temperature (Experimental): External-Room-Temperature.md
 
   - Advanced Information:
       - Troubleshooting: Troubleshooting.md
