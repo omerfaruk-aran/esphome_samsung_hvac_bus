@@ -49,8 +49,13 @@ valid Response, and it may retain the **last confirmed** value after a command o
 failed read. Neither is confirmation of the current display state. The API cannot
 publish an unknown switch value. The optional `state_valid` diagnostic binary sensor
 is OFF while verification is pending or unsuccessful, and ON after a valid Response.
-Include it when building automations that need confirmed state. The switch exposes
-explicit ON/OFF controls because a toggle based on stale state may be misleading.
+Include it when building automations that need confirmed state. Home Assistant
+shows a standard toggle (`assumed_state` is false), using the same existing entity
+identity. When `state_valid` is OFF, the toggle can show stale state and a toggle
+action may therefore select the wrong direction for the actual panel. If the
+desired state is known, use an explicit `switch.turn_on` or `switch.turn_off` action
+and wait for `state_valid` to return ON. Changing the UI does not make writes
+optimistic or turn an ACK into state confirmation.
 
 Indoor units reportedly do not normally notify `0x4016`. Changes through IR or
 SmartThings may remain invisible until the next triggered Read. A valid state is
@@ -78,8 +83,13 @@ in this version, and no intermediate display write is sent automatically.
 
 The protocol discovery was reported in
 [issue #256](https://github.com/omerfaruk-aran/esphome_samsung_hvac_bus/issues/256#issuecomment-6579546576).
-The contributor visually checked two indoor units; compatibility across other
-Samsung models is unknown. **This implementation has NOT BEEN TESTED on hardware.**
+The contributor visually checked two indoor units. The maintainer subsequently
+validated this implementation on a NASA indoor unit at `20.00.01`: OFF leaves the
+AC running, ON and repeated OFF/ON commands work, successful reads restore valid
+state, and powering the AC off and on resets the display to ON. These are
+maintainer-reported results; compatibility across other Samsung models is unknown.
+The standard-toggle UI change still requires confirmation in Home Assistant after
+updating the firmware.
 
 ## Manual hardware validation
 

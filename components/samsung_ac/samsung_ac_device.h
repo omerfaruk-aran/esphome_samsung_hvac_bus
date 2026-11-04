@@ -102,8 +102,8 @@ namespace esphome
       std::function<void(bool)> write_state_;
       binary_sensor::BinarySensor *state_valid{nullptr};
 
-      // Explicit ON/OFF controls remain available when the current state is unknown.
-      bool assumed_state() override { return true; }
+      // Use a standard toggle; state_valid indicates whether its displayed value is confirmed.
+      bool assumed_state() override { return false; }
       void set_state_valid_sensor(binary_sensor::BinarySensor *sensor) { state_valid = sensor; }
       void update_state(optional<bool> value)
       {
