@@ -36,19 +36,12 @@ namespace esphome
                                                                   : climate::CLIMATE_FAN_MIDDLE,
                                         climate::CLIMATE_FAN_LOW,
                                         climate::CLIMATE_FAN_AUTO});
-
-        if (device->supports_turbo_mode()) {
-          static const char *CUSTOM_FAN_MODES[] = {"Turbo"};
-          traits.set_supported_custom_fan_modes(CUSTOM_FAN_MODES);
-        }
       }
 
       {
         auto supported = device->get_supported_alt_modes();
         if (!supported->empty())
         {
-          std::vector<const char *> custom_presets;
-
           for (const AltModeDesc &mode : *supported)
           {
             auto preset = altmodename_to_preset(mode.name);
@@ -56,15 +49,6 @@ namespace esphome
             {
               traits.add_supported_preset(preset.value());
             }
-            else
-            {
-              custom_presets.push_back(mode.name.c_str());
-            }
-          }
-
-          if (!custom_presets.empty())
-          {
-            traits.set_supported_custom_presets(custom_presets);
           }
         }
       }

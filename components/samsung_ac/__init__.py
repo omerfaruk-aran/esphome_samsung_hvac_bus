@@ -524,34 +524,30 @@ async def to_code(config):
             )
 
         none_added = False
+        custom_presets = []
         presets = capabilities.get(CONF_PRESETS, {})
 
         for preset, preset_info in PRESETS.items():
             preset_conf = presets.get(preset, None)
 
             if isinstance(preset_conf, bool) and preset_conf:
-                if not none_added:
-                    none_added = True
-                    cg.add(var_dev.add_alt_mode("None", 0))
-
-                cg.add(
-                    var_dev.add_alt_mode(
-                        preset_info["displayName"], preset_info["value"]
-                    )
-                )
+                preset_name = preset_info["displayName"]
+                preset_value = preset_info["value"]
             elif isinstance(preset_conf, dict) and preset_conf.get(
                 CONF_PRESET_ENABLED, False
             ):
-                if not none_added:
-                    none_added = True
-                    cg.add(var_dev.add_alt_mode("None", 0))
+                preset_name = preset_conf.get(CONF_PRESET_NAME, preset_info["displayName"])
+                preset_value = preset_conf.get(CONF_PRESET_VALUE, preset_info["value"])
+            else:
+                continue
 
-                cg.add(
-                    var_dev.add_alt_mode(
-                        preset_conf.get(CONF_PRESET_NAME, preset_info["displayName"]),
-                        preset_conf.get(CONF_PRESET_VALUE, preset_info["value"]),
-                    )
-                )
+            if not none_added:
+                none_added = True
+                cg.add(var_dev.add_alt_mode("None", 0))
+            cg.add(var_dev.add_alt_mode(preset_name, preset_value))
+            # Match C++ standard presets without folding non-ASCII custom names.
+            if not preset_name.isascii() or preset_name.upper() not in climate.CLIMATE_PRESETS:
+                custom_presets.append(preset_name)
 
         #        if CONF_CAPABILITIES in device and CONF_ALT_MODES in device[CONF_CAPABILITIES]:
         #            cg.add(var_dev.add_alt_mode("None", 0))
@@ -688,8 +684,18 @@ async def to_code(config):
         if CONF_DEVICE_CLIMATE in device:
             conf = device[CONF_DEVICE_CLIMATE]
             var_cli = cg.new_Pvariable(conf[CONF_ID])
-            await climate.register_climate(var_cli, conf)
             cg.add(var_dev.set_climate(var_cli))
+
+            # Configure once before registration/discovery. Generated string literals
+            # keep the entity's custom mode pointers valid for its entire lifetime.
+            custom_fan_modes = []
+            if capabilities.get(CONF_CAPABILITIES_FAN_MODES, True) and capabilities.get(
+                CONF_CAPABILITIES_TURBO_MODE, True
+            ):
+                custom_fan_modes.append("Turbo")
+            cg.add(var_cli.set_supported_custom_fan_modes(custom_fan_modes))
+            cg.add(var_cli.set_supported_custom_presets(custom_presets))
+            await climate.register_climate(var_cli, conf)
 
             # Optional UI mapping: expose Samsung Auto as HA Heat/Cool
             cg.add(
