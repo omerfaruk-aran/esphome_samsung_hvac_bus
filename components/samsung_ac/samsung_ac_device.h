@@ -315,6 +315,14 @@ namespace esphome
         };
       }
 
+      void set_display_light_refresh_button(Samsung_AC_Button *button)
+      {
+        button->press_action_ = [this]()
+        {
+          protocol->refresh_display_light(address);
+        };
+      }
+
       void update_display_light(optional<bool> value)
       {
         if (display_light != nullptr)

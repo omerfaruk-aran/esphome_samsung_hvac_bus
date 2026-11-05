@@ -262,6 +262,7 @@ namespace esphome
             void publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request) override;
             void protocol_update(MessageTarget *target) override;
             void enable_display_light(const std::string &address) override;
+            void refresh_display_light(const std::string &address) override;
             bool process_display_packet(MessageTarget *target, Packet &packet);
 
         protected:

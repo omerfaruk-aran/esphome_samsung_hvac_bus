@@ -656,6 +656,15 @@ namespace esphome
                 displays_.emplace(Address::parse(address).to_string(), DisplayState{});
         }
 
+        void NasaProtocol::refresh_display_light(const std::string &address)
+        {
+            // Reuse the bounded Read/Response verification path.
+            // At most one refresh is pending per indoor unit.
+            const auto it = displays_.find(Address::parse(address).to_string());
+            if (it != displays_.end())
+                it->second.refresh_pending = true;
+        }
+
         void NasaProtocol::update_displays(MessageTarget *target)
         {
             for (auto &entry : displays_)

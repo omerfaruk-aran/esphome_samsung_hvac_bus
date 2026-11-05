@@ -139,6 +139,7 @@ namespace esphome
             virtual void publish_request(MessageTarget *target, const std::string &address, ProtocolRequest &request) = 0;
             virtual void protocol_update(MessageTarget *target) = 0;
             virtual void enable_display_light(const std::string &address) {}
+            virtual void refresh_display_light(const std::string &address) {}
         };
 
         enum class ProtocolProcessing

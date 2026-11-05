@@ -87,6 +87,7 @@ CONF_DEVICE_AUTOMATIC_CLEANING = "automatic_cleaning"
 CONF_DEVICE_SILENCE_MODE = "silence_mode"
 CONF_DEVICE_DISPLAY_LIGHT = "display_light"
 CONF_DISPLAY_STATE_VALID = "state_valid"
+CONF_DISPLAY_REFRESH = "refresh"
 CONF_DEVICE_WATER_HEATER_POWER = "water_heater_power"
 CONF_DEVICE_MODE = "mode"
 CONF_DEVICE_WATER_HEATER_MODE = "water_heater_mode"
@@ -334,6 +335,9 @@ DEVICE_SCHEMA = cv.Schema(
                     icon="mdi:check-network-outline",
                     entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
                 ),
+                cv.Optional(CONF_DISPLAY_REFRESH): button.button_schema(
+                    Samsung_AC_Button, icon="mdi:refresh"
+                ),
             }
         ),
         cv.Optional(CONF_DEVICE_FILTER_WARNING): binary_sensor.binary_sensor_schema(
@@ -566,6 +570,9 @@ async def to_code(config):
                 valid = await binary_sensor.new_binary_sensor(display_conf[CONF_DISPLAY_STATE_VALID])
                 cg.add(display.set_state_valid_sensor(valid))
             cg.add(var_dev.set_display_light_switch(display))
+            if CONF_DISPLAY_REFRESH in display_conf:
+                refresh = await button.new_button(display_conf[CONF_DISPLAY_REFRESH])
+                cg.add(var_dev.set_display_light_refresh_button(refresh))
 
         device_actions = {
             CONF_DEVICE_POWER: (switch.new_switch, var_dev.set_power_switch),
