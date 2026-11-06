@@ -13,6 +13,8 @@ samsung_ac:
         name: "Living Room Display Light"
         state_valid:
           name: "Living Room Display Light State Valid"
+        refresh:
+          name: "Living Room Refresh Display Light"
 ```
 
 Add the block to your existing device configuration. Keep your UART, board,
@@ -24,7 +26,10 @@ for devices without it. No restore command is sent at startup.
 
 The component sends one Read at startup, one after each display command, and
 one when the observed power state changes (including the first power report).
-It does not periodically poll. Display commands use Request, not Write. Display
+The optional `refresh` button triggers a single Read of `0x4016`, allowing
+Home Assistant or ioBroker to synchronize the state after changes made through
+IR or SmartThings. It does not change the panel state or poll periodically.
+Repeated presses are coalesced while a display transaction is active. Display commands use Request, not Write. Display
 Requests are sent once, separately from climate fields. Concurrent climate fields
 still merge into their usual Request and retain the existing ACK/retry behavior.
 Combining display and climate actions does not activate the power-on workaround.
@@ -113,6 +118,8 @@ updating the firmware.
    OFF and no continuous Read/retry traffic appears. Do not inject test frames into
    a live installation.
 9. Change lighting using IR/SmartThings, note the documented stale snapshot, then
-   send an explicit display action to verify readback again.
+   press the optional `refresh` button. Verify that a matching Read/Response
+   updates the actual state without changing the light and that a failed
+   read leaves `state_valid` OFF.
 10. Remove `display_light`, rebuild, and confirm all existing controls still work
     without any display-related traffic. Report observations before merging.

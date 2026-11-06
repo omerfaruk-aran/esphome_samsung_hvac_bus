@@ -386,6 +386,60 @@ static void test_absent_and_climate_only()
     assert(target.states.empty());
 }
 
+static void test_manual_refresh()
+{
+    NasaProtocol protocol;
+    DisplayTarget target;
+    protocol.refresh_display_light("20.00.02");
+    protocol.protocol_update(&target);
+    assert(target.all_publish_data.empty()); // Opt-in: no display configured.
+
+    protocol.enable_display_light("20.00.02");
+    protocol.protocol_update(&target);
+    auto first = target.last_packet();
+    handle(protocol, target, reply(first, DataType::Response, 1));
+    assert(target.confirmed() == 1 && target.states.back().second.value());
+    protocol.protocol_update(&target);
+    assert(target.all_publish_data.size() == 1); // No periodic polling.
+
+    protocol.refresh_display_light("20.00.03"); // Unconfigured device.
+    protocol.protocol_update(&target);
+    assert(target.all_publish_data.size() == 1);
+
+    protocol.refresh_display_light("20.00.02");
+    protocol.protocol_update(&target);
+    assert(target.all_publish_data.size() == 2);
+    auto refresh = target.last_packet();
+    assert(refresh.command.dataType == DataType::Read);
+    assert(refresh.da.to_string() == "20.00.02");
+    assert(refresh.messages.size() == 1);
+    assert(refresh.messages[0].messageNumber == MessageNumber::ENUM_in_display_light);
+    handle(protocol, target, reply(refresh, DataType::Response, 0));
+    assert(target.confirmed() == 2 && !target.states.back().second.value());
+    protocol.protocol_update(&target);
+    assert(target.all_publish_data.size() == 2);
+
+    // Rapid presses coalesce; a press during an in-flight Read requests
+    // exactly one later Read, instead of trusting a superseded snapshot.
+    protocol.refresh_display_light("20.00.02");
+    protocol.refresh_display_light("20.00.02");
+    protocol.protocol_update(&target);
+    assert(target.all_publish_data.size() == 3);
+    auto old_read = target.last_packet();
+    protocol.refresh_display_light("20.00.02");
+    handle(protocol, target, reply(old_read, DataType::Response, 1));
+    assert(!target.states.back().second.has_value());
+    assert(target.confirmed() == 2);
+    protocol.protocol_update(&target);
+    assert(target.all_publish_data.size() == 4);
+    auto last_read = target.last_packet();
+    assert(last_read.command.dataType == DataType::Read);
+    handle(protocol, target, reply(last_read, DataType::Response, 1));
+    assert(target.confirmed() == 3 && target.states.back().second.value());
+    protocol.protocol_update(&target);
+    assert(target.all_publish_data.size() == 4);
+}
+
 int main()
 {
     test_encoding();
@@ -397,5 +451,6 @@ int main()
     test_callback_can_enqueue_next_command();
     test_absent_and_climate_only();
     test_decoder_and_power_refresh();
+    test_manual_refresh();
     cout << "NASA display tests passed" << endl;
 }
