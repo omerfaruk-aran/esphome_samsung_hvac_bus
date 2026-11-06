@@ -1589,6 +1589,57 @@ void test_protocol_detection()
     // Note: protocol_processing stays as NonNASA (it doesn't switch back to NASA)
 }
 
+void test_calc_action()
+{
+    std::cout << "test_calc_action" << std::endl;
+    const auto none_b = std::optional<bool>();
+    const auto none_i = std::optional<int>();
+    auto act = [](bool power, Mode mode, std::optional<bool> thermo, std::optional<bool> defrost,
+                  std::optional<int> real, bool defrosting_action = false)
+    { return calc_action(power, mode, thermo, defrost, real, defrosting_action); };
+
+    // off
+    assert(act(false, Mode::Heat, true, false, 4) == Action::Off);
+    assert(act(false, Mode::Auto, true, true, 14, true) == Action::Off);
+
+    // regular modes follow the thermo state
+    assert(act(true, Mode::Heat, true, false, 4) == Action::Heating);
+    assert(act(true, Mode::Heat, false, false, 4) == Action::Idle);
+    assert(act(true, Mode::Cool, true, false, 1) == Action::Cooling);
+    assert(act(true, Mode::Cool, false, false, 1) == Action::Idle);
+    assert(act(true, Mode::Dry, true, false, 2) == Action::Drying);
+    assert(act(true, Mode::Dry, false, false, 2) == Action::Idle);
+
+    // fan only is always fan, whatever the thermo state
+    assert(act(true, Mode::Fan, false, false, 3) == Action::Fan);
+    assert(act(true, Mode::Fan, true, false, 3) == Action::Fan);
+
+    // auto sub-modes (0x4002): heating/cooling/drying follow the thermo state
+    assert(act(true, Mode::Auto, true, false, 11) == Action::Cooling);
+    assert(act(true, Mode::Auto, false, false, 11) == Action::Idle);
+    assert(act(true, Mode::Auto, true, false, 12) == Action::Drying);
+    assert(act(true, Mode::Auto, false, false, 12) == Action::Idle);
+    assert(act(true, Mode::Auto, true, false, 14) == Action::Heating);
+    assert(act(true, Mode::Auto, false, false, 14) == Action::Idle);
+    // auto fan is fan even with the thermo off
+    assert(act(true, Mode::Auto, false, false, 13) == Action::Fan);
+    assert(act(true, Mode::Auto, true, false, 13) == Action::Fan);
+    // auto with an unknown real mode
+    assert(act(true, Mode::Auto, true, false, none_i) == Action::Idle);
+
+    // defrosting: idle unless defrosting_action is enabled
+    assert(act(true, Mode::Heat, true, true, 4, false) == Action::Idle);
+    assert(act(true, Mode::Heat, true, true, 4, true) == Action::Defrosting);
+    assert(act(true, Mode::Auto, true, true, 14, false) == Action::Idle);
+    assert(act(true, Mode::Auto, true, true, 14, true) == Action::Defrosting);
+    // fan only doesn't report defrosting
+    assert(act(true, Mode::Fan, false, true, 3, true) == Action::Fan);
+
+    // values not received yet (e.g. right after boot)
+    assert(act(true, Mode::Heat, none_b, none_b, none_i) == Action::Idle);
+    assert(act(true, Mode::Heat, true, none_b, none_i) == Action::Heating);
+}
+
 int main(int argc, char *argv[])
 {
     test_nasa_1();
@@ -1620,6 +1671,7 @@ int main(int argc, char *argv[])
     test_nasa_water_heater_control();
     test_nasa_alt_mode();
     test_nasa_swing_controls();
+    test_calc_action();
     
     // NASA additional temperature sensor tests
     test_nasa_water_outlet_target();
