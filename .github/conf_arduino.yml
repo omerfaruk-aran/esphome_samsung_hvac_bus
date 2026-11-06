@@ -6,6 +6,9 @@ esp32:
   framework:
     type: arduino
 
+logger:
+  level: VERY_VERBOSE
+
 external_components:
   - source: 
       type: local
@@ -17,12 +20,44 @@ uart:
   baud_rate: 9600
   parity: EVEN
 
+# Compile fixture only: unavailable source, runtime sender starts OFF.
+sensor:
+  - platform: template
+    id: external_temperature_fixture
+    internal: true
+    lambda: return NAN;
+    update_interval: 45s
+
 samsung_ac:  
   debug_log_messages: false
   debug_log_messages_raw: false
 
   devices:
   - address: "20.00.00"
+    external_room_temperature:
+      experimental: true
+      acknowledge_latched_temperature: true
+      controller_absent_confirmed: true
+      sensor: external_temperature_fixture
+      source_address: "50.00.00"
+      debug: true
+      debug_raw: true
+      enable_switch:
+        name: Test_external_temperature_enable
+      input_temperature:
+        name: Test_external_temperature_input
+      sent_temperature:
+        name: Test_external_temperature_sent
+      reported_temperature:
+        name: Test_external_temperature_reported
+      fresh:
+        name: Test_external_temperature_fresh
+      reported_match:
+        name: Test_external_temperature_reported_match
+      status:
+        name: Test_external_temperature_status
+      failures:
+        name: Test_external_temperature_failures
     climate:
       name: "Test"  
     room_temperature:

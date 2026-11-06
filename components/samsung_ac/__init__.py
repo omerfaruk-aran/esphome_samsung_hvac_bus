@@ -58,6 +58,9 @@ Samsung_AC_Water_Heater_Mode_Select = samsung_ac.class_(
 )
 Samsung_AC_Number = samsung_ac.class_("Samsung_AC_Number", number.Number)
 Samsung_AC_Climate = samsung_ac.class_("Samsung_AC_Climate", climate.Climate)
+Samsung_AC_External_Temperature = samsung_ac.class_(
+    "Samsung_AC_External_Temperature", cg.Component, switch.Switch
+)
 
 # not sure why select.select_schema did not work yet
 SELECT_MODE_SCHEMA = select.select_schema(Samsung_AC_Mode_Select)
@@ -264,7 +267,80 @@ def error_code_sensor_schema(message: int):
     )
 
 
+def acknowledged(value):
+    if not cv.boolean(value):
+        raise cv.Invalid("must be true for this experimental, supervised-only feature")
+    return True
+
+
+def external_address(value, prefix):
+    import re
+
+    value = cv.string(value).lower()
+    if not re.fullmatch(prefix + r"\.[0-9a-f]{2}\.[0-9a-f]{2}", value):
+        raise cv.Invalid(f"expected an individual {prefix}.cc.aa NASA address")
+    if "ff" in value.split(".")[1:]:
+        raise cv.Invalid("broadcast/wildcard addresses are forbidden")
+    return value
+
+
+def validate_external(config):
+    import math
+
+    if not all(math.isfinite(config[key]) for key in ("minimum", "maximum", "max_step", "tolerance")):
+        raise cv.Invalid("temperature limits must be finite")
+    if config["enable_switch"]["restore_mode"] != "DISABLED":
+        raise cv.Invalid("external temperature must start disabled; restore_mode must be DISABLED")
+    if config["minimum"] >= config["maximum"]:
+        raise cv.Invalid("minimum must be below maximum")
+    if config["max_age"] < config["update_interval"]:
+        raise cv.Invalid("max_age must be at least update_interval")
+    for key in ("input_temperature", "sent_temperature", "reported_temperature", "failures"):
+        if key in config and config[key][CONF_ID] == config["sensor"]:
+            raise cv.Invalid("source sensor cannot be an external temperature diagnostic")
+    return config
+
+
+EXTERNAL_TEMPERATURE_SCHEMA = cv.All(
+    cv.Schema({
+        cv.Required("experimental"): acknowledged,
+        cv.Required("acknowledge_latched_temperature"): acknowledged,
+        cv.Required("controller_absent_confirmed"): acknowledged,
+        cv.Required("sensor"): cv.use_id(sensor.Sensor),
+        cv.Required("source_address"): lambda value: external_address(value, "50"),
+        cv.Required("enable_switch"): switch.switch_schema(
+            Samsung_AC_External_Temperature, block_inverted=True,
+            default_restore_mode="DISABLED", icon="mdi:thermometer-alert",
+        ),
+        cv.Optional("update_interval", default="45s"): cv.All(cv.positive_time_period_milliseconds, cv.Range(min=cv.TimePeriod(seconds=30), max=cv.TimePeriod(seconds=300))),
+        cv.Optional("max_age", default="120s"): cv.All(cv.positive_time_period_milliseconds, cv.Range(min=cv.TimePeriod(seconds=30), max=cv.TimePeriod(seconds=600))),
+        cv.Optional("observe_for", default="60s"): cv.All(cv.positive_time_period_milliseconds, cv.Range(min=cv.TimePeriod(seconds=30), max=cv.TimePeriod(seconds=300))),
+        cv.Optional("response_timeout", default="5s"): cv.All(cv.positive_time_period_milliseconds, cv.Range(min=cv.TimePeriod(seconds=1), max=cv.TimePeriod(seconds=10))),
+        cv.Optional("verification_timeout", default="90s"): cv.All(cv.positive_time_period_milliseconds, cv.Range(min=cv.TimePeriod(seconds=45), max=cv.TimePeriod(seconds=300))),
+        cv.Optional("minimum", default=5): cv.float_range(min=-20, max=60),
+        cv.Optional("maximum", default=40): cv.float_range(min=-20, max=60),
+        cv.Optional("max_step", default=5): cv.float_range(min=0.1, max=20),
+        cv.Optional("tolerance", default=0.5): cv.float_range(min=0.1, max=2),
+        cv.Optional("debug", default=False): cv.boolean,
+        cv.Optional("debug_raw", default=False): cv.boolean,
+        **{cv.Optional(key): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS, accuracy_decimals=1,
+            device_class=DEVICE_CLASS_TEMPERATURE, entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ) for key in ("input_temperature", "sent_temperature", "reported_temperature")},
+        cv.Optional("failures"): sensor.sensor_schema(accuracy_decimals=0, entity_category=ENTITY_CATEGORY_DIAGNOSTIC),
+        **{cv.Optional(key): binary_sensor.binary_sensor_schema(entity_category=ENTITY_CATEGORY_DIAGNOSTIC)
+           for key in ("fresh", "reported_match")},
+        cv.Optional("status"): text_sensor.text_sensor_schema(entity_category=ENTITY_CATEGORY_DIAGNOSTIC),
+    }), validate_external,
+)
+
+
 def validate_device(config):
+    if "external_room_temperature" in config:
+        config[CONF_DEVICE_ADDRESS] = external_address(config[CONF_DEVICE_ADDRESS], "20")
+        source = config["external_room_temperature"]["sensor"]
+        if CONF_DEVICE_ROOM_TEMPERATURE in config and config[CONF_DEVICE_ROOM_TEMPERATURE][CONF_ID] == source:
+            raise cv.Invalid("external source cannot be the unit's own room_temperature")
     if CONF_DEVICE_DISPLAY_LIGHT in config:
         import re
 
@@ -286,6 +362,7 @@ DEVICE_SCHEMA = cv.Schema(
         cv.GenerateID(CONF_DEVICE_ID): cv.declare_id(Samsung_AC_Device),
         cv.Optional(CONF_CAPABILITIES): CAPABILITIES_SCHEMA,
         cv.Required(CONF_DEVICE_ADDRESS): cv.string,
+        cv.Optional("external_room_temperature"): EXTERNAL_TEMPERATURE_SCHEMA,
         cv.Optional(CONF_DEVICE_ROOM_TEMPERATURE): sensor.sensor_schema(
             unit_of_measurement=UNIT_CELSIUS,
             accuracy_decimals=1,
@@ -477,6 +554,25 @@ CONFIG_SCHEMA = (
 )
 
 
+def validate_external_devices(config):
+    devices = config[CONF_DEVICES]
+    external = [d for d in devices if "external_room_temperature" in d]
+    # Reject direct feedback through any configured unit or injection diagnostic.
+    outputs = [d[CONF_DEVICE_ROOM_TEMPERATURE][CONF_ID] for d in devices if CONF_DEVICE_ROOM_TEMPERATURE in d]
+    for device in external:
+        ext = device["external_room_temperature"]
+        outputs.extend(ext[key][CONF_ID] for key in ("input_temperature", "sent_temperature", "reported_temperature", "failures") if key in ext)
+    for device in external:
+        if device["external_room_temperature"]["sensor"] in outputs:
+            raise cv.Invalid("external source cannot feed back a bus temperature or injection diagnostic")
+        if sum(d[CONF_DEVICE_ADDRESS].lower() == device[CONF_DEVICE_ADDRESS] for d in devices) != 1:
+            raise cv.Invalid("external temperature requires a unique indoor device address")
+    return config
+
+
+CONFIG_SCHEMA = cv.All(CONFIG_SCHEMA, validate_external_devices)
+
+
 async def to_code(config):
     # For Debug_MQTT
     if CORE.is_esp8266 or CORE.is_libretiny:
@@ -561,6 +657,30 @@ async def to_code(config):
         #            cg.add(var_dev.add_alt_mode("None", 0))
         #            for alt in config[CONF_CAPABILITIES][CONF_ALT_MODES]:
         #                cg.add(var_dev.add_alt_mode(alt[CONF_ALT_MODE_NAME], alt[CONF_ALT_MODE_VALUE]))
+
+        if "external_room_temperature" in device:
+            ext = device["external_room_temperature"]
+            source = await cg.get_variable(ext["sensor"])
+            controller = await switch.new_switch(ext["enable_switch"])
+            cg.add(controller.configure(var, device[CONF_DEVICE_ADDRESS], ext["source_address"], source))
+            cg.add(controller.set_timing(*(ext[key].total_milliseconds for key in (
+                "update_interval", "max_age", "observe_for", "response_timeout", "verification_timeout"
+            ))))
+            cg.add(controller.set_limits(*(ext[key] for key in ("minimum", "maximum", "max_step", "tolerance"))))
+            cg.add(controller.set_logging(ext["debug"], ext["debug_raw"]))
+            for key, method in (("input_temperature", "set_input_sensor"), ("sent_temperature", "set_sent_sensor"),
+                                ("reported_temperature", "set_reported_sensor"), ("failures", "set_failures_sensor")):
+                if key in ext:
+                    entity = await sensor.new_sensor(ext[key])
+                    cg.add(getattr(controller, method)(entity))
+            for key, method in (("fresh", "set_fresh_sensor"), ("reported_match", "set_match_sensor")):
+                if key in ext:
+                    entity = await binary_sensor.new_binary_sensor(ext[key])
+                    cg.add(getattr(controller, method)(entity))
+            if "status" in ext:
+                entity = await text_sensor.new_text_sensor(ext["status"])
+                cg.add(controller.set_status_sensor(entity))
+            await cg.register_component(controller, ext["enable_switch"])
 
         # Mapping of config keys to their corresponding methods and types
         if CONF_DEVICE_DISPLAY_LIGHT in device:

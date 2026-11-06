@@ -4,6 +4,7 @@
 #include "util.h"
 #include "log.h"
 #include "protocol_nasa.h"
+#include "external_room_temperature.h"
 #include "debug_mqtt.h"
 #include <unordered_map>
 
@@ -1184,6 +1185,20 @@ namespace esphome
             return packet_.decode(data);
         }
 
+        void NasaProtocol::register_external_temperature(ExternalRoomTemperature *controller)
+        {
+            external_temperatures_.push_back(controller);
+        }
+
+        void NasaProtocol::process_external_packet(Packet &packet)
+        {
+            bool own_echo = false;
+            for (auto *controller : external_temperatures_)
+                own_echo = own_echo || controller->owns_loopback(packet);
+            for (auto *controller : external_temperatures_)
+                controller->observe(packet, own_echo);
+        }
+
         void process_nasa_packet(MessageTarget *target)
         {
             const auto source = packet_.sa.to_string();
@@ -1191,6 +1206,7 @@ namespace esphome
             const auto me = Address::get_my_address().to_string();
 
             target->register_address(source);
+            static_cast<NasaProtocol *>(get_protocol(source))->process_external_packet(packet_);
 
             if (debug_log_undefined_messages)
             {

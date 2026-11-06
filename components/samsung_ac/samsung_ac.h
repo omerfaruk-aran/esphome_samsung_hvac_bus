@@ -38,6 +38,7 @@ namespace esphome
       uint32_t timeout;
       uint8_t retries;
       std::function<void()> on_sent;
+      std::function<bool()> can_send;
     };
 
     class Samsung_AC : public PollingComponent,
@@ -127,6 +128,9 @@ namespace esphome
 
       void publish_data(uint8_t id, std::vector<uint8_t> &&data);
       void publish_data_once(uint8_t id, std::vector<uint8_t> &&data, std::function<void()> on_sent) override;
+      bool publish_data_once_guarded(uint8_t id, std::vector<uint8_t> &&data,
+                                    std::function<bool()> can_send, std::function<void()> on_sent) override;
+      bool is_bus_ready() override { return !data_processing_init; }
 
       void set_display_light(const std::string &address, optional<bool> value) override
       {

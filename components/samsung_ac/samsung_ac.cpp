@@ -125,6 +125,21 @@ namespace esphome
       send_queue_.push_back(std::move(item));
     }
 
+    bool Samsung_AC::publish_data_once_guarded(uint8_t id, std::vector<uint8_t> &&data,
+                                              std::function<bool()> can_send, std::function<void()> on_sent)
+    {
+      // Only experimental injection is bounded here; existing command retry behavior is unchanged.
+      if (send_queue_.size() >= 16)
+        return false;
+      OutgoingData item{};
+      item.id = id;
+      item.data = std::move(data);
+      item.on_sent = std::move(on_sent);
+      item.can_send = std::move(can_send);
+      send_queue_.push_back(std::move(item));
+      return true;
+    }
+
     void Samsung_AC::ack_data(uint8_t id)
     {
         if (!send_queue_.empty())
@@ -223,6 +238,11 @@ namespace esphome
 
       if (now-last_transmission_ > silenceInterval && senddata->nextRetry < now)
       {
+        if (senddata->can_send && !senddata->can_send())
+        {
+          send_queue_.pop_front();
+          return true;
+        }
         if (senddata->nextRetry > 0){
           LOGW("Retry sending packet %d", senddata->id);
           senddata->retries++;
