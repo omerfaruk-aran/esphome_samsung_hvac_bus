@@ -38,6 +38,31 @@ This page contains helpful troubleshooting tips for resolving common issues that
         - lambda: UARTDebug::log_hex(direction, bytes, ' ');
   ```
 
+### Live NASA Diagnostics
+
+To opt in, merge this snippet into your existing YAML, keeping your `devices` and other settings.
+Rebuild, then open the ESPHome logs through the native API and look for `NASA_DIAG` under `samsung_ac.diagnostics`.
+The flag defaults to `false` and does not apply to Non-NASA frames.
+
+```yaml
+logger:
+  level: DEBUG
+
+samsung_ac:
+  debug_log_diagnostics: true
+```
+
+This passive log reports accepted NASA frames as they arrive, including repeats.
+It sends no queries and creates no entities or MQTT messages.
+Legacy log options are independent: `debug_log_messages`, `debug_log_undefined_messages`, and `debug_log_messages_raw` can stay off.
+`debug_log_messages_on_change` does not filter `NASA_DIAG`.
+
+Use `dt` to distinguish notifications and responses from read, request, and write commands.
+Empty ACK and NACK frames appear as `fields=0`.
+A decoded field is a bus value, not proof of a physical measurement or command success.
+Do not interpret unknown fields, raw-only values, or unverified markers as measurements.
+Field availability and meaning can vary by model. Do not infer refrigerant charge, delivered capacity, or installation health from these logs.
+
 ## Identifying Indoor Device Addresses
 
 - **Monitor for Discovered Devices**  

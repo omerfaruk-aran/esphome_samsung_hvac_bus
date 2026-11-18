@@ -3,6 +3,7 @@
 #include "esphome/core/hal.h"
 #include "util.h"
 #include "log.h"
+#include "nasa_diagnostics.h"
 #include "protocol_nasa.h"
 #include "debug_mqtt.h"
 #include <unordered_map>
@@ -1191,6 +1192,11 @@ namespace esphome
             const auto me = Address::get_my_address().to_string();
 
             target->register_address(source);
+
+            if (debug_log_diagnostics)
+            {
+                log_nasa_diagnostics(packet_);
+            }
 
             if (debug_log_undefined_messages)
             {

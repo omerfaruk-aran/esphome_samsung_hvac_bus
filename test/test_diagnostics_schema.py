@@ -1,5 +1,6 @@
 """Validate the diagnostics flag and its generated C++ with ESPHome."""
 
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -40,6 +41,7 @@ class DiagnosticsSchemaTest(unittest.TestCase):
         return subprocess.run(
             [sys.executable, "-m", "esphome", *command, str(path)],
             cwd=self.workspace,
+            env={**os.environ, "ESPHOME_DATA_DIR": str(self.workspace)},
             capture_output=True,
             encoding="utf-8",
             timeout=120,

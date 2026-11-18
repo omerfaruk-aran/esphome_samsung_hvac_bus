@@ -17,6 +17,7 @@ web_server:
 
 # Enable logging
 logger:
+  # level: DEBUG  # Required for live NASA diagnostics (also the ESPHome default).
   logs:
     component: ERROR # Remove the "Your component takes to long to respond warning"
 
@@ -73,6 +74,9 @@ samsung_ac:
   
   # When enabled (set to true), this option logs messages associated with defined codes on the device. This helps in monitoring the behavior of the device by recording the activity related to known, expected codes.
   debug_log_messages: false
+
+  # Log received NASA fields as NASA_DIAG at DEBUG level. Off by default; no extra bus traffic.
+  # debug_log_diagnostics: true
 
   # For half duplex RS485 board with DI, DE, RE, and RO pins, you have to control read/write with control pin
   # see https://microcontrollerslab.com/rs485-serial-communication-esp32-esp8266-tutorial/ for wiring
