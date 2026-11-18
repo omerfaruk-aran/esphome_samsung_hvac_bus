@@ -12,6 +12,6 @@ Thank you for your interest in contributing to this project! We welcome all kind
 
 ### Guidelines
 
-- Please follow the coding style guidelines.
+- Please follow the [coding style guidelines](CODING_STYLE.md).
 - Write meaningful commit messages.
 - Ensure that all tests pass before submitting a pull request.
