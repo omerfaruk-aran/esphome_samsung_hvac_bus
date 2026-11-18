@@ -78,6 +78,12 @@ samsung_ac:
   # Log received NASA fields as NASA_DIAG at DEBUG level. Off by default; no extra bus traffic.
   # debug_log_diagnostics: true
 
+  # Enable read-only Home Assistant telemetry for the NASA addresses in devices.
+  # No debug logs or bus queries are needed. Explicit sensor settings below take precedence.
+  # Use a component revision that supports this option before uncommenting it.
+  # Add the outdoor address and one entry per indoor unit you want to monitor.
+  # telemetry: true
+
   # For half duplex RS485 board with DI, DE, RE, and RO pins, you have to control read/write with control pin
   # see https://microcontrollerslab.com/rs485-serial-communication-esp32-esp8266-tutorial/ for wiring
   #flow_control_pin: GPIO4
@@ -118,6 +124,7 @@ samsung_ac:
 
     # Repeat everything below for each indoor device address you see in your logs
     - address: "20.00.00" # Indoor device address 
+      # Telemetry adds missing evaporator temperatures, thermal demand (0x4028), and filter warnings.
       # Each property below is optional (climate, room_temperature etc.) - you can delete those which you dont need.
       # For the names we suggest to choose a combination of room name and the thing it controls. 
 
@@ -214,13 +221,13 @@ samsung_ac:
         - name: "Kitchen custom value"
           message: 0x1234
 
-        # NASA only: filter warning message (0x4027), exposed through the
-        # existing generic binary custom sensor functionality.
-        - name: "Kitchen filter warning"
-          message: 0x4027
-          type: binary
-          device_class: problem
-          entity_category: diagnostic
+        # NASA only: alternative to the filter_warning option above (use only one).
+        # Filter warning message (0x4027) through the generic binary custom sensor.
+        # - name: "Kitchen filter warning"
+        #   message: 0x4027
+        #   type: binary
+        #   device_class: problem
+        #   entity_category: diagnostic
 
         # Set type: binary to expose a bus message as a binary_sensor.
         # Binary custom sensors publish false when the decoded value is 0,
@@ -231,7 +238,12 @@ samsung_ac:
           device_class: heat
           entity_category: diagnostic
       
+    # With telemetry enabled, an address alone is enough to monitor another NASA indoor unit.
+    # - address: "20.00.01"
+
     - address: "10.00.00" # Outdoor device address as the following components are dependent on an outdoor unit.
+      # Telemetry adds missing mode, temperature, power, energy, compressor frequency (0x8238, Hz),
+      # and fan speed (0x823D, rpm). Automatic numeric entities publish at most once per 10s.
       # This sensor captures and monitors specific error codes returned by the HVAC system.
       # When an error occurs, the sensor detects the error code and updates its value accordingly.
       # Additionally, by using the blueprint available at https://github.com/omerfaruk-aran/esphome_samsung_ac_blueprint,

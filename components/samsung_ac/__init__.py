@@ -1,3 +1,5 @@
+import re
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import (
@@ -266,8 +268,6 @@ def error_code_sensor_schema(message: int):
 
 def validate_device(config):
     if CONF_DEVICE_DISPLAY_LIGHT in config:
-        import re
-
         if not re.fullmatch(r"20\.[0-9a-fA-F]{2}\.[0-9a-fA-F]{2}", config[CONF_DEVICE_ADDRESS]):
             raise cv.Invalid("display_light is only supported for NASA indoor devices (20.cc.aa)")
         config[CONF_DEVICE_ADDRESS] = config[CONF_DEVICE_ADDRESS].lower()
@@ -436,6 +436,7 @@ CUSTOM_SENSOR_KEYS = [
 ]
 
 CONF_DEVICES = "devices"
+CONF_TELEMETRY = "telemetry"
 
 CONF_DEBUG_MQTT_HOST = "debug_mqtt_host"
 CONF_DEBUG_MQTT_PORT = "debug_mqtt_port"
@@ -451,6 +452,120 @@ CONF_NON_NASA_KEEPALIVE = "non_nasa_keepalive"
 CONF_DEBUG_LOG_UNDEFINED_MESSAGES = "debug_log_undefined_messages"
 
 
+def _add_device_telemetry(device):
+    if not isinstance(device, dict):
+        return device
+    address = device.get(CONF_DEVICE_ADDRESS)
+    if not isinstance(address, str) or not re.fullmatch(
+        r"(10|20)\.[0-9a-fA-F]{2}\.[0-9a-fA-F]{2}", address
+    ):
+        return device
+
+    address = address.lower()
+    outdoor = address.startswith("10.")
+    prefix = f"{'Outdoor' if outdoor else 'Indoor'} {address}"
+    device = {**device, CONF_DEVICE_ADDRESS: address}
+    custom = list(cv.ensure_list()(device.get(CONF_DEVICE_CUSTOM)))
+    configured_messages = set()
+    for entry in custom:
+        if isinstance(entry, dict) and CONF_DEVICE_CUSTOM_MESSAGE in entry:
+            try:
+                message = cv.hex_int(entry[CONF_DEVICE_CUSTOM_MESSAGE])
+            except cv.Invalid:
+                continue  # The normal schema reports invalid entries.
+            kind = entry.get(CONF_DEVICE_CUSTOM_TYPE, "sensor")
+            if isinstance(kind, str):
+                configured_messages.add((message, kind.lower()))
+
+    if outdoor:
+        numeric_sensors = (
+            (CONF_DEVICE_OUTDOOR_TEMPERATURE, "Temperature", 0x8204, ()),
+            (CONF_DEVICE_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM, "Power", 0x8413, ()),
+            (
+                CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM,
+                "Total Energy",
+                0x8414,
+                ({"multiply": 0.001},),  # The bus reports Wh; the entity uses kWh.
+            ),
+        )
+        device.setdefault(
+            CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT,
+            {
+                "name": f"{prefix} Mode",
+                CONF_FILTERS: [
+                    {"lambda": Lambda(
+                        "static std::string previous;\n"
+                        "if (x == previous) return {};\n"
+                        "previous = x;\n"
+                        "return x;"
+                    )}
+                ],
+            },
+        )
+        extra_sensors = (
+            (0x8238, "Compressor Frequency", "Hz"),
+            (0x823D, "Fan Speed", "rpm"),
+        )
+        for message, label, unit in extra_sensors:
+            if (message, "sensor") not in configured_messages:
+                custom.append(
+                    {
+                        "name": f"{prefix} {label}",
+                        CONF_DEVICE_CUSTOM_MESSAGE: message,
+                        CONF_UNIT_OF_MEASUREMENT: unit,
+                        "accuracy_decimals": 0,
+                        "state_class": STATE_CLASS_MEASUREMENT,
+                        CONF_FILTERS: [{"throttle": "10s"}],
+                    }
+                )
+    else:
+        numeric_sensors = (
+            (CONF_DEVICE_INDOOR_EVA_IN_TEMPERATURE, "Evaporator Inlet", 0x4205, ()),
+            (CONF_DEVICE_INDOOR_EVA_OUT_TEMPERATURE, "Evaporator Outlet", 0x4206, ()),
+        )
+        filter_message = NASA_BINARY_SENSORS[CONF_DEVICE_FILTER_WARNING]
+        if (filter_message, "binary") not in configured_messages:
+            device.setdefault(
+                CONF_DEVICE_FILTER_WARNING, {"name": f"{prefix} Filter Warning"}
+            )
+        if (0x4028, "binary") not in configured_messages:
+            custom.append(
+                {
+                    "name": f"{prefix} Thermal Demand",
+                    CONF_DEVICE_CUSTOM_MESSAGE: 0x4028,
+                    CONF_DEVICE_CUSTOM_TYPE: "binary",
+                }
+            )
+
+    for key, label, message, filters in numeric_sensors:
+        if (message, "sensor") not in configured_messages:
+            device.setdefault(
+                key,
+                {
+                    "name": f"{prefix} {label}",
+                    CONF_FILTERS: [*filters, {"throttle": "10s"}],
+                },
+            )
+    device[CONF_DEVICE_CUSTOM] = custom
+    return device
+
+
+def _add_telemetry_defaults(config):
+    if not isinstance(config, dict) or CONF_DEVICES not in config:
+        return config
+    with cv.prepend_path([CONF_TELEMETRY]):
+        enabled = cv.boolean(config.get(CONF_TELEMETRY, False))
+    if not enabled:
+        return config
+
+    return {
+        **config,
+        CONF_DEVICES: [
+            _add_device_telemetry(device)
+            for device in cv.ensure_list()(config[CONF_DEVICES])
+        ],
+    }
+
 CONFIG_SCHEMA = (
     cv.Schema(
         {
@@ -464,6 +579,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_DEBUG_LOG_MESSAGES, default=False): cv.boolean,
             cv.Optional(CONF_DEBUG_LOG_MESSAGES_RAW, default=False): cv.boolean,
             cv.Optional(CONF_DEBUG_LOG_DIAGNOSTICS, default=False): cv.boolean,
+            cv.Optional(CONF_TELEMETRY, default=False): cv.boolean,
             cv.Optional(CONF_NON_NASA_KEEPALIVE, default=False): cv.boolean,
             cv.Optional(CONF_NON_NASA_TX_DELAY_MS, default=0): cv.int_range(
                 min=0, max=1000
@@ -477,6 +593,7 @@ CONFIG_SCHEMA = (
     .extend(uart.UART_DEVICE_SCHEMA)
     .extend(cv.polling_component_schema("30s"))
 )
+CONFIG_SCHEMA = cv.All(_add_telemetry_defaults, CONFIG_SCHEMA)
 
 
 async def to_code(config):
