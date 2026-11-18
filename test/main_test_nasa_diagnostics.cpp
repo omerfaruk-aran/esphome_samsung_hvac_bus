@@ -289,6 +289,10 @@ namespace
     const std::string UNKNOWN_DIAGNOSTIC =
         "NASA_DIAG src=20.00.01 dst=b3.00.ff dt=notification seq=1 index=1 code=0x421C type=variable "
         "name=unknown_0x421C raw=971 raw_hex=0x03CB value=na unit=na status=unknown_code confidence=unknown";
+    constexpr const char *ROOM_NOTIFICATION = "320012200000b000ffc0140201420400f44b4d34";
+    const std::string SECOND_ROOM_DIAGNOSTIC =
+        "NASA_DIAG src=20.00.00 dst=b0.00.ff dt=notification seq=2 index=0 code=0x4204 type=variable "
+        "name=indoor_room_temperature_modified raw=244 raw_hex=0x00F4 value=24.4 unit=C status=decoded confidence=provisional";
 
     struct Callback
     {
@@ -315,6 +319,10 @@ namespace
         void set_room_temperature(const std::string address, float value) override
         {
             callbacks.push_back({"room", address, 0, value});
+        }
+        void set_power(const std::string address, bool value) override
+        {
+            callbacks.push_back({"power", address, 0, value ? 1.0f : 0.0f});
         }
         void set_custom_sensor(const std::string address, uint16_t code, float value) override
         {
@@ -343,40 +351,58 @@ namespace
             expect_line(actual[i], expected[i]);
     }
 
+    void test_unaccepted_nasa_rx_is_silent()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        const bool previous_diagnostics = std::exchange(debug_log_diagnostics, true);
+        auto frame = hex_to_bytes(ROOM_NOTIFICATION);
+        auto prefix = frame;
+        prefix.pop_back(); // Same scalar frame, still waiting for the final byte.
+        RxTarget target;
+        expect_records(capture_diagnostics([&]()
+        {
+            assert(process_data(prefix, &target).type == DecodeResultType::Fill);
+        }), {});
+        assert(target.callbacks.empty() && target.all_publish_data.empty());
+
+        // Complete the same frame as a positive control before checking CRC rejection.
+        prefix.push_back(frame.back());
+        expect_records(capture_diagnostics([&]()
+        {
+            assert(process_data(prefix, &target).type == DecodeResultType::Processed);
+        }), {SECOND_ROOM_DIAGNOSTIC});
+        const std::vector<Callback> callbacks = {
+            {"address", "20.00.00"}, {"custom", "20.00.00", 0x4204, 244.0f}, {"room", "20.00.00", 0, 24.4f},
+        };
+        assert(target.callbacks == callbacks && target.all_publish_data.empty());
+
+        frame.at(frame.size() - 2) ^= 1; // Flip one CRC bit; leave framing and scalar data intact.
+        target.callbacks.clear();
+        expect_records(capture_diagnostics([&]()
+        {
+            assert(process_data(frame, &target).type == DecodeResultType::Discard);
+        }), {});
+        assert(target.callbacks.empty() && target.all_publish_data.empty());
+        debug_log_diagnostics = previous_diagnostics;
+        protocol_processing = previous_processing;
+    }
+
     struct RxTrace
     {
         std::vector<std::string> diagnostics;
         std::vector<Callback> callbacks;
         std::vector<std::string> transmissions;
-        uint8_t display_sequence;
     };
 
     RxTrace run_nasa_rx(bool diagnostics_enabled)
     {
-        debug_log_diagnostics = diagnostics_enabled;
-        protocol_processing = ProtocolProcessing::NASA;
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        const bool previous_diagnostics = std::exchange(debug_log_diagnostics, diagnostics_enabled);
         RxTarget target;
-        auto *protocol = get_protocol("20.00.02");
-        protocol->enable_display_light("20.00.02");
-        protocol->refresh_display_light("20.00.02");
-        protocol->protocol_update(&target);
-        assert(target.all_publish_data.size() == 1);
-        auto bytes = hex_to_bytes(target.all_publish_data.front());
-        Packet display_reply;
-        assert(display_reply.decode(bytes).type == DecodeResultType::Processed);
-        assert(display_reply.command.dataType == DataType::Read);
-        assert(display_reply.messages.size() == 1);
-        assert(display_reply.messages[0].messageNumber == MessageNumber::ENUM_in_display_light);
-        std::swap(display_reply.sa, display_reply.da);
-        display_reply.command.dataType = DataType::Response;
-        display_reply.messages[0].value = 1;
-        const auto display_sequence = display_reply.command.packetNumber;
-        target.all_publish_data.clear(); // The startup Read sets up the Response; trace only TX caused by RX.
-
         auto lines = capture_diagnostics([&]()
         {
             test_process_data(INDOOR_NOTIFICATION, target);
-            test_process_data("320012200000b000ffc0140201420400f44b4d34", target); // Same code, different addresses.
+            test_process_data(ROOM_NOTIFICATION, target); // Same code, different addresses.
             test_process_data("32000e20000180ff00c016030096ac34", target); // Empty ACK.
             test_process_data("32000e20000180ff00c0170400380b34", target); // Empty NACK.
             test_process_data("320012500000200001c01105014201000075ce34", target); // Read.
@@ -385,11 +411,11 @@ namespace
             // Explicit big-endian LongVariable RX bytes: 0x8414, 0x000F6868 Wh.
             test_process_data("320014100000b000ffc01406018414000f6868692934", target);
             test_process_data("320013200001500000c0150801460a1234ab259e34", target); // Single structure Response.
-            test_process_data(bytes_to_hex(display_reply.encode()), target);
-            protocol->protocol_update(&target);
+            get_protocol("20.00.02")->protocol_update(&target);
         });
-        debug_log_diagnostics = false;
-        return {std::move(lines), std::move(target.callbacks), std::move(target.all_publish_data), display_sequence};
+        debug_log_diagnostics = previous_diagnostics;
+        protocol_processing = previous_processing;
+        return {std::move(lines), std::move(target.callbacks), std::move(target.all_publish_data)};
     }
 
     void test_accepted_nasa_rx_is_passive()
@@ -399,14 +425,13 @@ namespace
         const auto enabled = run_nasa_rx(true);
         expect_records(disabled.diagnostics, {});
         const std::vector<Callback> callbacks = {
-            {"display_unconfirmed", "20.00.02"},
             {"address", "20.00.01"}, {"custom", "20.00.01", 0x4204, 233.0f}, {"room", "20.00.01", 0, 23.3f},
             {"custom", "20.00.01", 0x421C, 971.0f},
             {"address", "20.00.00"}, {"custom", "20.00.00", 0x4204, 244.0f}, {"room", "20.00.00", 0, 24.4f},
             {"address", "20.00.01"}, {"ack", {}, 3}, {"address", "20.00.01"},
             {"address", "50.00.00"}, {"address", "80.ff.00"}, {"address", "50.00.00"},
             {"address", "10.00.00"}, {"custom", "10.00.00", 0x8414, 1009768.0f}, {"energy", "10.00.00", 0, 1009768.0f},
-            {"address", "20.00.01"}, {"address", "20.00.02"}, {"display_on", "20.00.02"},
+            {"address", "20.00.01"},
         };
         assert(disabled.callbacks == callbacks);
         assert(enabled.callbacks == disabled.callbacks);
@@ -415,8 +440,7 @@ namespace
         expect_records(enabled.diagnostics, {
             ROOM_DIAGNOSTIC,
             UNKNOWN_DIAGNOSTIC,
-            "NASA_DIAG src=20.00.00 dst=b0.00.ff dt=notification seq=2 index=0 code=0x4204 type=variable "
-            "name=indoor_room_temperature_modified raw=244 raw_hex=0x00F4 value=24.4 unit=C status=decoded confidence=provisional",
+            SECOND_ROOM_DIAGNOSTIC,
             "NASA_DIAG src=20.00.01 dst=80.ff.00 dt=ack seq=3 fields=0",
             "NASA_DIAG src=20.00.01 dst=80.ff.00 dt=nack seq=4 fields=0",
             "NASA_DIAG src=50.00.00 dst=20.00.01 dt=read seq=5 index=0 code=0x4201 type=variable "
@@ -428,8 +452,94 @@ namespace
             "NASA_DIAG src=10.00.00 dst=b0.00.ff dt=notification seq=6 index=0 code=0x8414 type=long_variable "
             "name=outdoor_electrical_energy_total raw=1009768 raw_hex=0x000F6868 value=1009.768 unit=kWh status=decoded confidence=documented",
             "NASA_DIAG src=20.00.01 dst=50.00.00 dt=response seq=8 index=0 code=0x460A type=structure len=3 offset=0 hex=1234AB",
-            "NASA_DIAG src=20.00.02 dst=80.ff.00 dt=response seq=" + std::to_string(enabled.display_sequence) +
-            " index=0 code=0x4016 type=enum name=unknown_0x4016 raw=1 raw_hex=0x01 value=na unit=na status=unknown_code confidence=unknown",
+        });
+    }
+
+    void receive_display_reply(RxTarget &target, const std::string &read)
+    {
+        auto bytes = hex_to_bytes(read);
+        Packet reply;
+        assert(reply.decode(bytes).type == DecodeResultType::Processed);
+        assert(reply.command.dataType == DataType::Read);
+        assert(reply.messages.size() == 1 && reply.messages[0].messageNumber == MessageNumber::ENUM_in_display_light);
+        std::swap(reply.sa, reply.da);
+        reply.command.dataType = DataType::Response;
+        reply.messages[0].value = 1;
+        test_process_data(bytes_to_hex(reply.encode()), target);
+    }
+
+    RxTrace run_power_rx(bool diagnostics_enabled)
+    {
+        constexpr const char *POWER_NOTIFICATION = "320011200002b300ffc0140901400001588034";
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        const bool previous_diagnostics = std::exchange(debug_log_diagnostics, false);
+        const bool previous_messages = std::exchange(debug_log_messages, true);
+        const bool previous_undefined_messages = std::exchange(debug_log_undefined_messages, true);
+        const bool previous_on_change = std::exchange(debug_log_messages_on_change, true);
+        auto &protocol = *static_cast<NasaProtocol *>(get_protocol("20.00.02"));
+        // RX dispatch uses the shared protocol. Restore its state after each run.
+        auto previous_protocol = std::exchange(protocol, NasaProtocol{});
+
+        expect_records(capture_diagnostics([&]()
+        {
+            RxTarget setup;
+            // Warm this test's own legacy dedup key before enabling the display.
+            test_process_data(POWER_NOTIFICATION, setup);
+            protocol.enable_display_light("20.00.02");
+            protocol.protocol_update(&setup);
+            assert(setup.all_publish_data.size() == 1);
+            receive_display_reply(setup, setup.all_publish_data.front());
+            assert(!setup.callbacks.empty() && setup.callbacks.back().name == "display_on");
+        }), {});
+
+        debug_log_diagnostics = diagnostics_enabled;
+        RxTarget target;
+        std::vector<std::string> legacy;
+        auto lines = capture_diagnostics([&]()
+        {
+            protocol.protocol_update(&target); // The startup Read is complete.
+            assert(target.callbacks.empty() && target.all_publish_data.empty());
+            test_process_data(POWER_NOTIFICATION, target);
+            assert(target.all_publish_data.empty());
+            protocol.protocol_update(&target);
+            assert(target.all_publish_data.size() == 1);
+            receive_display_reply(target, target.all_publish_data.front());
+            protocol.protocol_update(&target);
+        }, &legacy);
+        assert(std::none_of(legacy.begin(), legacy.end(), [](const std::string &line)
+        {
+            return line.find("s:20.00.02 d:b3.00.ff ENUM_in_operation_power ") == 0;
+        }));
+
+        protocol = std::move(previous_protocol);
+        debug_log_messages_on_change = previous_on_change;
+        debug_log_undefined_messages = previous_undefined_messages;
+        debug_log_messages = previous_messages;
+        debug_log_diagnostics = previous_diagnostics;
+        protocol_processing = previous_processing;
+        return {std::move(lines), std::move(target.callbacks), std::move(target.all_publish_data)};
+    }
+
+    void test_diagnostics_preserve_power_driven_display_read()
+    {
+        const auto disabled = run_power_rx(false);
+        const auto enabled = run_power_rx(true);
+        const std::vector<Callback> callbacks = {
+            {"address", "20.00.02"}, {"display_unconfirmed", "20.00.02"},
+            {"custom", "20.00.02", 0x4000, 1.0f}, {"power", "20.00.02", 0, 1.0f},
+            {"display_unconfirmed", "20.00.02"}, {"address", "20.00.02"}, {"display_on", "20.00.02"},
+        };
+        assert(disabled.callbacks == callbacks);
+        assert(enabled.callbacks == callbacks);
+        // Startup consumes sequences 1 and 3; compare the full Read, including sequence and CRC.
+        assert(disabled.transmissions == std::vector<std::string>{"32001180ff00200002c0110201401600918734"});
+        assert(enabled.transmissions == std::vector<std::string>{"32001180ff00200002c01104014016005c0234"});
+        expect_records(disabled.diagnostics, {});
+        expect_records(enabled.diagnostics, {
+            "NASA_DIAG src=20.00.02 dst=b3.00.ff dt=notification seq=9 index=0 code=0x4000 type=enum "
+            "name=indoor_power raw=1 raw_hex=0x01 value=ON unit=na status=decoded confidence=documented",
+            "NASA_DIAG src=20.00.02 dst=80.ff.00 dt=response seq=4 index=0 code=0x4016 type=enum "
+            "name=unknown_0x4016 raw=1 raw_hex=0x01 value=na unit=na status=unknown_code confidence=unknown",
         });
     }
 
@@ -490,7 +600,9 @@ int main()
     test_scalar_logging_keeps_order_and_duplicates();
     test_structure_fragments_are_lossless();
     test_invalid_structure_metadata_has_no_payload();
+    test_unaccepted_nasa_rx_is_silent();
     test_accepted_nasa_rx_is_passive();
+    test_diagnostics_preserve_power_driven_display_read();
     test_repeated_rx_ignores_legacy_deduplication();
     test_non_nasa_rx_is_excluded();
     std::cout << "NASA diagnostics tests passed\n";
