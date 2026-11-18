@@ -444,6 +444,7 @@ CONF_DEBUG_MQTT_PASSWORD = "debug_mqtt_password"
 
 CONF_DEBUG_LOG_MESSAGES = "debug_log_messages"
 CONF_DEBUG_LOG_MESSAGES_RAW = "debug_log_messages_raw"
+CONF_DEBUG_LOG_DIAGNOSTICS = "debug_log_diagnostics"
 
 CONF_NON_NASA_KEEPALIVE = "non_nasa_keepalive"
 
@@ -462,6 +463,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_DEBUG_MQTT_PASSWORD, default=""): cv.string,
             cv.Optional(CONF_DEBUG_LOG_MESSAGES, default=False): cv.boolean,
             cv.Optional(CONF_DEBUG_LOG_MESSAGES_RAW, default=False): cv.boolean,
+            cv.Optional(CONF_DEBUG_LOG_DIAGNOSTICS, default=False): cv.boolean,
             cv.Optional(CONF_NON_NASA_KEEPALIVE, default=False): cv.boolean,
             cv.Optional(CONF_NON_NASA_TX_DELAY_MS, default=0): cv.int_range(
                 min=0, max=1000
@@ -783,6 +785,7 @@ async def to_code(config):
     config_actions = {
         CONF_DEBUG_LOG_MESSAGES: var.set_debug_log_messages,
         CONF_DEBUG_LOG_MESSAGES_RAW: var.set_debug_log_messages_raw,
+        CONF_DEBUG_LOG_DIAGNOSTICS: var.set_debug_log_diagnostics,
         CONF_NON_NASA_KEEPALIVE: var.set_non_nasa_keepalive,
         CONF_NON_NASA_TX_DELAY_MS: var.set_non_nasa_tx_delay_ms,
         CONF_DEBUG_LOG_UNDEFINED_MESSAGES: var.set_debug_log_undefined_messages,

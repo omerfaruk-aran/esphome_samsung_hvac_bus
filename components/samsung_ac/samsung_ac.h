@@ -98,6 +98,11 @@ namespace esphome
         debug_log_raw_bytes = value;
       }
 
+      void set_debug_log_diagnostics(bool value)
+      {
+        debug_log_diagnostics = value;
+      }
+
       void set_non_nasa_keepalive(bool value)
       {
         non_nasa_keepalive = value;

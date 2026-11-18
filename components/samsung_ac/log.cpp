@@ -10,6 +10,7 @@ namespace samsung_ac {
 bool debug_log_raw_bytes = false;
 bool debug_log_messages = false;
 bool debug_log_undefined_messages = false;
+bool debug_log_diagnostics = false;
 
 // NEW:
 bool debug_log_messages_on_change = false;
