@@ -365,7 +365,7 @@ namespace esphome
                 return {"na", "na", "raw_only"};
             }
 
-            std::string format_scalar(std::string line, const MessageSet &message, std::size_t index)
+            std::string format_scalar(std::string line, DataType data_type, const MessageSet &message, std::size_t index)
             {
                 const char *type;
                 unsigned hex_digits;
@@ -381,7 +381,9 @@ namespace esphome
                 const auto code = static_cast<uint16_t>(message.messageNumber);
                 const uint32_t raw = static_cast<uint32_t>(message.value) & mask;
                 const auto *descriptor = find_descriptor(code);
-                const auto decoded = decode_scalar(descriptor, message.type, raw);
+                const auto decoded = data_type == DataType::Read
+                    ? DecodedValue{"na", "na", "read_request"}
+                    : decode_scalar(descriptor, message.type, raw);
 
                 append_field_prefix(line, index, code, type);
                 line += " name=";
@@ -455,7 +457,7 @@ namespace esphome
         {
             if (message.type == Structure)
                 return {};
-            return format_scalar(packet_prefix(packet), message, index);
+            return format_scalar(packet_prefix(packet), packet.command.dataType, message, index);
         }
 
         void log_nasa_diagnostics(const Packet &packet)
@@ -473,7 +475,7 @@ namespace esphome
                 if (message.type == Structure)
                     log_structure(prefix, message, index, packet.messages.size());
                 else
-                    log_line(format_scalar(prefix, message, index));
+                    log_line(format_scalar(prefix, packet.command.dataType, message, index));
             }
         }
     } // namespace samsung_ac

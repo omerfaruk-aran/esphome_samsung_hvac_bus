@@ -475,7 +475,17 @@ def _add_device_telemetry(device):
                 continue  # The normal schema reports invalid entries.
             kind = entry.get(CONF_DEVICE_CUSTOM_TYPE, "sensor")
             if isinstance(kind, str):
-                configured_messages.add((message, kind.lower()))
+                configured_messages.add((message & 0xFFFF, kind.lower()))
+
+    # Named overrides use the same uint16_t-keyed map as custom numeric sensors.
+    for key in CUSTOM_SENSOR_KEYS:
+        entry = device.get(key)
+        if isinstance(entry, dict) and CONF_DEVICE_CUSTOM_MESSAGE in entry:
+            try:
+                message = cv.hex_int(entry[CONF_DEVICE_CUSTOM_MESSAGE])
+            except cv.Invalid:
+                continue  # The normal schema reports invalid entries.
+            configured_messages.add((message & 0xFFFF, "sensor"))
 
     if outdoor:
         numeric_sensors = (
@@ -485,7 +495,8 @@ def _add_device_telemetry(device):
                 CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM,
                 "Total Energy",
                 0x8414,
-                ({"multiply": 0.001},),  # The bus reports Wh; the entity uses kWh.
+                # Recover unsigned Wh from the signed callback before scaling to kWh.
+                ({"lambda": Lambda("return (x < 0.0f ? x + 4294967296.0 : x) / 1000.0;")},),
             ),
         )
         device.setdefault(

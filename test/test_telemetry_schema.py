@@ -91,8 +91,8 @@ class TelemetrySchemaTest(unittest.TestCase):
             [(0x8238, "Hz"), (0x823D, "rpm")],
         )
         self.assertEqual(
-            outdoor["outdoor_cumulative_energy"]["filters"],
-            [{"multiply": 0.001}, {"throttle": "10s"}],
+            outdoor["outdoor_cumulative_energy"]["filters"][-1],
+            {"throttle": "10s"},
         )
         self.assertIn(
             "lambda", outdoor["outdoor_operation_heatcool"]["filters"][0]
@@ -143,6 +143,82 @@ class TelemetrySchemaTest(unittest.TestCase):
         self.assertEqual(indoor["address"], "20.00.0a")
         self.assertNotIn("filter_warning", indoor)
         self.assertEqual(len(indoor["custom_sensor"]), 2)
+
+    def test_named_message_overrides_take_precedence(self):
+        result = self.run_esphome(
+            "compile", "--only-generate",
+            telemetry=True,
+            devices=[
+                {
+                    "address": "10.00.00",
+                    "water_temperature": {
+                        "id": "my_water",
+                        "name": "My water",
+                        "message": "0x8238",
+                    },
+                },
+                {
+                    "address": "10.00.01",
+                    "room_humidity": {
+                        "id": "my_humidity",
+                        "name": "My humidity",
+                        "message": 0x1823D,
+                    },
+                },
+            ],
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        source = (self.workspace / "build/src/main.cpp").read_text(encoding="utf-8")
+        registrations = {}
+        explicit = {}
+        for device, message, sensor_id in re.findall(
+            r"(\w+)->add_custom_sensor\(([^,]+), (\w+)\);", source
+        ):
+            message = int(message, 0) & 0xFFFF
+            registrations.setdefault(device, []).append(message)
+            if sensor_id in ("my_water", "my_humidity"):
+                explicit[sensor_id] = message
+        self.assertEqual(len(registrations), 2)
+        for messages in registrations.values():
+            self.assertCountEqual(messages, [0x8238, 0x823D])
+        self.assertEqual(explicit, {"my_water": 0x8238, "my_humidity": 0x823D})
+
+    def test_generated_energy_converts_unsigned_wh(self):
+        config = self.validated_config(
+            telemetry=True,
+            devices=[
+                {"address": "10.00.00"},
+                {
+                    "address": "10.00.01",
+                    "outdoor_cumulative_energy": {"name": "My energy"},
+                },
+            ],
+        )
+        generated, explicit = config["devices"]
+        self.assertEqual(explicit["outdoor_cumulative_energy"]["filters"], [{"multiply": 0.001}])
+        scale = generated["outdoor_cumulative_energy"]["filters"][0]
+        body = scale["lambda"] if "lambda" in scale else f"return x * {scale['multiply']}f;"
+        executable = self.workspace / "energy-filter"
+        compiled = subprocess.run(
+            ["g++", "-std=c++17", "-x", "c++", "-", "-o", str(executable)],
+            input=(
+                "#include <iomanip>\n#include <iostream>\n#include <optional>\n"
+                f"std::optional<float> convert(float x) {{ {body} }}\n"
+                "int main() {\n"
+                "  for (float wh : {1009768.0f, -2147483648.0f, -1.0f})\n"
+                "    std::cout << std::setprecision(12) << convert(wh).value() << '\\n';\n"
+                "}\n"
+            ),
+            capture_output=True,
+            encoding="utf-8",
+            timeout=30,
+        )
+        self.assertEqual(compiled.returncode, 0, compiled.stderr)
+        result = subprocess.check_output([str(executable)], encoding="utf-8", timeout=30)
+        normal, sign_bit, maximum = map(float, result.splitlines())
+        self.assertAlmostEqual(normal, 1009.768, delta=0.0001)
+        self.assertAlmostEqual(sign_bit, 2147483.648, delta=0.125)
+        self.assertAlmostEqual(maximum, 4294967.295, delta=0.25)
 
     def test_invalid_flag_is_rejected(self):
         result = self.run_esphome("config", telemetry="not-a-boolean")

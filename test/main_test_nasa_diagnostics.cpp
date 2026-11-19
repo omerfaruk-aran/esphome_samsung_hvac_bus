@@ -62,6 +62,9 @@ namespace
                     "NASA_DIAG src=20.00.01 dst=b3.00.ff dt=notification seq=1 index=3 code=0x8414 type=long_variable "
                     "name=outdoor_electrical_energy_total raw=16777217 raw_hex=0x01000001 value=16777.217 unit=kWh "
                     "status=decoded confidence=documented");
+        expect_line(format_nasa_diagnostic_scalar(make_packet(DataType::Read), scalar(0x4201, Variable, 280), 0),
+                    "NASA_DIAG src=20.00.01 dst=b3.00.ff dt=read seq=1 index=0 code=0x4201 type=variable "
+                    "name=indoor_setpoint raw=280 raw_hex=0x0118 value=na unit=na status=read_request confidence=documented");
     }
 
     void test_scalar_conversions_and_fallbacks()
@@ -444,7 +447,7 @@ namespace
             "NASA_DIAG src=20.00.01 dst=80.ff.00 dt=ack seq=3 fields=0",
             "NASA_DIAG src=20.00.01 dst=80.ff.00 dt=nack seq=4 fields=0",
             "NASA_DIAG src=50.00.00 dst=20.00.01 dt=read seq=5 index=0 code=0x4201 type=variable "
-            "name=indoor_setpoint raw=0 raw_hex=0x0000 value=0.0 unit=C status=decoded confidence=documented",
+            "name=indoor_setpoint raw=0 raw_hex=0x0000 value=na unit=na status=read_request confidence=documented",
             "NASA_DIAG src=80.ff.00 dst=20.00.02 dt=request seq=242 index=0 code=0x4201 type=variable "
             "name=indoor_setpoint raw=280 raw_hex=0x0118 value=28.0 unit=C status=decoded confidence=documented",
             "NASA_DIAG src=50.00.00 dst=20.00.01 dt=write seq=7 index=0 code=0x4201 type=variable "
