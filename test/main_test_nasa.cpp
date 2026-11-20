@@ -1589,11 +1589,60 @@ void test_protocol_detection()
     // Note: protocol_processing stays as NonNASA (it doesn't switch back to NASA)
 }
 
+void test_nasa_message_listener()
+{
+    std::cout << "test_nasa_message_listener" << std::endl;
+
+    // A Response (reply to a Read request) is not handled by samsung_ac itself,
+    // but must reach on_nasa_message so companion components can read FSVs.
+    DebugTarget target;
+    Packet packet;
+    packet.sa = Address::parse("20.00.00");
+    packet.da = Address::parse("80.ff.00");
+    packet.command.packetInformation = true;
+    packet.command.protocolVersion = 2;
+    packet.command.packetType = PacketType::Normal;
+    packet.command.dataType = DataType::Response;
+    packet.command.packetNumber = 7;
+    MessageSet fsv_3043((MessageNumber)0x4269);
+    fsv_3043.value = 13;
+    packet.messages.push_back(fsv_3043);
+    test_process_data(bytes_to_hex(packet.encode()), target);
+
+    assert(target.nasa_messages.size() == 1);
+    assert(target.nasa_messages[0].source == "20.00.00");
+    assert(target.nasa_messages[0].data_type == (uint8_t)DataType::Response);
+    assert(target.nasa_messages[0].message_number == 0x4269);
+    assert(target.nasa_messages[0].value == 13);
+
+    // Notifications are reported too; VAR values arrive as raw 16 bit.
+    target = DebugTarget();
+    packet.command.dataType = DataType::Notification;
+    packet.da = Address::parse("ff.ff.ff");
+    packet.messages.clear();
+    MessageSet offset((MessageNumber)0x4248);
+    offset.value = -45;
+    packet.messages.push_back(offset);
+    test_process_data(bytes_to_hex(packet.encode()), target);
+
+    assert(target.nasa_messages.size() == 1);
+    assert(target.nasa_messages[0].message_number == 0x4248);
+    assert((int16_t)target.nasa_messages[0].value == -45);
+
+    // Ack packets carry no values and are not reported.
+    target = DebugTarget();
+    packet.command.dataType = DataType::Ack;
+    packet.messages.clear();
+    test_process_data(bytes_to_hex(packet.encode()), target);
+    assert(target.nasa_messages.empty());
+}
+
 int main(int argc, char *argv[])
 {
     test_nasa_1();
     test_nasa_2();
     test_process_data();
+    test_nasa_message_listener();
     
     // NASA temperature sensor tests
     test_nasa_room_temperature();

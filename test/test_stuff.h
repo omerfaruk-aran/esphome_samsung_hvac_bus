@@ -37,6 +37,21 @@ public:
         cout << "> ack_data id=" << (int)id << endl;
     }
 
+    struct NasaMessageRecord
+    {
+        std::string source;
+        std::string dest;
+        uint8_t data_type;
+        uint16_t message_number;
+        long value;
+    };
+    std::vector<NasaMessageRecord> nasa_messages;
+    void on_nasa_message(const std::string &source, const std::string &dest, uint8_t data_type,
+                         uint16_t message_number, long value) override
+    {
+        nasa_messages.push_back({source, dest, data_type, message_number, value});
+    }
+
     std::string last_register_address;
     void register_address(const std::string address) override
     {

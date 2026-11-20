@@ -1197,6 +1197,17 @@ namespace esphome
                 LOG_PACKET_RECV("MSG: %s", packet_);
             }
 
+            if (packet_.command.dataType != DataType::Ack && packet_.command.dataType != DataType::Nack)
+            {
+                for (auto &message : packet_.messages)
+                {
+                    if (message.type == Structure)
+                        continue;
+                    target->on_nasa_message(source, dest, (uint8_t)packet_.command.dataType,
+                                            (uint16_t)message.messageNumber, message.value);
+                }
+            }
+
             if (static_cast<NasaProtocol *>(get_protocol(source))->process_display_packet(target, packet_))
             {
                 LOG_PACKET_RECV("Display light", packet_);

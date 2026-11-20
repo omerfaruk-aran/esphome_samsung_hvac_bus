@@ -85,6 +85,12 @@ namespace esphome
                 on_sent();
             }
             virtual void set_display_light(const std::string &address, optional<bool> value) {}
+            // Called for every decoded NASA message set, whatever the packet type
+            // (Notification, Response, Write, Request, Read). Lets other components
+            // observe values that samsung_ac itself does not handle (e.g. FSV read-back).
+            // data_type is the NASA DataType as uint8_t; structure messages are skipped.
+            virtual void on_nasa_message(const std::string &source, const std::string &dest, uint8_t data_type,
+                                         uint16_t message_number, long value) {}
             virtual void ack_data(uint8_t id) = 0;
             virtual void register_address(const std::string address) = 0;
             virtual void set_power(const std::string address, bool value) = 0;

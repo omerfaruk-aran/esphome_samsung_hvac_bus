@@ -4,6 +4,8 @@
 #include <map>
 #include <optional>
 #include <queue>
+#include <functional>
+#include <vector>
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "samsung_ac_device.h"
@@ -135,6 +137,20 @@ namespace esphome
       }
 
       void ack_data(uint8_t id);
+
+      // Listener for every decoded NASA message (see MessageTarget::on_nasa_message).
+      using NasaMessageListener = std::function<void(const std::string &source, const std::string &dest,
+                                                     uint8_t data_type, uint16_t message_number, long value)>;
+      void add_nasa_message_listener(NasaMessageListener &&listener)
+      {
+        nasa_message_listeners_.push_back(std::move(listener));
+      }
+      void on_nasa_message(const std::string &source, const std::string &dest, uint8_t data_type,
+                           uint16_t message_number, long value) override
+      {
+        for (auto &listener : nasa_message_listeners_)
+          listener(source, dest, data_type, message_number, value);
+      }
 
       void set_room_temperature(const std::string address, float value) override
       {
@@ -294,6 +310,7 @@ namespace esphome
       std::map<std::string, Samsung_AC_Device *> devices_;
       DeviceStateTracker<Mode> state_tracker_{1000};
       std::set<std::string> addresses_;
+      std::vector<NasaMessageListener> nasa_message_listeners_;
 
       std::deque<OutgoingData> send_queue_;
       std::vector<uint8_t> data_;

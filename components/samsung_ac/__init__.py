@@ -42,6 +42,9 @@ DEPENDENCIES = ["uart"]
 AUTO_LOAD = ["sensor", "binary_sensor", "button", "switch", "select", "number", "climate", "text_sensor"]
 MULTI_CONF = False
 
+# Lets companion components detect the NASA message listener hook.
+NASA_MESSAGE_LISTENER = True
+
 CONF_SAMSUNG_AC_ID = "samsung_ac_id"
 
 samsung_ac = cg.esphome_ns.namespace("samsung_ac")
@@ -483,6 +486,7 @@ async def to_code(config):
         cg.add_library("heman/AsyncMqttClient-esphome", "2.0.0")
 
     var = cg.new_Pvariable(config[CONF_ID])
+    cg.add_define("USE_SAMSUNG_AC_NASA_MESSAGE_LISTENER")
     if CONF_FLOW_CONTROL_PIN in config:
         pin = await gpio_pin_expression(config[CONF_FLOW_CONTROL_PIN])
         cg.add(var.set_flow_control_pin(pin))
