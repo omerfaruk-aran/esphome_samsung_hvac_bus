@@ -30,6 +30,7 @@ The following Samsung units have been confirmed to work with the NASA protocol:
 - AR12TSFABWKNCV
 - AR12TSFACWKX
 - AC071TNHDKG
+- AM040BXMDEH/EU (DVM S Eco HP outdoor) with AM056NN1DEHEU and AM022NN1PEHEU 1-way cassettes and an AM022TNVDKH/EU NeoForte wall unit
 
 ### NonNASA Protocol
 
