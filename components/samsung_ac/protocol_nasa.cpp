@@ -888,7 +888,7 @@ namespace esphome
         {
             if (debug_mqtt_connected())
             {
-                static const std::string topic_prefix = "samsung_ac/nasa/" + source;
+                const std::string topic_prefix = "samsung_ac/nasa/" + source + "/";
                 std::string topic_suffix;
                 std::string payload;
 
