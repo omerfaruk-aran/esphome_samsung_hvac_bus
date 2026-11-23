@@ -98,6 +98,11 @@ namespace esphome
         debug_log_raw_bytes = value;
       }
 
+      void set_debug_log_diagnostics(bool value)
+      {
+        debug_log_diagnostics = value;
+      }
+
       void set_non_nasa_keepalive(bool value)
       {
         non_nasa_keepalive = value;
@@ -239,7 +244,19 @@ namespace esphome
       void set_custom_sensor(const std::string address, uint16_t message_number, float value) override
       {
         execute_if_device_exists(address, [message_number, value](Samsung_AC_Device *dev)
-                                 { dev->update_custom_sensor(message_number, value); });
+                                  { dev->update_custom_sensor(message_number, value); });
+      }
+
+      bool wants_nasa_service_telemetry(const std::string &address, uint16_t code) override
+      {
+        const auto *device = find_device(address);
+        return device != nullptr && device->has_nasa_service_entity(code);
+      }
+
+      void set_nasa_service_telemetry(const std::string &address, uint16_t code, const NasaServiceValue &value) override
+      {
+        execute_if_device_exists(address, [code, &value](Samsung_AC_Device *dev)
+                                 { dev->update_nasa_service_telemetry(code, value); });
       }
 
       void set_error_code(const std::string address, int value) override

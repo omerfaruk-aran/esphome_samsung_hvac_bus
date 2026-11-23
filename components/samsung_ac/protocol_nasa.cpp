@@ -3,6 +3,7 @@
 #include "esphome/core/hal.h"
 #include "util.h"
 #include "log.h"
+#include "nasa_diagnostics.h"
 #include "protocol_nasa.h"
 #include "debug_mqtt.h"
 #include <unordered_map>
@@ -416,8 +417,20 @@ namespace esphome
             cursor++;
 
             messages.clear();
+            const unsigned int payload_end = size - 1; // First CRC byte.
+            constexpr unsigned int scalar_sizes[] = {3, 4, 6};
             for (int i = 1; i <= capacity; ++i)
             {
+                if (payload_end - cursor < 2)
+                    return {DecodeResultType::Discard, total_len};
+                const auto type = static_cast<MessageSetType>((pkt[cursor] & 0x06) >> 1);
+                if (type == Structure)
+                {
+                    if (capacity != 1 || payload_end - cursor - 2 > sizeof(Buffer::data))
+                        return {DecodeResultType::Discard, total_len};
+                }
+                else if (payload_end - cursor < scalar_sizes[type])
+                    return {DecodeResultType::Discard, total_len};
                 MessageSet set = MessageSet::decode(pkt, cursor, capacity);
                 messages.push_back(set);
                 cursor += set.size;
@@ -744,12 +757,12 @@ namespace esphome
             }
             if (type != DataType::Response || state.phase != DisplayPhase::Reading)
                 return false;
-            if (target->get_miliseconds() - state.sent_at >= 2000)
-                return true;
             for (const auto &message : packet.messages)
             {
                 if (message.messageNumber != MessageNumber::ENUM_in_display_light)
                     continue;
+                if (target->get_miliseconds() - state.sent_at >= 2000)
+                    return true;
                 state.phase = DisplayPhase::Idle;
                 const auto queued = outgoing_queue_.find(source);
                 const bool superseded = state.refresh_pending ||
@@ -1192,6 +1205,11 @@ namespace esphome
 
             target->register_address(source);
 
+            if (debug_log_diagnostics)
+            {
+                log_nasa_diagnostics(packet_);
+            }
+
             if (debug_log_undefined_messages)
             {
                 LOG_PACKET_RECV("MSG: %s", packet_);
@@ -1201,6 +1219,17 @@ namespace esphome
             {
                 LOG_PACKET_RECV("Display light", packet_);
                 return;
+            }
+
+            if (packet_.command.dataType == DataType::Notification || packet_.command.dataType == DataType::Response)
+            {
+                for (std::size_t index = 0; index < packet_.messages.size(); ++index)
+                {
+                    const auto code = static_cast<uint16_t>(packet_.messages[index].messageNumber);
+                    if (target->wants_nasa_service_telemetry(source, code))
+                        if (const auto value = decode_nasa_service_telemetry(packet_, index))
+                            target->set_nasa_service_telemetry(source, code, *value);
+                }
             }
 
             if (packet_.command.dataType == DataType::Ack)
@@ -1245,6 +1274,8 @@ namespace esphome
 
             for (auto &message : packet_.messages)
             {
+                if (message.type == Structure && static_cast<uint16_t>(message.messageNumber) == 0x461E)
+                    continue; // Error history is not a raw scalar.
                 process_messageset(source, dest, message, target);
             }
         }
