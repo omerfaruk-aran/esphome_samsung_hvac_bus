@@ -26,6 +26,7 @@ namespace esphome
                 UnsignedTenths,
                 LowByte,
                 HighWordTenths,
+                OverloadCountStatus,
                 WhToKwh,
             };
 
@@ -71,15 +72,19 @@ namespace esphome
                 {0, "AUTO"}, {1, "COOL"}, {2, "DRY"}, {3, "FAN"}, {4, "HEAT"}, {21, "COOL_STORAGE"}, {24, "HOT_WATER"},
             };
             constexpr EnumValue MODE_REPORTED[] = {
-                {0, "AUTO"}, {1, "COOL"}, {2, "DRY"}, {3, "FAN"}, {4, "HEAT"}, {11, "AUTO_COOL"},
+                // S-NET distinguishes Unknown here from Auto in the selected mode.
+                {0, "UNKNOWN"}, {1, "COOL"}, {2, "DRY"}, {3, "FAN"}, {4, "HEAT"}, {11, "AUTO_COOL"},
                 {12, "AUTO_DRY"}, {13, "AUTO_FAN"}, {14, "AUTO_HEAT"}, {21, "COOL_STORAGE"}, {24, "HOT_WATER"}, {255, "NULL"},
             };
             constexpr EnumValue FAN_SELECTED[] = {{0, "AUTO"}, {1, "LOW"}, {2, "MID"}, {3, "HIGH"}, {4, "TURBO"}};
             constexpr EnumValue FAN_REPORTED[] = {
                 {1, "LOW"}, {2, "MID"}, {3, "HIGH"}, {4, "TURBO"},
-                {10, "AUTO_LOW"}, {11, "AUTO_MID"}, {12, "AUTO_HIGH"}, {254, "OFF"},
+                {10, "AUTO_LOW"}, {11, "AUTO_MID"}, {12, "AUTO_HIGH"},
+                {13, "UL"}, {14, "LL"}, {15, "HH"}, {16, "SPEED"},
+                {17, "NATURAL_LOW"}, {18, "NATURAL_MID"}, {19, "NATURAL_HIGH"}, {254, "OFF"},
             };
             constexpr EnumValue THERMAL_DEMAND[] = {{0, "NO_DEMAND"}, {1, "DEMAND"}};
+            constexpr EnumValue ROOM_SENSOR_SELECTED[] = {{0, "INDOOR_UNIT"}, {1, "WIRED_REMOTE"}};
             constexpr EnumValue QUIET_MODE_AVAILABLE[] = {{1, "SUPPORTED"}};
             constexpr EnumValue INDOOR_PRESET[] = {
                 {0, "NONE"}, {1, "SLEEP"}, {2, "QUIET"}, {3, "FAST"}, {6, "LONG_REACH"}, {7, "ECO"}, {9, "WINDFREE"},
@@ -89,13 +94,14 @@ namespace esphome
                 {0, "STOP"}, {1, "SAFETY"}, {2, "NORMAL"}, {3, "BALANCE"}, {4, "RECOVERY"}, {5, "DEFROST"},
                 {6, "COMPRESSOR_DOWN"}, {7, "INHIBITED"}, {8, "LINE_TEST"}, {9, "PCB_TEST"}, {10, "TEST"}, {11, "CHARGE"},
                 {12, "PUMP_DOWN"}, {13, "PUMP_OUT"}, {14, "VACUUM"}, {15, "CALORIMETRIC_TEST"}, {16, "PUMP_DOWN_END"},
-                {17, "SECONDARY_STOP"}, {18, "PIPE_CHECK"}, {19, "REFRIGERANT_CHECK"}, {20, "FPT_TEST"}, {21, "HEAT_COOL_CHANGE"},
+                {17, "SECONDARY_STOP"}, {18, "PIPE_CHECK"}, {19, "REFRIGERANT_CHECK"}, {20, "FPT_TEST"}, {21, "NONSTOP_HEAT_COOL_CHANGE"},
                 {22, "AUTO_INSPECTION"}, {23, "ELECTRICAL_DISCHARGE"}, {24, "SPLIT_DEFROST"}, {25, "INVERTER_CHECK"},
                 {26, "NONSTOP_DEFROST"}, {27, "REMOTE_TEST"}, {28, "NOMINAL_TEST"}, {29, "PC_TEST"}, {30, "THERMO_OFF_PUMP_DOWN"},
-                {31, "THREE_PHASE_TEST"}, {32, "SMART_INSTALL"}, {33, "DEFROST_PERFORMANCE_TEST"}, {34, "FAN_PCB_CHECK"},
+                {31, "THREE_PHASE_TEST"}, {32, "SMART_INSTALL_TEST"}, {33, "DEFROST_PERFORMANCE_TEST"}, {34, "INVERTER_FAN_PBA_CHECK"},
                 {35, "AUTO_PIPE_PAIRING"}, {36, "AUTO_CHARGE"},
             };
-            constexpr EnumValue OUTDOOR_THERMAL_MODE[] = {{1, "COOL"}, {2, "HEAT"}, {3, "COOL_DOMINANT"}, {4, "HEAT_DOMINANT"}};
+            constexpr EnumValue OUTDOOR_THERMAL_MODE[] = {{0, "UNDEFINED"}, {1, "COOL"}, {2, "HEAT"}, {3, "COOL_DOMINANT"}, {4, "HEAT_DOMINANT"}};
+            constexpr EnumValue TEST_COMPLETION[] = {{0, "NOT_COMPLETED"}, {1, "COMPLETED"}};
             constexpr EnumValue DEICE_STEP[] = {{1, "STEP_1"}, {2, "STEP_2"}, {3, "STEP_3"}, {7, "FINAL_STEP"}, {255, "NO_DEFROST"}};
             constexpr EnumValue OUTDOOR_ERROR[] = {{0, "NO_ERROR"}};
 
@@ -140,6 +146,7 @@ namespace esphome
                 enum_descriptor(0x4045, "quiet_mode_available", QUIET_MODE_AVAILABLE),
                 enum_descriptor(0x4046, "quiet_mode", OFF_ON),
                 enum_descriptor(0x4060, "indoor_preset", INDOOR_PRESET),
+                enum_descriptor(0x4076, "indoor_room_sensor_selected", ROOM_SENSOR_SELECTED),
                 enum_descriptor(0x407E, "horizontal_swing", OFF_ON),
                 {0x40BC, "in_state_key_tag"},
                 {0x40BD, "in_empty_room_control_used"},
@@ -147,11 +154,13 @@ namespace esphome
                 {0x4201, "indoor_setpoint", Conversion::SignedTenths, "C"},
                 raw_descriptor(0x4202, "unconfirmed_0x4202", Confidence::Provisional),
                 {0x4203, "indoor_room_temperature", Conversion::SignedTenths, "C"},
-                {0x4204, "indoor_room_temperature_modified", Conversion::SignedTenths, "C", Confidence::Provisional},
+                {0x4204, "indoor_temperature_0x4204", Conversion::SignedTenths, "C", Confidence::Provisional},
                 {0x4205, "indoor_evaporator_inlet_temperature", Conversion::SignedTenths, "C"},
                 {0x4206, "indoor_evaporator_outlet_temperature", Conversion::SignedTenths, "C"},
                 raw_descriptor(0x4211, "indoor_capacity_request", Confidence::Provisional),
                 raw_descriptor(0x4212, "indoor_capacity_absolute", Confidence::Provisional),
+                {0x4217, "indoor_eev_1_position", Conversion::Unsigned},
+                {0x4218, "indoor_eev_2_position", Conversion::Unsigned},
                 {0x4229, "indoor_model_information"},
                 raw_descriptor(0x42D1, "particle_sensor_pm10", Confidence::Documented, 0xFFFF),
                 raw_descriptor(0x42D2, "particle_sensor_pm2_5", Confidence::Documented, 0xFFFF),
@@ -169,9 +178,10 @@ namespace esphome
                 enum_descriptor(0x8001, "outdoor_operation_state", OPERATION_STATE),
                 enum_descriptor(0x8003, "outdoor_thermal_mode", OUTDOOR_THERMAL_MODE),
                 enum_descriptor(0x8010, "compressor_1_running", OFF_ON),
+                enum_descriptor(0x8017, "hot_gas_valve_1_drive", OFF_ON),
                 enum_descriptor(0x801A, "four_way_valve_drive", OFF_ON),
                 raw_descriptor(0x8020, "outdoor_eev_state", Confidence::Provisional),
-                raw_descriptor(0x8046, "test_operation_complete", Confidence::Provisional),
+                enum_descriptor(0x8046, "outdoor_test_completion", TEST_COMPLETION),
                 raw_descriptor(0x8047, "outdoor_service_mode", Confidence::Provisional),
                 enum_descriptor(0x8061, "indoor_deice_step", DEICE_STEP),
                 raw_descriptor(0x8066, "outdoor_mode_limit", Confidence::Provisional),
@@ -184,16 +194,19 @@ namespace esphome
                 raw_descriptor(0x8200, "outdoor_mode_option", Confidence::Provisional),
                 {0x8202, "compressor_count", Conversion::Unsigned, "count", Confidence::Documented, 0xFFFF},
                 {0x8204, "outdoor_air_temperature", Conversion::SignedTenths, "C"},
+                {0x8206, "outdoor_high_pressure", Conversion::SignedTenths, "kgf/cm2"},
+                {0x8208, "outdoor_low_pressure", Conversion::SignedTenths, "kgf/cm2"},
                 {0x820A, "compressor_1_discharge_temperature", Conversion::SignedTenths, "C"},
                 {0x8217, "compressor_1_ct_current", Conversion::UnsignedTenths, "A"},
                 {0x8218, "outdoor_heat_exchanger_outlet_temperature", Conversion::SignedTenths, "C"},
                 {0x821A, "compressor_suction_temperature", Conversion::SignedTenths, "C", Confidence::Documented, 0xFFFF},
+                {0x821C, "outdoor_liquid_line_temperature", Conversion::SignedTenths, "C"},
                 {0x8223, "compressor_discharge_target_temperature", Conversion::SignedTenths, "C"},
-                {0x8229, "outdoor_eev_1_position"},
-                {0x822A, "outdoor_eev_2_position"},
-                {0x822B, "outdoor_eev_3_position"},
-                {0x822C, "outdoor_eev_4_position"},
-                {0x822D, "outdoor_eev_5_position"},
+                {0x8229, "outdoor_eev_1_position", Conversion::Unsigned},
+                {0x822A, "outdoor_eev_2_position", Conversion::Unsigned},
+                {0x822B, "outdoor_eev_3_position", Conversion::Unsigned},
+                {0x822C, "outdoor_eev_4_position", Conversion::Unsigned},
+                {0x822D, "outdoor_eev_5_position", Conversion::Unsigned},
                 raw_descriptor(0x8233, "outdoor_operating_capacity", Confidence::Provisional),
                 enum_descriptor(0x8235, "outdoor_error_code", OUTDOOR_ERROR),
                 {0x8236, "compressor_1_frequency_requested", Conversion::Unsigned, "Hz"},
@@ -225,6 +238,7 @@ namespace esphome
                 {0x82BC, "outdoor_project_code"},
                 raw_descriptor(0x82DB, "phase_current_unverified", Confidence::Provisional),
                 raw_descriptor(0x82E3, "outdoor_product_capacity_code", Confidence::Provisional),
+                {0x82F5, "outdoor_overload_detection", Conversion::OverloadCountStatus},
                 {0x8411, "outdoor_electrical_power", Conversion::Unsigned, "W"},
                 // The reported aggregate does not establish an averaging interval.
                 {0x8413, "outdoor_electrical_power_aggregate", Conversion::Unsigned, "W"},
@@ -359,6 +373,8 @@ namespace esphome
                     return {std::to_string(raw & 0xFF), descriptor->unit};
                 case Conversion::HighWordTenths:
                     return {fixed_decimal(raw >> 16, 10, 1), descriptor->unit};
+                case Conversion::OverloadCountStatus:
+                    return {"count:" + std::to_string(raw >> 8) + ",status:" + std::to_string(raw & 0xFF), descriptor->unit};
                 case Conversion::WhToKwh:
                     return {fixed_decimal(raw, 1000, 3), descriptor->unit};
                 }

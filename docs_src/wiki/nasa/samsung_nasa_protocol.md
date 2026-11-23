@@ -797,7 +797,7 @@ Below tables show the available information from these files in a concise layout
 | 0x82E8 | VAR_OUT_LOAD_MCU_HR_BYPASS_EEV  | | MCU HR Bypass EEV opening diagram   | |
 | 0x82E9 | VAR_OUT_SENSOR_PFCM1 | | PFCM#1 element temperature | Min -54, Max 3000   |
 | 0x82ED | VAR_OUT\*??     | | | |
-| 0x82F5 | VAR\*OUT_HIGH_OVERLOAD_DETECT   | | PFCM#1 element temperature | |
+| 0x82F5 | VAR\*OUT_HIGH_OVERLOAD_DETECT   | | Outdoor overload detection | S-NET Pro 2 separates the high byte (count) and low byte (status). Individual status meanings are not verified. The PFCM #1 temperature is `0x82E9`. |
 | 0x82F6 | VAR_OUT\*??     | | | seen in NASA data from EHS Mono HT Quiet |
 | 0x82F9 | VAR\*OUT_SENSOR_SUCTION3_1SEC   | | Suction3 temperature     | |
 | 0x82FC | VAR_OUT_LOAD_EVI_SOL_EEV | | EVI SOL EEV | |
@@ -815,8 +815,8 @@ Below tables show the available information from these files in a concise layout
 | 0x8410 | LVAR*OUT*??     | | | |
 | 0x8411 | LVAR*OUT*??     | NASA\*OUTDOOR_CONTROL_WATTMETER_1UNIT | Instantaneous power consumption of outdoor unit. One outdoor unit. Not used by the controller. | appears about every 135 seconds, so less often than 0x8413    |
 | 0x8412 | NASA_OUTDOOR_CONTROL_WATTMETER_1UNIT_ACCUM    | | Cumulative power consumption of outdoor unit. One outdoor unit. Not used by the controller.    | |
-| 0x8413 | LVAR_OUT_CONTROL_WATTMETER_1W_1MIN_SUM   | NASA_OUTDOOR_CONTROL_WATTMETER_ALL_UNIT    | Outdoor unit instantaneous power consumption. Sum of modules | appears about every 30 seconds, not once in a minute     |
-| 0x8414 | LVAR_OUT\*??    | NASA\*OUTDOOR_CONTROL_WATTMETER_ALL_UNIT_ACCUM  | Outdoor unit cumulative power consumption. Sum of modules | value is Wh, so do div 1000     |
+| 0x8413 | LVAR_OUT_CONTROL_WATTMETER_1W_1MIN_SUM   | NASA_OUTDOOR_CONTROL_WATTMETER_ALL_UNIT    | Reported electrical power | S-NET Pro 2 displays raw W divided by 1000 as kW. Observed about every 30 seconds on one EHS installation; this does not establish the averaging window or which loads are included. |
+| 0x8414 | LVAR_OUT\*??    | NASA\*OUTDOOR_CONTROL_WATTMETER_ALL_UNIT_ACCUM  | Reported cumulative electrical energy | The integration interprets the raw value as Wh and divides by 1000 for kWh. This interpretation does not come from the inspected S-NET Pro 2 rules. |
 | 0x8415 | LVAR_OUT\*??    | NASA\*OUTDOOR_CONTROL_WATTMETER_TOTAL_SUM  | Total (indoor + outdoor) instantaneous power consumption  | never seen in NASA data from EHS Mono HT Quiet  |
 | 0x8416 | LVAR_OUT\*??    | NASA\*OUTDOOR_CONTROL_WATTMETER_TOTAL_SUM_ACCUM | Total (indoor + outdoor) cumulative power consumption | never seen in NASA data from EHS Mono HT Quiet  |
 | 0x8417 | LVAR_OUT\*??    | NASA\*OUTDOOR_VARIABLE_SETUP_INFO | | |
@@ -1581,7 +1581,7 @@ Below tables show the available information from these files in a concise layout
 | 0x8411 | LVAR |   |     |   |
 | 0x8412 | |   |     |   |
 | 0x8413 | LVAR | false  | kW  | division by 1000   |
-| 0x8414 | LVAR | false  | kW  | division by 1000   |
+| 0x8414 | LVAR | false  | kWh | raw Wh divided by 1000 (integration interpretation) |
 | 0x8415 | LVAR |   |     |   |
 | 0x8416 | LVAR |   |     |   |
 | 0x8417 | LVAR |   |     |   |

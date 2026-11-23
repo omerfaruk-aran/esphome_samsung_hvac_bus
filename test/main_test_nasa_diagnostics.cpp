@@ -77,9 +77,11 @@ namespace
             long value;
             const char *expected;
         } cases[] = {
+            {0x4002, Enum, 0, "name=indoor_mode_reported raw=0 raw_hex=0x00 value=UNKNOWN unit=na status=decoded confidence=documented"},
             {0x8238, Variable, 30, "name=compressor_1_frequency_actual raw=30 raw_hex=0x001E value=30 unit=Hz status=decoded confidence=documented"},
-            {0x4204, Variable, -1, "name=indoor_room_temperature_modified raw=65535 raw_hex=0xFFFF value=-0.1 unit=C status=decoded confidence=provisional"},
+            {0x4204, Variable, -1, "name=indoor_temperature_0x4204 raw=65535 raw_hex=0xFFFF value=-0.1 unit=C status=decoded confidence=provisional"},
             {0x4205, Variable, 0xFE0C, "name=indoor_evaporator_inlet_temperature raw=65036 raw_hex=0xFE0C value=-50.0 unit=C status=decoded confidence=documented"},
+            {0x4206, Variable, 0xFE0C, "name=indoor_evaporator_outlet_temperature raw=65036 raw_hex=0xFE0C value=-50.0 unit=C status=decoded confidence=documented"},
             {0x8217, Variable, 31, "name=compressor_1_ct_current raw=31 raw_hex=0x001F value=3.1 unit=A status=decoded confidence=documented"},
             {0x0402, LongVariable, 0x12345678, "name=remote_controller_address raw=305419896 raw_hex=0x12345678 value=120 unit=na status=decoded confidence=documented"},
             {0x0411, LongVariable, 0x00F90011, "name=ad_install_level_cool_mode_upper raw=16318481 raw_hex=0x00F90011 value=24.9 unit=C status=decoded confidence=documented"},
@@ -89,18 +91,30 @@ namespace
             {0x8413, LongVariable, -2147483647L - 1, "name=outdoor_electrical_power_aggregate raw=2147483648 raw_hex=0x80000000 value=2147483648 unit=W status=decoded confidence=documented"},
             {0x823B, Variable, 151, "name=inverter_dc_link_voltage raw=151 raw_hex=0x0097 value=na unit=na status=raw_only confidence=provisional"},
             {0x4211, Variable, 30, "name=indoor_capacity_request raw=30 raw_hex=0x001E value=na unit=na status=raw_only confidence=provisional"},
-            {0x822A, Variable, 158, "name=outdoor_eev_2_position raw=158 raw_hex=0x009E value=na unit=na status=raw_only confidence=documented"},
             {0x4038, Enum, 0, "name=humidity_unverified raw=0 raw_hex=0x00 value=na unit=na status=raw_only confidence=provisional"},
             {0x421C, Variable, 971, "name=unknown_0x421C raw=971 raw_hex=0x03CB value=na unit=na status=unknown_code confidence=unknown"},
             {0x429D, Variable, 965, "name=unknown_0x429D raw=965 raw_hex=0x03C5 value=na unit=na status=unknown_code confidence=unknown"},
             {0x4016, Enum, 1, "name=unknown_0x4016 raw=1 raw_hex=0x01 value=na unit=na status=unknown_code confidence=unknown"},
+            {0x4001, Enum, 0, "name=indoor_mode_selected raw=0 raw_hex=0x00 value=AUTO unit=na status=decoded confidence=documented"},
+            {0x4002, Enum, 11, "name=indoor_mode_reported raw=11 raw_hex=0x0B value=AUTO_COOL unit=na status=decoded confidence=documented"},
             {0x4002, Enum, 255, "name=indoor_mode_reported raw=255 raw_hex=0xFF value=NULL unit=na status=decoded confidence=documented"},
+            {0x4007, Enum, 13, "name=indoor_fan_reported raw=13 raw_hex=0x0D value=UL unit=na status=decoded confidence=documented"},
+            {0x4007, Enum, 14, "name=indoor_fan_reported raw=14 raw_hex=0x0E value=LL unit=na status=decoded confidence=documented"},
+            {0x4007, Enum, 15, "name=indoor_fan_reported raw=15 raw_hex=0x0F value=HH unit=na status=decoded confidence=documented"},
+            {0x4007, Enum, 16, "name=indoor_fan_reported raw=16 raw_hex=0x10 value=SPEED unit=na status=decoded confidence=documented"},
+            {0x4007, Enum, 17, "name=indoor_fan_reported raw=17 raw_hex=0x11 value=NATURAL_LOW unit=na status=decoded confidence=documented"},
+            {0x4007, Enum, 18, "name=indoor_fan_reported raw=18 raw_hex=0x12 value=NATURAL_MID unit=na status=decoded confidence=documented"},
+            {0x4007, Enum, 19, "name=indoor_fan_reported raw=19 raw_hex=0x13 value=NATURAL_HIGH unit=na status=decoded confidence=documented"},
             {0x4007, Enum, 510, "name=indoor_fan_reported raw=254 raw_hex=0xFE value=OFF unit=na status=decoded confidence=documented"},
             {0x8061, Enum, 255, "name=indoor_deice_step raw=255 raw_hex=0xFF value=NO_DEFROST unit=na status=decoded confidence=documented"},
             {0x4001, Enum, 14, "name=indoor_mode_selected raw=14 raw_hex=0x0E value=na unit=na status=unmapped_enum confidence=documented"},
             {0x4007, Enum, 0, "name=indoor_fan_reported raw=0 raw_hex=0x00 value=na unit=na status=unmapped_enum confidence=documented"},
             {0x4045, Enum, 0, "name=quiet_mode_available raw=0 raw_hex=0x00 value=na unit=na status=unmapped_enum confidence=documented"},
+            {0x8001, Enum, 21, "name=outdoor_operation_state raw=21 raw_hex=0x15 value=NONSTOP_HEAT_COOL_CHANGE unit=na status=decoded confidence=documented"},
+            {0x8001, Enum, 32, "name=outdoor_operation_state raw=32 raw_hex=0x20 value=SMART_INSTALL_TEST unit=na status=decoded confidence=documented"},
             {0x8001, Enum, 33, "name=outdoor_operation_state raw=33 raw_hex=0x21 value=DEFROST_PERFORMANCE_TEST unit=na status=decoded confidence=documented"},
+            {0x8001, Enum, 34, "name=outdoor_operation_state raw=34 raw_hex=0x22 value=INVERTER_FAN_PBA_CHECK unit=na status=decoded confidence=documented"},
+            {0x8003, Enum, 0, "name=outdoor_thermal_mode raw=0 raw_hex=0x00 value=UNDEFINED unit=na status=decoded confidence=documented"},
             {0x8235, Variable, 0, "name=outdoor_error_code raw=0 raw_hex=0x0000 value=NO_ERROR unit=na status=decoded confidence=documented"},
             {0x8235, Variable, 256, "name=outdoor_error_code raw=256 raw_hex=0x0100 value=na unit=na status=unmapped_enum confidence=documented"},
             {0x8235, Enum, 0, "name=outdoor_error_code raw=0 raw_hex=0x00 value=na unit=na status=type_mismatch confidence=documented"},
@@ -130,6 +144,46 @@ namespace
             const auto line = format_nasa_diagnostic_scalar(packet, scalar(code, Variable, 0xFE0C), 0);
             assert(line.find("raw=65036 raw_hex=0xFE0C value=na unit=na status=unverified_marker ") != std::string::npos);
             assert(format_nasa_diagnostic_scalar(packet, scalar(code, Variable, 0xFE0D), 0).find("value=-49.9 unit=C status=decoded ") != std::string::npos);
+        }
+    }
+
+    void test_snet_service_readings()
+    {
+        const auto packet = make_packet();
+        const struct
+        {
+            uint16_t code;
+            MessageSetType type;
+            long value;
+            const char *expected;
+        } cases[] = {
+            {0x4076, Enum, 0, "name=indoor_room_sensor_selected raw=0 raw_hex=0x00 value=INDOOR_UNIT unit=na status=decoded confidence=documented"},
+            {0x4076, Enum, 1, "name=indoor_room_sensor_selected raw=1 raw_hex=0x01 value=WIRED_REMOTE unit=na status=decoded confidence=documented"},
+            {0x4076, Enum, 2, "name=indoor_room_sensor_selected raw=2 raw_hex=0x02 value=na unit=na status=unmapped_enum confidence=documented"},
+            {0x8017, Enum, 0, "name=hot_gas_valve_1_drive raw=0 raw_hex=0x00 value=OFF unit=na status=decoded confidence=documented"},
+            {0x8017, Enum, 1, "name=hot_gas_valve_1_drive raw=1 raw_hex=0x01 value=ON unit=na status=decoded confidence=documented"},
+            {0x8017, Enum, 2, "name=hot_gas_valve_1_drive raw=2 raw_hex=0x02 value=na unit=na status=unmapped_enum confidence=documented"},
+            {0x8229, Variable, 0, "name=outdoor_eev_1_position raw=0 raw_hex=0x0000 value=0 unit=na status=decoded confidence=documented"},
+            {0x822A, Variable, 158, "name=outdoor_eev_2_position raw=158 raw_hex=0x009E value=158 unit=na status=decoded confidence=documented"},
+            {0x822B, Variable, 240, "name=outdoor_eev_3_position raw=240 raw_hex=0x00F0 value=240 unit=na status=decoded confidence=documented"},
+            {0x822C, Variable, 310, "name=outdoor_eev_4_position raw=310 raw_hex=0x0136 value=310 unit=na status=decoded confidence=documented"},
+            {0x822D, Variable, 10000, "name=outdoor_eev_5_position raw=10000 raw_hex=0x2710 value=10000 unit=na status=decoded confidence=documented"},
+            {0x82F5, Variable, 0x1203, "name=outdoor_overload_detection raw=4611 raw_hex=0x1203 value=count:18,status:3 unit=na status=decoded confidence=documented"},
+            {0x82F5, Variable, 0xFF00, "name=outdoor_overload_detection raw=65280 raw_hex=0xFF00 value=count:255,status:0 unit=na status=decoded confidence=documented"},
+            {0x4217, Variable, 120, "name=indoor_eev_1_position raw=120 raw_hex=0x0078 value=120 unit=na status=decoded confidence=documented"},
+            {0x4218, Variable, 3000, "name=indoor_eev_2_position raw=3000 raw_hex=0x0BB8 value=3000 unit=na status=decoded confidence=documented"},
+            {0x8046, Enum, 0, "name=outdoor_test_completion raw=0 raw_hex=0x00 value=NOT_COMPLETED unit=na status=decoded confidence=documented"},
+            {0x8046, Enum, 1, "name=outdoor_test_completion raw=1 raw_hex=0x01 value=COMPLETED unit=na status=decoded confidence=documented"},
+            {0x8046, Enum, 2, "name=outdoor_test_completion raw=2 raw_hex=0x02 value=na unit=na status=unmapped_enum confidence=documented"},
+            {0x8206, Variable, 185, "name=outdoor_high_pressure raw=185 raw_hex=0x00B9 value=18.5 unit=kgf/cm2 status=decoded confidence=documented"},
+            {0x8208, Variable, 0xFFF9, "name=outdoor_low_pressure raw=65529 raw_hex=0xFFF9 value=-0.7 unit=kgf/cm2 status=decoded confidence=documented"},
+            {0x821C, Variable, 0xFFDB, "name=outdoor_liquid_line_temperature raw=65499 raw_hex=0xFFDB value=-3.7 unit=C status=decoded confidence=documented"},
+        };
+        for (const auto &entry : cases)
+        {
+            const auto line = format_nasa_diagnostic_scalar(packet, scalar(entry.code, entry.type, entry.value), 0);
+            check_line_bound(line);
+            expect_line(line.substr(line.find("name=")), entry.expected);
         }
     }
 
@@ -288,14 +342,14 @@ namespace
     constexpr const char *INDOOR_NOTIFICATION = "320016200001b300ffc0140102420400e9421c03cb555734";
     const std::string ROOM_DIAGNOSTIC =
         "NASA_DIAG src=20.00.01 dst=b3.00.ff dt=notification seq=1 index=0 code=0x4204 type=variable "
-        "name=indoor_room_temperature_modified raw=233 raw_hex=0x00E9 value=23.3 unit=C status=decoded confidence=provisional";
+        "name=indoor_temperature_0x4204 raw=233 raw_hex=0x00E9 value=23.3 unit=C status=decoded confidence=provisional";
     const std::string UNKNOWN_DIAGNOSTIC =
         "NASA_DIAG src=20.00.01 dst=b3.00.ff dt=notification seq=1 index=1 code=0x421C type=variable "
         "name=unknown_0x421C raw=971 raw_hex=0x03CB value=na unit=na status=unknown_code confidence=unknown";
     constexpr const char *ROOM_NOTIFICATION = "320012200000b000ffc0140201420400f44b4d34";
     const std::string SECOND_ROOM_DIAGNOSTIC =
         "NASA_DIAG src=20.00.00 dst=b0.00.ff dt=notification seq=2 index=0 code=0x4204 type=variable "
-        "name=indoor_room_temperature_modified raw=244 raw_hex=0x00F4 value=24.4 unit=C status=decoded confidence=provisional";
+        "name=indoor_temperature_0x4204 raw=244 raw_hex=0x00F4 value=24.4 unit=C status=decoded confidence=provisional";
 
     struct Callback
     {
@@ -354,6 +408,34 @@ namespace
             expect_line(actual[i], expected[i]);
     }
 
+    void test_energy_counter_preserves_wire_value()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        const bool previous_diagnostics = std::exchange(debug_log_diagnostics, true);
+        RxTarget target;
+        const auto lines = capture_diagnostics([&]()
+        {
+            // Literal big-endian RX frames with CRCs; do not use the TX encoder.
+            test_process_data("320014100000b000ffc01401018414010000018bb834", target);
+            test_process_data("320014100000b000ffc014020184147fffffff61af34", target);
+            test_process_data("320014100000b000ffc0140301841480000000bfb334", target);
+            test_process_data("320014100000b000ffc01404018414ffffffff3c5c34", target);
+        });
+        debug_log_diagnostics = previous_diagnostics;
+        protocol_processing = previous_processing;
+        assert(target.all_publish_data.empty());
+        expect_records(lines, {
+            "NASA_DIAG src=10.00.00 dst=b0.00.ff dt=notification seq=1 index=0 code=0x8414 type=long_variable "
+            "name=outdoor_electrical_energy_total raw=16777217 raw_hex=0x01000001 value=16777.217 unit=kWh status=decoded confidence=documented",
+            "NASA_DIAG src=10.00.00 dst=b0.00.ff dt=notification seq=2 index=0 code=0x8414 type=long_variable "
+            "name=outdoor_electrical_energy_total raw=2147483647 raw_hex=0x7FFFFFFF value=2147483.647 unit=kWh status=decoded confidence=documented",
+            "NASA_DIAG src=10.00.00 dst=b0.00.ff dt=notification seq=3 index=0 code=0x8414 type=long_variable "
+            "name=outdoor_electrical_energy_total raw=2147483648 raw_hex=0x80000000 value=2147483.648 unit=kWh status=decoded confidence=documented",
+            "NASA_DIAG src=10.00.00 dst=b0.00.ff dt=notification seq=4 index=0 code=0x8414 type=long_variable "
+            "name=outdoor_electrical_energy_total raw=4294967295 raw_hex=0xFFFFFFFF value=4294967.295 unit=kWh status=decoded confidence=documented",
+        });
+    }
+
     void test_unaccepted_nasa_rx_is_silent()
     {
         const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
@@ -405,6 +487,8 @@ namespace
         auto lines = capture_diagnostics([&]()
         {
             test_process_data(INDOOR_NOTIFICATION, target);
+            // Same sender and sequence as the preceding 0x4204 frame, but 0x4203 must not update climate.
+            test_process_data("320012200001b300ffc01401014203fff4784d34", target);
             test_process_data(ROOM_NOTIFICATION, target); // Same code, different addresses.
             test_process_data("32000e20000180ff00c016030096ac34", target); // Empty ACK.
             test_process_data("32000e20000180ff00c0170400380b34", target); // Empty NACK.
@@ -430,6 +514,7 @@ namespace
         const std::vector<Callback> callbacks = {
             {"address", "20.00.01"}, {"custom", "20.00.01", 0x4204, 233.0f}, {"room", "20.00.01", 0, 23.3f},
             {"custom", "20.00.01", 0x421C, 971.0f},
+            {"address", "20.00.01"}, {"custom", "20.00.01", 0x4203, 65524.0f},
             {"address", "20.00.00"}, {"custom", "20.00.00", 0x4204, 244.0f}, {"room", "20.00.00", 0, 24.4f},
             {"address", "20.00.01"}, {"ack", {}, 3}, {"address", "20.00.01"},
             {"address", "50.00.00"}, {"address", "80.ff.00"}, {"address", "50.00.00"},
@@ -443,6 +528,8 @@ namespace
         expect_records(enabled.diagnostics, {
             ROOM_DIAGNOSTIC,
             UNKNOWN_DIAGNOSTIC,
+            "NASA_DIAG src=20.00.01 dst=b3.00.ff dt=notification seq=1 index=0 code=0x4203 type=variable "
+            "name=indoor_room_temperature raw=65524 raw_hex=0xFFF4 value=-1.2 unit=C status=decoded confidence=documented",
             SECOND_ROOM_DIAGNOSTIC,
             "NASA_DIAG src=20.00.01 dst=80.ff.00 dt=ack seq=3 fields=0",
             "NASA_DIAG src=20.00.01 dst=80.ff.00 dt=nack seq=4 fields=0",
@@ -599,6 +686,8 @@ int main()
     test_scalar_contract();
     test_scalar_conversions_and_fallbacks();
     test_markers_are_per_code();
+    test_snet_service_readings();
+    test_energy_counter_preserves_wire_value();
     test_empty_packet_records();
     test_scalar_logging_keeps_order_and_duplicates();
     test_structure_fragments_are_lossless();

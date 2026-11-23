@@ -53,7 +53,8 @@ samsung_ac:
 ```
 
 This passive log reports accepted NASA frames as they arrive, including repeats.
-It sends no queries and creates no entities or MQTT messages.
+It sends no queries, creates no entities, and does not publish via component-specific MQTT debugging.
+ESPHome can still forward these records if MQTT log forwarding is configured.
 Legacy log options are independent: `debug_log_messages`, `debug_log_undefined_messages`, and `debug_log_messages_raw` can stay off.
 `debug_log_messages_on_change` does not filter `NASA_DIAG`.
 
@@ -62,6 +63,38 @@ Empty ACK and NACK frames appear as `fields=0`.
 A decoded field is a bus value, not proof of a physical measurement or command success.
 Do not interpret unknown fields, raw-only values, or unverified markers as measurements.
 Field availability and meaning can vary by model. Do not infer refrigerant charge, delivered capacity, or installation health from these logs.
+
+#### Compare zones during a cooling cycle
+
+With one indoor unit calling for cooling, compare records for each source address over several minutes:
+
+- Compare the indoor setpoint (`0x4201`), room temperature (`0x4203`), and thermostat demand (`0x4028`).
+  Demand is not the indoor unit's power state. The reported mode (`0x4002`) is distinct from the selected mode (`0x4001`).
+  S-NET Pro 2 labels zero `Unknown` for reported mode and `Auto` for selected mode.
+- Compare the two evaporator pipe temperatures (`0x4205`, `0x4206`). These are not air temperatures.
+  S-NET Pro 2 hides outlet readings below `-41 °C`; the log still shows the decoded value and the raw bytes.
+  A [capture from one EHS system](https://community.openenergymonitor.org/t/samsung-ashp-nasa-messages-updated-table/29510) shows `-50 °C` for a disconnected outlet sensor. Do not treat this as a universal rule.
+- On the outdoor address, compare the operating state (`0x8001`), heating/cooling mode (`0x8003`), compressor frequency (`0x8238`), and reported power (`0x8413`).
+  Compare readings over time rather than treating records from different addresses as simultaneous.
+
+`0x8413` is reported electrical power in W. `0x8414` is reported accumulated energy in Wh, displayed in kWh.
+The fields do not establish which loads are included, the power averaging interval, or the energy counter reset policy.
+`0x4027` matches the filter warning on documented models. `0x4060` preset names depend on the model and controller.
+
+For the source of the decoded values, see the [NASA protocol notes](nasa/samsung_nasa_protocol.md) and the [S-NET Pro 2 message dictionary](https://github.com/pantherale0/pysamsungnasa/blob/931280c03c37c15144d6952035462eb77d7be302/info/snet/NASA.ptc).
+
+#### Additional service readings
+
+These readings appear only in received traffic. The component does not query or create Home Assistant entities for them.
+
+- Indoor expansion valve position (`0x4217`, `0x4218`) uses the original counts, not a percentage of valve opening.
+- Outdoor expansion valve position (`0x8229`–`0x822D`) uses original counts per channel. A channel number does not identify a room or indoor address.
+- Indoor room sensor selection (`0x4076`) reports the configured source: indoor unit or wired controller. This does not change which temperature the integration uses.
+- Hot-gas valve 1 drive (`0x8017`) reports an on/off signal, not physical valve position. Values other than `0` and `1` remain unmapped.
+- Outdoor liquid line temperature (`0x821C`) uses tenths of a degree Celsius on the bus.
+- Outdoor high and low pressures (`0x8206`, `0x8208`) use tenths of `kgf/cm2`, with no offset. They are not absolute-pressure or refrigerant-charge estimates.
+- Outdoor test completion (`0x8046`) says whether the test completed, not whether it passed.
+- Outdoor overload detection (`0x82F5`) reports the high-byte count and low-byte status. The log preserves the full word and does not assign meanings to individual status values.
 
 ## Identifying Indoor Device Addresses
 
@@ -80,4 +113,3 @@ If you’re still experiencing issues, feel free to open a discussion in our [Gi
 ---
 
 By following these troubleshooting steps, you should be able to resolve most issues encountered with the ESPHome Samsung HVAC integration.
-
