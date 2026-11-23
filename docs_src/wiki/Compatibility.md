@@ -30,6 +30,7 @@ The following Samsung units have been confirmed to work with the NASA protocol:
 - AR12TSFABWKNCV
 - AR12TSFACWKX
 - AC071TNHDKG
+- AE120MXTPEH (EHS TDM Plus outdoor) with AE260TNWTEH ClimateHub (DHW + underfloor heating) and AE028TNXDEH, AE036TNXDEH and AE056TNXDEH wall units
 
 ### NonNASA Protocol
 
