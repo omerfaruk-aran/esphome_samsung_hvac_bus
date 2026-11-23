@@ -73,6 +73,8 @@ namespace esphome
             All = 3
         };
 
+        struct NasaServiceValue;
+
         class MessageTarget
         {
         public:
@@ -105,6 +107,8 @@ namespace esphome
             virtual void set_swing_vertical(const std::string address, bool vertical) = 0;
             virtual void set_swing_horizontal(const std::string address, bool horizontal) = 0;
             virtual void set_custom_sensor(const std::string address, uint16_t message_number, float value) = 0;
+            virtual bool wants_nasa_service_telemetry(const std::string &address, uint16_t code) { return false; }
+            virtual void set_nasa_service_telemetry(const std::string &address, uint16_t code, const NasaServiceValue &value) {}
             virtual void set_error_code(const std::string address, int error_code) = 0;
             virtual void set_outdoor_instantaneous_power(const std::string &address, float value) = 0;
             virtual void set_outdoor_cumulative_energy(const std::string &address, float value) = 0;

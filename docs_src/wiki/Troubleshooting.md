@@ -83,21 +83,28 @@ The fields do not establish which loads are included, the power averaging interv
 
 For the source of the decoded values, see the [NASA protocol notes](nasa/samsung_nasa_protocol.md) and the [S-NET Pro 2 message dictionary](https://github.com/pantherale0/pysamsungnasa/blob/931280c03c37c15144d6952035462eb77d7be302/info/snet/NASA.ptc).
 
-#### Additional service readings
+### NASA Service Telemetry in Home Assistant
 
-These readings appear only in received traffic. The component does not query or create Home Assistant entities for them.
+Set `samsung_ac.telemetry: true` in your existing YAML to add these read-only diagnostic entities for configured NASA indoor and outdoor addresses.
+This works with `debug_log_diagnostics` off and sends no queries.
+Entities have no value until their unit reports a valid reading. A model may not report every field.
+Numeric entities publish at most once every 10 seconds. Explicitly configured sensors for the same message take precedence.
 
 - Indoor expansion valve position (`0x4217`, `0x4218`) uses the original counts, not a percentage of valve opening.
 - Outdoor expansion valve position (`0x8229`–`0x822D`) uses original counts per channel. A channel number does not identify a room or indoor address.
 - Indoor room sensor selection (`0x4076`) reports the configured source: indoor unit or wired controller. This does not change which temperature the integration uses.
 - Hot-gas valve 1 drive (`0x8017`) reports an on/off signal, not physical valve position. Values other than `0` and `1` remain unmapped.
 - Outdoor liquid line temperature (`0x821C`) uses tenths of a degree Celsius on the bus.
-- Outdoor high and low pressures (`0x8206`, `0x8208`) use tenths of `kgf/cm2`, with no offset. They are not absolute-pressure or refrigerant-charge estimates.
+- Outdoor high and low pressures (`0x8206`, `0x8208`) use tenths of `kgf/cm²` on the bus, with no offset. They are not absolute-pressure or refrigerant-charge estimates.
 - Outdoor test completion (`0x8046`) says whether the test completed, not whether it passed.
-- Outdoor overload detection (`0x82F5`) reports the high-byte count and low-byte status. The log preserves the full word and does not assign meanings to individual status values.
-- Indoor error history (`0x461E`) adds a summary after the raw records when an indoor response or notification includes at least ten payload bytes.
-  The five slots appear as three-digit hexadecimal codes in payload order, as displayed by Samsung S-NET Pro 2.
-  The log does not infer which slots are empty, when the errors occurred, or whether any error is active.
+- Outdoor overload detection (`0x82F5`) shows the high-byte count and low-byte status as text. The status values have no assigned meanings.
+- Indoor error history (`0x461E`) shows the last five-slot snapshot received in a valid indoor response or notification.
+  The slots appear as three-digit hexadecimal codes in payload order, as displayed by Samsung S-NET Pro 2.
+  The history does not identify empty slots, when errors occurred, or whether any error is active.
+
+`NASA_DIAG` still preserves the raw values, including unrecognized states and the full error-history payload.
+Automatic EEV and liquid-line entities use the display ranges from Samsung S-NET Pro 2: 0–3000 indoor counts, 0–10000 outdoor counts, and −41 to 150 °C.
+These ranges are display rules, not fault thresholds.
 
 ## Identifying Indoor Device Addresses
 

@@ -13,6 +13,7 @@
 #include "esphome/components/number/number.h"
 #include "esphome/components/climate/climate.h"
 #include "protocol.h"
+#include "nasa_diagnostics.h"
 #include "samsung_ac.h"
 #include "conversions.h"
 
@@ -290,6 +291,49 @@ namespace esphome
       void add_custom_binary_sensor(int message_number, binary_sensor::BinarySensor *sensor)
       {
         custom_binary_sensor_map[(uint16_t)message_number] = sensor;
+      }
+
+      void add_nasa_service_sensor(uint16_t code, sensor::Sensor *entity)
+      {
+        nasa_service_entities_[code] = entity;
+      }
+
+      void add_nasa_service_binary_sensor(uint16_t code, binary_sensor::BinarySensor *entity)
+      {
+        nasa_service_entities_[code] = entity;
+      }
+
+      void add_nasa_service_text_sensor(uint16_t code, text_sensor::TextSensor *entity)
+      {
+        nasa_service_entities_[code] = entity;
+      }
+
+      bool has_nasa_service_entity(uint16_t code) const
+      {
+        return nasa_service_entities_.find(code) != nasa_service_entities_.end();
+      }
+
+      void update_nasa_service_telemetry(uint16_t code, const NasaServiceValue &value)
+      {
+        const auto it = nasa_service_entities_.find(code);
+        if (it == nasa_service_entities_.end())
+          return;
+
+        if (const auto entity = std::get_if<sensor::Sensor *>(&it->second))
+        {
+          if (const auto state = std::get_if<float>(&value.state))
+            (*entity)->publish_state(*state);
+        }
+        else if (const auto entity = std::get_if<binary_sensor::BinarySensor *>(&it->second))
+        {
+          if (const auto state = std::get_if<bool>(&value.state))
+            (*entity)->publish_state(*state);
+        }
+        else if (const auto entity = std::get_if<text_sensor::TextSensor *>(&it->second))
+        {
+          if (const auto state = std::get_if<std::string>(&value.state))
+            (*entity)->publish_state(*state);
+        }
       }
 
       void set_power_switch(Samsung_AC_Switch *switch_)
@@ -808,6 +852,9 @@ namespace esphome
       }
 
     protected:
+      std::map<uint16_t, std::variant<sensor::Sensor *, binary_sensor::BinarySensor *, text_sensor::TextSensor *>>
+          nasa_service_entities_;
+
       bool supports_fan_modes_{true};
       bool supports_turbo_mode_{true};
       bool fan_mode_medium_{false};

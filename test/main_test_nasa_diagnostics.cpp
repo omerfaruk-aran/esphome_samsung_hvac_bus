@@ -442,6 +442,240 @@ namespace
             expect_line(actual[i], expected[i]);
     }
 
+    class ServiceTarget : public RxTarget
+    {
+    public:
+        using State = std::variant<float, bool, std::string>;
+        using Sample = std::tuple<std::string, uint16_t, State>;
+        std::vector<Sample> samples;
+        bool subscribed = true;
+        uint32_t now = 0;
+
+        uint32_t get_miliseconds() override { return now; }
+
+        bool wants_nasa_service_telemetry(const std::string &address, uint16_t code) override
+        {
+            return subscribed && (address == "20.00.01" || address == "10.00.00") && code != 0x822E;
+        }
+
+        void set_nasa_service_telemetry(const std::string &address, uint16_t code, const NasaServiceValue &value) override
+        {
+            samples.emplace_back(address, code, value.state);
+        }
+    };
+
+    void test_service_scalars_publish_without_debug()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        const auto previous_diagnostics = std::exchange(debug_log_diagnostics, false);
+        const struct
+        {
+            Address source;
+            uint16_t code;
+            MessageSetType type;
+            long raw;
+            ServiceTarget::State expected;
+        } cases[] = {
+            {{AddressClass::Indoor, 0, 1}, 0x4076, Enum, 0, std::string("INDOOR_UNIT")},
+            {{AddressClass::Indoor, 0, 1}, 0x4076, Enum, 1, std::string("WIRED_REMOTE")},
+            {{AddressClass::Indoor, 0, 1}, 0x4027, Enum, 0, false},
+            {{AddressClass::Indoor, 0, 1}, 0x4027, Enum, 1, true},
+            {{AddressClass::Indoor, 0, 1}, 0x4028, Enum, 0, false},
+            {{AddressClass::Indoor, 0, 1}, 0x4028, Enum, 1, true},
+            {{AddressClass::Indoor, 0, 1}, 0x4217, Variable, 0, 0.0f},
+            {{AddressClass::Indoor, 0, 1}, 0x4217, Variable, 120, 120.0f},
+            {{AddressClass::Indoor, 0, 1}, 0x4217, Variable, 3000, 3000.0f},
+            {{AddressClass::Indoor, 0, 1}, 0x4218, Variable, 0, 0.0f},
+            {{AddressClass::Indoor, 0, 1}, 0x4218, Variable, 3000, 3000.0f},
+            {{AddressClass::Outdoor, 0, 0}, 0x8017, Enum, 0, false},
+            {{AddressClass::Outdoor, 0, 0}, 0x8017, Enum, 1, true},
+            {{AddressClass::Outdoor, 0, 0}, 0x8046, Enum, 0, false},
+            {{AddressClass::Outdoor, 0, 0}, 0x8046, Enum, 1, true},
+            {{AddressClass::Outdoor, 0, 0}, 0x8206, Variable, 185, 18.5f},
+            {{AddressClass::Outdoor, 0, 0}, 0x8208, Variable, 0xFFF9, -0.7f},
+            {{AddressClass::Outdoor, 0, 0}, 0x821C, Variable, 0xFFDB, -3.7f},
+            {{AddressClass::Outdoor, 0, 0}, 0x821C, Variable, 0xFE66, -41.0f},
+            {{AddressClass::Outdoor, 0, 0}, 0x821C, Variable, 1500, 150.0f},
+            {{AddressClass::Outdoor, 0, 0}, 0x8229, Variable, 0, 0.0f},
+            {{AddressClass::Outdoor, 0, 0}, 0x822A, Variable, 158, 158.0f},
+            {{AddressClass::Outdoor, 0, 0}, 0x822B, Variable, 240, 240.0f},
+            {{AddressClass::Outdoor, 0, 0}, 0x822C, Variable, 310, 310.0f},
+            {{AddressClass::Outdoor, 0, 0}, 0x822D, Variable, 10000, 10000.0f},
+            {{AddressClass::Outdoor, 0, 0}, 0x82F5, Variable, 0x1203, std::string("count:18,status:3")},
+        };
+        for (const auto &entry : cases)
+        {
+            auto packet = make_packet();
+            packet.sa = entry.source;
+            packet.messages = {scalar(entry.code, entry.type, entry.raw)};
+            auto frame = packet.encode();
+            ServiceTarget target;
+            expect_records(capture_diagnostics([&]()
+            {
+                assert(process_data(frame, &target).type == DecodeResultType::Processed);
+            }), {});
+            auto address = packet.sa.to_string();
+            const std::vector<ServiceTarget::Sample> expected = {{address, entry.code, entry.expected}};
+            const std::vector<Callback> legacy = {{"address", address}, {"custom", address, entry.code, static_cast<float>(entry.raw)}};
+            assert(target.samples == expected);
+            assert(target.callbacks == legacy && target.all_publish_data.empty());
+        }
+        debug_log_diagnostics = previous_diagnostics;
+        protocol_processing = previous_processing;
+    }
+
+    void test_service_scalars_ignore_ineligible_samples()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        ServiceTarget target;
+        const auto replay = [&](Address address, uint16_t code, MessageSetType type, long raw,
+                                DataType data_type = DataType::Notification)
+        {
+            auto packet = make_packet(data_type);
+            packet.sa = address;
+            packet.messages = {scalar(code, type, raw)};
+            auto frame = packet.encode();
+            assert(process_data(frame, &target).type == DecodeResultType::Processed);
+        };
+        const Address outdoor{AddressClass::Outdoor, 0, 0};
+        const Address indoor{AddressClass::Indoor, 0, 1};
+        replay(indoor, 0x4076, Enum, 2);
+        replay(indoor, 0x4027, Enum, 2);
+        replay(indoor, 0x4028, Enum, 2);
+        replay(outdoor, 0x8017, Enum, 2);
+        replay(outdoor, 0x8046, Enum, 2);
+        replay(indoor, 0x4217, Variable, 3001);
+        replay(indoor, 0x4218, Variable, 3001);
+        for (uint16_t code = 0x8229; code <= 0x822D; ++code)
+            replay(outdoor, code, Variable, 10001);
+        replay(outdoor, 0x821C, Variable, 0xFE65); // -41.1 °C.
+        replay(outdoor, 0x821C, Variable, 1501);
+        replay({AddressClass::Indoor, 0, 0}, 0x4076, Enum, 1);
+        replay(indoor, 0x8208, Variable, 185);
+        replay(outdoor, 0x822E, Variable, 100);
+        replay(outdoor, 0x8003, Enum, 1);
+        for (auto type : {DataType::Read, DataType::Request, DataType::Response})
+            replay(outdoor, 0x8208, Variable, 185, type);
+
+        auto short_scalar = hex_to_bytes("320011100000b300ffc01408018208ffa65134");
+        assert(process_data(short_scalar, &target).type == DecodeResultType::Discard);
+        auto packet = make_packet();
+        packet.sa = outdoor;
+        packet.messages = {scalar(0x8208, Variable, 185)};
+        auto bad_crc = packet.encode();
+        bad_crc[bad_crc.size() - 2] ^= 1;
+        assert(process_data(bad_crc, &target).type == DecodeResultType::Discard);
+
+        target.subscribed = false;
+        replay(outdoor, 0x8208, Variable, 185);
+        assert(target.samples.empty() && target.all_publish_data.empty());
+        protocol_processing = previous_processing;
+    }
+
+    void test_service_ranges_do_not_hide_raw_diagnostics()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        const auto previous_diagnostics = std::exchange(debug_log_diagnostics, true);
+        ServiceTarget target;
+        auto packet = make_packet();
+        packet.messages = {scalar(0x4217, Variable, 3001)};
+        auto frame = packet.encode();
+        const auto lines = capture_diagnostics([&]()
+        {
+            assert(process_data(frame, &target).type == DecodeResultType::Processed);
+        });
+        const std::vector<Callback> legacy = {{"address", "20.00.01"}, {"custom", "20.00.01", 0x4217, 3001.0f}};
+        assert(target.samples.empty() && target.callbacks == legacy && target.all_publish_data.empty());
+        expect_records(lines, {
+            "NASA_DIAG src=20.00.01 dst=b3.00.ff dt=notification seq=1 index=0 code=0x4217 type=variable "
+            "name=indoor_eev_1_position raw=3001 raw_hex=0x0BB9 value=3001 unit=na status=decoded confidence=documented",
+        });
+        debug_log_diagnostics = previous_diagnostics;
+        protocol_processing = previous_processing;
+    }
+
+    void test_error_history_telemetry_is_independent_of_debug()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        const auto previous_diagnostics = debug_log_diagnostics;
+        const std::vector<ServiceTarget::Sample> expected = {
+            {"20.00.01", 0x461E, std::string("0x123,0xBCD,0x000,0xFFF,0xFFF")},
+        };
+        for (bool debug : {false, true})
+        {
+            debug_log_diagnostics = debug;
+            for (const auto *fixture : {
+                     "32003e200001500000c0150801461ea1230bcd0000ffffffff"
+                     "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20212223242f6e34",
+                     "32003e200001500000c0140801461ea1230bcd0000ffffffff"
+                     "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20212223246b1d34",
+                 })
+            {
+                ServiceTarget target;
+                const auto lines = capture_diagnostics([&]() { test_process_data(fixture, target); });
+                assert(target.samples == expected && target.all_publish_data.empty());
+                const std::vector<Callback> legacy = {{"address", "20.00.01"}};
+                assert(target.callbacks == legacy);
+                assert(lines.size() == (debug ? 3U : 0U));
+                if (debug)
+                    assert(lines.back().find("codes=0x123,0xBCD,0x000,0xFFF,0xFFF") != std::string::npos);
+            }
+        }
+        ServiceTarget target;
+        test_process_data("320019200001500000c0150801461ea1230bcd0000ffffffddc034", target);
+        assert(target.samples.empty() && target.all_publish_data.empty());
+        debug_log_diagnostics = previous_diagnostics;
+        protocol_processing = previous_processing;
+    }
+
+    void test_nasa_custom_override_receives_its_message_not_fixed_current()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        auto packet = make_packet();
+        packet.sa = {AddressClass::Outdoor, 0, 0};
+        packet.messages = {scalar(0x8217, Variable, 46), scalar(0x8206, Variable, 185)};
+        auto frame = packet.encode();
+        RxTarget target;
+        assert(process_data(frame, &target).type == DecodeResultType::Processed);
+        assert(target.last_set_outdoor_current_address == "10.00.00");
+        assert(target.last_set_outdoor_current_value == 46.0f);
+        const std::vector<Callback> legacy = {
+            {"address", "10.00.00"}, {"custom", "10.00.00", 0x8217, 46.0f},
+            {"custom", "10.00.00", 0x8206, 185.0f},
+        };
+        assert(target.callbacks == legacy && target.all_publish_data.empty());
+        protocol_processing = previous_processing;
+    }
+
+    void test_expired_display_read_does_not_consume_error_history()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        auto &protocol = *static_cast<NasaProtocol *>(get_protocol("20.00.01"));
+        auto previous_protocol = std::exchange(protocol, NasaProtocol{});
+        ServiceTarget target;
+        protocol.enable_display_light("20.00.01");
+        protocol.protocol_update(&target);
+        assert(target.all_publish_data.size() == 1);
+        auto read_frame = hex_to_bytes(target.all_publish_data.front());
+        Packet read{};
+        assert(read.decode(read_frame).type == DecodeResultType::Processed);
+
+        auto history = make_structure_packet(10, 0);
+        history.da = read.sa;
+        history.command.dataType = DataType::Response;
+        history.command.packetNumber = read.command.packetNumber;
+        history.messages.front().messageNumber = static_cast<MessageNumber>(0x461E);
+        target.now = 2000;
+        auto frame = history.encode();
+        assert(process_data(frame, &target).type == DecodeResultType::Processed);
+        const std::vector<ServiceTarget::Sample> expected = {
+            {"20.00.01", 0x461E, std::string("0x001,0x203,0x405,0x607,0x809")},
+        };
+        assert(target.samples == expected && target.all_publish_data.size() == 1);
+        protocol = std::move(previous_protocol);
+        protocol_processing = previous_processing;
+    }
+
     void test_error_history_response_is_passive()
     {
         const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
@@ -752,9 +986,15 @@ int main()
     test_invalid_structure_metadata_has_no_payload();
     test_error_history_summary_gating();
     test_error_history_response_is_passive();
+    test_service_scalars_publish_without_debug();
+    test_service_scalars_ignore_ineligible_samples();
+    test_service_ranges_do_not_hide_raw_diagnostics();
+    test_error_history_telemetry_is_independent_of_debug();
+    test_nasa_custom_override_receives_its_message_not_fixed_current();
     test_unaccepted_nasa_rx_is_silent();
     test_accepted_nasa_rx_is_passive();
     test_diagnostics_preserve_power_driven_display_read();
+    test_expired_display_read_does_not_consume_error_history();
     test_repeated_rx_ignores_legacy_deduplication();
     test_non_nasa_rx_is_excluded();
     std::cout << "NASA diagnostics tests passed\n";

@@ -339,14 +339,37 @@ namespace esphome
                 const char *status = "decoded";
             };
 
+            bool matches_wire_type(const Descriptor &descriptor, MessageSetType type)
+            {
+                return type == static_cast<MessageSetType>((descriptor.code & 0x0600) >> 9);
+            }
+
+            const char *find_enum_name(const Descriptor &descriptor, uint32_t raw)
+            {
+                for (std::size_t i = 0; i < descriptor.value_count; ++i)
+                    if (descriptor.values[i].raw == raw)
+                        return descriptor.values[i].name;
+                return nullptr;
+            }
+
+            int32_t signed_word(uint32_t raw)
+            {
+                return static_cast<int32_t>(raw) - (raw >= 0x8000 ? 0x10000 : 0);
+            }
+
+            std::string overload_count_status(uint32_t raw)
+            {
+                // S-NET Pro 2's ProcessVariableElement splits 0x82F5 into count and status bytes.
+                return "count:" + std::to_string(raw >> 8) + ",status:" + std::to_string(raw & 0xFF);
+            }
+
             DecodedValue decode_scalar(const Descriptor *descriptor, MessageSetType type, uint32_t raw)
             {
                 if (!descriptor)
                     return {"na", "na", "unknown_code"};
 
                 // Wire type and conversion are independent: 0x8235 is a Variable with enum values.
-                const auto expected_type = static_cast<MessageSetType>((descriptor->code & 0x0600) >> 9);
-                if (type != expected_type)
+                if (!matches_wire_type(*descriptor, type))
                     return {"na", "na", "type_mismatch"};
                 if (descriptor->marker == raw)
                     return {"na", "na", "unverified_marker"};
@@ -356,19 +379,17 @@ namespace esphome
                 case Conversion::Raw:
                     return {"na", "na", "raw_only"};
                 case Conversion::Enum:
-                    for (std::size_t i = 0; i < descriptor->value_count; ++i)
-                    {
-                        if (descriptor->values[i].raw == raw)
-                            return {descriptor->values[i].name, descriptor->unit};
-                    }
+                    if (const auto *name = find_enum_name(*descriptor, raw))
+                        return {name, descriptor->unit};
                     return {"na", "na", "unmapped_enum"};
                 case Conversion::Unsigned:
                     return {std::to_string(raw), descriptor->unit};
                 case Conversion::SignedTenths:
                 {
-                    if (raw >= 0x8000)
-                        return {"-" + fixed_decimal(0x10000 - raw, 10, 1), descriptor->unit};
-                    return {fixed_decimal(raw, 10, 1), descriptor->unit};
+                    const auto value = signed_word(raw);
+                    if (value < 0)
+                        return {"-" + fixed_decimal(-value, 10, 1), descriptor->unit};
+                    return {fixed_decimal(value, 10, 1), descriptor->unit};
                 }
                 case Conversion::UnsignedTenths:
                     return {fixed_decimal(raw, 10, 1), descriptor->unit};
@@ -377,8 +398,7 @@ namespace esphome
                 case Conversion::HighWordTenths:
                     return {fixed_decimal(raw >> 16, 10, 1), descriptor->unit};
                 case Conversion::OverloadCountStatus:
-                    // S-NET Pro 2's ProcessVariableElement splits 0x82F5 into count and status bytes.
-                    return {"count:" + std::to_string(raw >> 8) + ",status:" + std::to_string(raw & 0xFF), descriptor->unit};
+                    return {overload_count_status(raw), descriptor->unit};
                 case Conversion::WhToKwh:
                     return {fixed_decimal(raw, 1000, 3), descriptor->unit};
                 }
@@ -435,25 +455,35 @@ namespace esphome
                 ESP_LOGD(DIAGNOSTIC_TAG, "%s", line.c_str());
             }
 
-            void log_indoor_error_history(std::string line, const Buffer &payload)
+            bool has_valid_structure(const Packet &packet, const MessageSet &message)
             {
-                if (payload.size < INDOOR_ERROR_HISTORY_SLOTS * 2)
-                    return;
+                // Do not inspect the payload of an incomplete or inconsistent structure.
+                return packet.messages.size() == 1 && message.size >= 2 &&
+                       message.size <= sizeof(Buffer::data) + 2 && message.structure.size == message.size - 2;
+            }
+
+            std::optional<std::string> indoor_error_history(const Packet &packet, const Buffer &payload)
+            {
+                const auto type = packet.command.dataType;
+                if (packet.sa.klass != AddressClass::Indoor ||
+                    (type != DataType::Notification && type != DataType::Response) ||
+                    payload.size < INDOOR_ERROR_HISTORY_SLOTS * 2)
+                    return std::nullopt;
 
                 // Samsung S-NET Pro 2's ProcessStructureElemenet displays the last
                 // three hex digits of each of the first five two-byte slots.
                 // Keep the complete payload in the raw records; slot meaning can vary.
-                line += " name=indoor_error_history codes=";
+                std::string codes;
                 for (std::size_t slot = 0; slot < INDOOR_ERROR_HISTORY_SLOTS; ++slot)
                 {
                     if (slot != 0)
-                        line += ',';
+                        codes += ',';
                     const auto code = (static_cast<uint16_t>(payload.data[2 * slot] & 0x0F) << 8) |
                                       payload.data[2 * slot + 1];
-                    line += "0x";
-                    append_hex(line, code, 3);
+                    codes += "0x";
+                    append_hex(codes, code, 3);
                 }
-                log_line(line + " status=decoded confidence=documented");
+                return codes;
             }
 
             void log_structure(std::string line, const Packet &packet, std::size_t index)
@@ -462,19 +492,13 @@ namespace esphome
                 const auto code = static_cast<uint16_t>(message.messageNumber);
                 append_field_prefix(line, index, code, "structure");
 
-                // The parser can leave the union inactive when a structure is not the sole field.
-                if (packet.messages.size() != 1 || message.size < 2 || message.size > sizeof(Buffer::data) + 2)
-                {
-                    log_line(line + " status=invalid_structure");
-                    return;
-                }
-                const std::size_t length = message.size - 2;
-                if (message.structure.size != length)
+                if (!has_valid_structure(packet, message))
                 {
                     log_line(line + " status=invalid_structure");
                     return;
                 }
 
+                const std::size_t length = message.structure.size;
                 line += " len=";
                 line += std::to_string(length);
                 if (length == 0)
@@ -494,12 +518,93 @@ namespace esphome
                     log_line(fragment);
                 }
 
-                const auto data_type = packet.command.dataType;
-                if (code == 0x461E && packet.sa.klass == AddressClass::Indoor &&
-                    (data_type == DataType::Response || data_type == DataType::Notification))
-                    log_indoor_error_history(line, message.structure);
+                if (code == 0x461E)
+                    if (const auto codes = indoor_error_history(packet, message.structure))
+                        log_line(line + " name=indoor_error_history codes=" + *codes + " status=decoded confidence=documented");
+            }
+
+            bool is_service_scalar(AddressClass source, uint16_t code)
+            {
+                switch (code)
+                {
+                case 0x4027:
+                case 0x4028:
+                case 0x4076:
+                case 0x4217:
+                case 0x4218:
+                    return source == AddressClass::Indoor;
+                case 0x8017:
+                case 0x8046:
+                case 0x8206:
+                case 0x8208:
+                case 0x821C:
+                case 0x8229:
+                case 0x822A:
+                case 0x822B:
+                case 0x822C:
+                case 0x822D:
+                case 0x82F5:
+                    return source == AddressClass::Outdoor;
+                default:
+                    return false;
+                }
             }
         } // namespace
+
+        std::optional<NasaServiceValue> decode_nasa_service_telemetry(const Packet &packet, std::size_t index)
+        {
+            if (index >= packet.messages.size())
+                return std::nullopt;
+            const auto &message = packet.messages[index];
+            const auto code = static_cast<uint16_t>(message.messageNumber);
+            if (message.type == Structure)
+            {
+                if (code == 0x461E && has_valid_structure(packet, message))
+                    if (auto codes = indoor_error_history(packet, message.structure))
+                        return NasaServiceValue{std::move(*codes)};
+                return std::nullopt;
+            }
+            if (packet.command.dataType != DataType::Notification || !is_service_scalar(packet.sa.klass, code))
+                return std::nullopt;
+
+            const auto *descriptor = find_descriptor(code);
+            if (descriptor == nullptr || !matches_wire_type(*descriptor, message.type))
+                return std::nullopt;
+            const uint32_t raw = static_cast<uint32_t>(message.value) & (message.type == Enum ? 0xFF : 0xFFFF);
+            if (descriptor->marker == raw)
+                return std::nullopt;
+
+            switch (descriptor->conversion)
+            {
+            case Conversion::Enum:
+                if (const auto *name = find_enum_name(*descriptor, raw))
+                {
+                    if (code != 0x4076)
+                        return NasaServiceValue{raw == 1};
+                    return NasaServiceValue{std::string(name)};
+                }
+                break;
+            case Conversion::Unsigned:
+                // Use S-NET Pro 2's field-specific display ranges for HA only.
+                // Out-of-range values still appear unmodified in NASA_DIAG.
+                if (((code == 0x4217 || code == 0x4218) && raw > 3000) ||
+                    (code >= 0x8229 && code <= 0x822D && raw > 10000))
+                    return std::nullopt;
+                return NasaServiceValue{static_cast<float>(raw)};
+            case Conversion::SignedTenths:
+            {
+                const auto tenths = signed_word(raw);
+                if (code == 0x821C && (tenths < -410 || tenths > 1500))
+                    return std::nullopt;
+                return NasaServiceValue{tenths / 10.0f};
+            }
+            case Conversion::OverloadCountStatus:
+                return NasaServiceValue{overload_count_status(raw)};
+            default:
+                break;
+            }
+            return std::nullopt;
+        }
 
         std::string format_nasa_diagnostic_scalar(const Packet &packet, const MessageSet &message, std::size_t index)
         {

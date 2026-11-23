@@ -99,6 +99,7 @@ CONF_DEVICE_CUSTOM = "custom_sensor"
 CONF_DEVICE_CUSTOM_MESSAGE = "message"
 CONF_DEVICE_CUSTOM_RAW_FILTERS = "raw_filters"
 CONF_DEVICE_CUSTOM_TYPE = "type"
+CONF_NASA_SERVICE_TELEMETRY = "nasa_service_telemetry"
 CONF_DEVICE_ERROR_CODE = "error_code"
 CONF_DEVICE_OUT_CONTROL_WATTMETER_ALL_UNIT_ACCUM = "outdoor_instantaneous_power"
 CONF_DEVICE_OUT_CONTROL_WATTMETER_1W_1MIN_SUM = "outdoor_cumulative_energy"
@@ -110,6 +111,12 @@ CONF_NON_NASA_TX_DELAY_MS = "non_nasa_tx_delay_ms"
 CONF_DEVICE_FILTER_RESET = "filter_reset"
 CONF_DEVICE_FILTER_WARNING = "filter_warning"
 CONF_DEVICE_DEFROSTING = "defrosting"
+
+FIXED_NASA_SENSOR_MESSAGES = {
+    CONF_DEVICE_ERROR_CODE: 0x8235,
+    CONF_DEVICE_OUT_SENSOR_CT1: 0x8217,
+    CONF_DEVICE_OUT_SENSOR_VOLTAGE: 0x24FC,
+}
 
 # Named binary sensors backed by a NASA message (NASA only)
 NASA_BINARY_SENSORS = {
@@ -203,6 +210,21 @@ CUSTOM_SENSOR_SCHEMA = cv.Any(
     CUSTOM_BINARY_SENSOR_SCHEMA,
 )
 
+NASA_SERVICE_TELEMETRY_SCHEMA = cv.typed_schema(
+    {
+        "sensor": sensor.sensor_schema(entity_category=ENTITY_CATEGORY_DIAGNOSTIC),
+        "binary": binary_sensor.binary_sensor_schema(),
+        "text": text_sensor.text_sensor_schema(entity_category=ENTITY_CATEGORY_DIAGNOSTIC),
+    }
+)
+
+
+def _service_telemetry_entry(config):
+    config = config.copy()
+    message = cv.hex_int(config.pop(CONF_DEVICE_CUSTOM_MESSAGE))
+    return {**NASA_SERVICE_TELEMETRY_SCHEMA(config), CONF_DEVICE_CUSTOM_MESSAGE: message}
+
+
 def custom_sensor_schema(
     message: int,
     unit_of_measurement=cv.UNDEFINED,
@@ -278,6 +300,14 @@ def validate_device(config):
     for key in NASA_BINARY_SENSORS:
         if key in config and len(config[CONF_DEVICE_ADDRESS]) == 2:
             raise cv.Invalid(f"{key} is only supported for NASA devices")
+    if len(config[CONF_DEVICE_ADDRESS]) != 2:
+        history_error = "0x461E is structured error history; use telemetry: true for its text sensor"
+        for index, entry in enumerate(config.get(CONF_DEVICE_CUSTOM, [])):
+            if entry[CONF_DEVICE_CUSTOM_MESSAGE] & 0xFFFF == 0x461E:
+                raise cv.Invalid(history_error, path=[CONF_DEVICE_CUSTOM, index, CONF_DEVICE_CUSTOM_MESSAGE])
+        for key in (*CUSTOM_SENSOR_KEYS, *FIXED_NASA_SENSOR_MESSAGES):
+            if key in config and config[key][CONF_DEVICE_CUSTOM_MESSAGE] & 0xFFFF == 0x461E:
+                raise cv.Invalid(history_error, path=[key, CONF_DEVICE_CUSTOM_MESSAGE])
     return config
 
 
@@ -311,7 +341,9 @@ DEVICE_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_TEMPERATURE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-        cv.Optional(CONF_DEVICE_ERROR_CODE): error_code_sensor_schema(0x8235),
+        cv.Optional(CONF_DEVICE_ERROR_CODE): error_code_sensor_schema(
+            FIXED_NASA_SENSOR_MESSAGES[CONF_DEVICE_ERROR_CODE],
+        ),
         cv.Optional(CONF_DEVICE_TARGET_TEMPERATURE): NUMBER_SCHEMA,
         cv.Optional(CONF_DEVICE_WATER_OUTLET_TARGET): NUMBER_SCHEMA,
         cv.Optional(CONF_DEVICE_WATER_TARGET_TEMPERATURE): NUMBER_SCHEMA,
@@ -362,6 +394,7 @@ DEVICE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DEVICE_CUSTOM, default=[]): cv.ensure_list(
             CUSTOM_SENSOR_SCHEMA
         ),
+        cv.Optional(CONF_NASA_SERVICE_TELEMETRY): cv.ensure_list(_service_telemetry_entry),
         # keep CUSTOM_SENSOR_KEYS in sync with these
         cv.Optional(CONF_DEVICE_WATER_TEMPERATURE): temperature_sensor_schema(0x4237),
         cv.Optional(CONF_DEVICE_ROOM_HUMIDITY): humidity_sensor_schema(0x4038),
@@ -397,7 +430,10 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:current-ac",
         ).extend(
             {
-                cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x8217): cv.hex_int,
+                cv.Optional(
+                    CONF_DEVICE_CUSTOM_MESSAGE,
+                    default=FIXED_NASA_SENSOR_MESSAGES[CONF_DEVICE_OUT_SENSOR_CT1],
+                ): cv.hex_int,
                 cv.Optional(
                     CONF_FILTERS, default=[{"multiply": 0.1}]
                 ): sensor.validate_filters,
@@ -411,7 +447,10 @@ DEVICE_SCHEMA = cv.Schema(
             icon="mdi:flash",
         ).extend(
             {
-                cv.Optional(CONF_DEVICE_CUSTOM_MESSAGE, default=0x24FC): cv.hex_int,
+                cv.Optional(
+                    CONF_DEVICE_CUSTOM_MESSAGE,
+                    default=FIXED_NASA_SENSOR_MESSAGES[CONF_DEVICE_OUT_SENSOR_VOLTAGE],
+                ): cv.hex_int,
             }
         ),
         cv.Optional(
@@ -452,6 +491,55 @@ CONF_NON_NASA_KEEPALIVE = "non_nasa_keepalive"
 CONF_DEBUG_LOG_UNDEFINED_MESSAGES = "debug_log_undefined_messages"
 
 
+def _service_telemetry_defaults(prefix, outdoor, configured_codes):
+    if outdoor:
+        readings = (
+            (0x8017, "Hot Gas Valve 1 Drive", "binary", None, None),
+            (0x8046, "Test Completed", "binary", None, None),
+            (0x8206, "High Pressure", "sensor", "kgf/cm²", None),
+            (0x8208, "Low Pressure", "sensor", "kgf/cm²", None),
+            (0x821C, "Liquid Line Temperature", "sensor", UNIT_CELSIUS, DEVICE_CLASS_TEMPERATURE),
+            *((0x8228 + channel, f"EEV {channel} Position", "sensor", None, None)
+              for channel in range(1, 6)),
+            (0x82F5, "Overload Detection", "text", None, None),
+        )
+    else:
+        readings = (
+            (0x4027, "Filter Warning", "binary", None, DEVICE_CLASS_PROBLEM),
+            (0x4028, "Thermal Demand", "binary", None, None),
+            (0x4076, "Selected Room Sensor", "text", None, None),
+            (0x4217, "EEV 1 Position", "sensor", None, None),
+            (0x4218, "EEV 2 Position", "sensor", None, None),
+            (0x461E, "Error History", "text", None, None),
+        )
+
+    entities = []
+    for message, label, kind, unit, device_class in readings:
+        if message in configured_codes:
+            continue
+        entity = {
+            "name": f"{prefix} {label}",
+            CONF_DEVICE_CUSTOM_MESSAGE: message,
+            CONF_DEVICE_CUSTOM_TYPE: kind,
+        }
+        if kind == "sensor":
+            entity.update(
+                accuracy_decimals=1 if unit is not None else 0,
+                state_class=STATE_CLASS_MEASUREMENT,
+                filters=[{"throttle": "10s"}],
+            )
+            if unit is not None:
+                entity[CONF_UNIT_OF_MEASUREMENT] = unit
+        if device_class is not None:
+            entity[CONF_DEVICE_CLASS] = device_class
+        if kind == "binary" and message != 0x4028:
+            entity["entity_category"] = ENTITY_CATEGORY_DIAGNOSTIC
+        if message == 0x4027:
+            entity["icon"] = "mdi:air-filter"
+        entities.append(entity)
+    return entities
+
+
 def _add_device_telemetry(device):
     if not isinstance(device, dict):
         return device
@@ -466,26 +554,14 @@ def _add_device_telemetry(device):
     prefix = f"{'Outdoor' if outdoor else 'Indoor'} {address}"
     device = {**device, CONF_DEVICE_ADDRESS: address}
     custom = list(cv.ensure_list()(device.get(CONF_DEVICE_CUSTOM)))
-    configured_messages = set()
-    for entry in custom:
+    configured_codes = {message for key, message in NASA_BINARY_SENSORS.items() if key in device}
+    # Explicit overrides use the same uint16_t message IDs as the automatic bindings.
+    for entry in [*custom, *(device.get(key) for key in (*CUSTOM_SENSOR_KEYS, *FIXED_NASA_SENSOR_MESSAGES))]:
         if isinstance(entry, dict) and CONF_DEVICE_CUSTOM_MESSAGE in entry:
             try:
-                message = cv.hex_int(entry[CONF_DEVICE_CUSTOM_MESSAGE])
+                configured_codes.add(cv.hex_int(entry[CONF_DEVICE_CUSTOM_MESSAGE]) & 0xFFFF)
             except cv.Invalid:
                 continue  # The normal schema reports invalid entries.
-            kind = entry.get(CONF_DEVICE_CUSTOM_TYPE, "sensor")
-            if isinstance(kind, str):
-                configured_messages.add((message & 0xFFFF, kind.lower()))
-
-    # Named overrides use the same uint16_t-keyed map as custom numeric sensors.
-    for key in CUSTOM_SENSOR_KEYS:
-        entry = device.get(key)
-        if isinstance(entry, dict) and CONF_DEVICE_CUSTOM_MESSAGE in entry:
-            try:
-                message = cv.hex_int(entry[CONF_DEVICE_CUSTOM_MESSAGE])
-            except cv.Invalid:
-                continue  # The normal schema reports invalid entries.
-            configured_messages.add((message & 0xFFFF, "sensor"))
 
     if outdoor:
         numeric_sensors = (
@@ -499,26 +575,27 @@ def _add_device_telemetry(device):
                 ({"lambda": Lambda("return (x < 0.0f ? x + 4294967296.0 : x) / 1000.0;")},),
             ),
         )
-        device.setdefault(
-            CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT,
-            {
-                "name": f"{prefix} Mode",
-                CONF_FILTERS: [
-                    {"lambda": Lambda(
-                        "static std::string previous;\n"
-                        "if (x == previous) return {};\n"
-                        "previous = x;\n"
-                        "return x;"
-                    )}
-                ],
-            },
-        )
+        if 0x8003 not in configured_codes:
+            device.setdefault(
+                CONF_DEVICE_OUT_OPERATION_HEATCOOL_TEXT,
+                {
+                    "name": f"{prefix} Mode",
+                    CONF_FILTERS: [
+                        {"lambda": Lambda(
+                            "static std::string previous;\n"
+                            "if (x == previous) return {};\n"
+                            "previous = x;\n"
+                            "return x;"
+                        )}
+                    ],
+                },
+            )
         extra_sensors = (
             (0x8238, "Compressor Frequency", "Hz"),
             (0x823D, "Fan Speed", "rpm"),
         )
         for message, label, unit in extra_sensors:
-            if (message, "sensor") not in configured_messages:
+            if message not in configured_codes:
                 custom.append(
                     {
                         "name": f"{prefix} {label}",
@@ -534,22 +611,8 @@ def _add_device_telemetry(device):
             (CONF_DEVICE_INDOOR_EVA_IN_TEMPERATURE, "Evaporator Inlet", 0x4205, ()),
             (CONF_DEVICE_INDOOR_EVA_OUT_TEMPERATURE, "Evaporator Outlet", 0x4206, ()),
         )
-        filter_message = NASA_BINARY_SENSORS[CONF_DEVICE_FILTER_WARNING]
-        if (filter_message, "binary") not in configured_messages:
-            device.setdefault(
-                CONF_DEVICE_FILTER_WARNING, {"name": f"{prefix} Filter Warning"}
-            )
-        if (0x4028, "binary") not in configured_messages:
-            custom.append(
-                {
-                    "name": f"{prefix} Thermal Demand",
-                    CONF_DEVICE_CUSTOM_MESSAGE: 0x4028,
-                    CONF_DEVICE_CUSTOM_TYPE: "binary",
-                }
-            )
-
     for key, label, message, filters in numeric_sensors:
-        if (message, "sensor") not in configured_messages:
+        if message not in configured_codes:
             device.setdefault(
                 key,
                 {
@@ -558,6 +621,8 @@ def _add_device_telemetry(device):
                 },
             )
     device[CONF_DEVICE_CUSTOM] = custom
+    if entities := _service_telemetry_defaults(prefix, outdoor, configured_codes):
+        device[CONF_NASA_SERVICE_TELEMETRY] = entities
     return device
 
 
@@ -566,15 +631,17 @@ def _add_telemetry_defaults(config):
         return config
     with cv.prepend_path([CONF_TELEMETRY]):
         enabled = cv.boolean(config.get(CONF_TELEMETRY, False))
+    devices = cv.ensure_list()(config[CONF_DEVICES])
+    for index, device in enumerate(devices):
+        if isinstance(device, dict) and CONF_NASA_SERVICE_TELEMETRY in device:
+            with cv.prepend_path([CONF_DEVICES, index, CONF_NASA_SERVICE_TELEMETRY]):
+                raise cv.Invalid("Service telemetry is generated by telemetry: true")
     if not enabled:
         return config
 
     return {
         **config,
-        CONF_DEVICES: [
-            _add_device_telemetry(device)
-            for device in cv.ensure_list()(config[CONF_DEVICES])
-        ],
+        CONF_DEVICES: [_add_device_telemetry(device) for device in devices],
     }
 
 CONFIG_SCHEMA = (
@@ -770,7 +837,15 @@ async def to_code(config):
             if key in device:
                 conf = device[key]
                 sens = await action(conf)
-                cg.add(method(sens))
+                default_message = FIXED_NASA_SENSOR_MESSAGES.get(key)
+                if (
+                    default_message is not None
+                    and len(device[CONF_DEVICE_ADDRESS]) != 2
+                    and (message := conf[CONF_DEVICE_CUSTOM_MESSAGE] & 0xFFFF) != default_message
+                ):
+                    cg.add(var_dev.add_custom_sensor(message, sens))
+                else:
+                    cg.add(method(sens))
 
         if CONF_DEVICE_ROOM_TEMPERATURE_OFFSET in device:
             cg.add(
@@ -879,6 +954,16 @@ async def to_code(config):
                 cg.add(
                     var_dev.add_custom_sensor(conf[CONF_DEVICE_CUSTOM_MESSAGE], sens)
                 )
+
+        service_bindings = {
+            "sensor": (sensor.new_sensor, var_dev.add_nasa_service_sensor),
+            "binary": (binary_sensor.new_binary_sensor, var_dev.add_nasa_service_binary_sensor),
+            "text": (text_sensor.new_text_sensor, var_dev.add_nasa_service_text_sensor),
+        }
+        for entry in device.get(CONF_NASA_SERVICE_TELEMETRY, []):
+            create_entity, bind = service_bindings[entry[CONF_DEVICE_CUSTOM_TYPE]]
+            entity = await create_entity(entry)
+            cg.add(bind(entry[CONF_DEVICE_CUSTOM_MESSAGE], entity))
 
         cg.add(var.register_device(var_dev))
 

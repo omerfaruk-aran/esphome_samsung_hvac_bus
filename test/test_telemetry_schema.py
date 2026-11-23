@@ -65,6 +65,8 @@ class TelemetrySchemaTest(unittest.TestCase):
                 self.assertNotIn("indoor_eva_in_temperature", indoor)
                 self.assertEqual(outdoor["custom_sensor"], [])
                 self.assertEqual(indoor["custom_sensor"], [])
+                self.assertNotIn("nasa_service_telemetry", outdoor)
+                self.assertNotIn("nasa_service_telemetry", indoor)
 
     def test_enabled_fills_only_configured_nasa_indoor_and_outdoor_devices(self):
         config = self.validated_config(
@@ -102,11 +104,17 @@ class TelemetrySchemaTest(unittest.TestCase):
         for indoor in (indoor_a, indoor_b):
             for key in ("indoor_eva_in_temperature", "indoor_eva_out_temperature"):
                 self.assertEqual(indoor[key]["filters"], [{"throttle": "10s"}])
-            self.assertIn("filter_warning", indoor)
-            self.assertEqual(indoor["custom_sensor"][0]["type"], "binary")
-            self.assertEqual(int(str(indoor["custom_sensor"][0]["message"]), 0), 0x4028)
+            self.assertEqual(indoor["custom_sensor"], [])
+            flags = {
+                int(str(entry["message"]), 0): entry
+                for entry in indoor["nasa_service_telemetry"] if entry["type"] == "binary"
+            }
+            self.assertEqual(set(flags), {0x4027, 0x4028})
+            self.assertEqual(flags[0x4027]["device_class"], "problem")
+            self.assertNotIn("device_class", flags[0x4028])
         self.assertNotEqual(
-            indoor_a["filter_warning"]["name"], indoor_b["filter_warning"]["name"]
+            indoor_a["nasa_service_telemetry"][0]["name"],
+            indoor_b["nasa_service_telemetry"][0]["name"],
         )
         for device in other:
             self.assertEqual(device["custom_sensor"], [])
@@ -143,6 +151,8 @@ class TelemetrySchemaTest(unittest.TestCase):
         self.assertEqual(indoor["address"], "20.00.0a")
         self.assertNotIn("filter_warning", indoor)
         self.assertEqual(len(indoor["custom_sensor"]), 2)
+        generated = {int(str(entry["message"]), 0) for entry in indoor["nasa_service_telemetry"]}
+        self.assertTrue(generated.isdisjoint({0x4027, 0x4028}))
 
     def test_named_message_overrides_take_precedence(self):
         result = self.run_esphome(
@@ -240,7 +250,179 @@ class TelemetrySchemaTest(unittest.TestCase):
         ):
             self.assertEqual(source.count(binding), 1, binding)
         numeric = re.findall(r"->add_custom_sensor\(([^,]+),", source)
-        binary = re.findall(r"->add_custom_binary_sensor\(([^,]+),", source)
+        binary = re.findall(r"->add_nasa_service_binary_sensor\(([^,]+),", source)
         self.assertCountEqual([int(value, 0) for value in numeric], [0x8238, 0x823D])
-        self.assertCountEqual([int(value, 0) for value in binary], [0x4027, 0x4028])
+        self.assertCountEqual([int(value, 0) for value in binary], [0x4027, 0x4028, 0x8017, 0x8046])
+        self.assertNotIn("App.register_switch(", source)
+
+    def test_error_history_cannot_be_configured_as_a_scalar(self):
+        for enabled in (False, True):
+            for kind in ("sensor", "binary"):
+                with self.subTest(enabled=enabled, kind=kind):
+                    result = self.run_esphome(
+                        "config", telemetry=enabled, devices=[{
+                            "address": "20.00.01",
+                            "custom_sensor": [{"name": "History", "message": "0x461E", "type": kind}],
+                        }],
+                    )
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("0x461E is structured error history", result.stdout + result.stderr)
+
+    def test_fixed_named_sensors_route_explicit_nasa_message_overrides(self):
+        result = self.run_esphome(
+            "compile", "--only-generate", telemetry=True,
+            devices=[
+                {
+                    "address": "10.00.00",
+                    "outdoor_current": {
+                        "id": "my_current", "name": "Custom current", "message": 0x8206,
+                        "filters": [{"multiply": 0.2}],
+                    },
+                    "outdoor_voltage": {"id": "my_voltage", "name": "Custom voltage", "message": 0x8208},
+                    "error_code": {"id": "my_error", "name": "Custom error", "message": 0x821C},
+                },
+                {
+                    "address": "10.00.01",
+                    "outdoor_current": {"id": "default_current", "name": "Default current"},
+                },
+                {
+                    "address": "c8",
+                    "outdoor_current": {
+                        "id": "legacy_current", "name": "Legacy current", "message": 0x8206,
+                    },
+                },
+            ],
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        source = (self.workspace / "build/src/main.cpp").read_text(encoding="utf-8")
+        for entity, code, legacy in (
+            ("my_current", 0x8206, "set_outdoor_current_sensor"),
+            ("my_voltage", 0x8208, "set_outdoor_voltage_sensor"),
+            ("my_error", 0x821C, "set_error_code_sensor"),
+        ):
+            registrations = re.findall(rf"->add_custom_sensor\(([^,]+), {entity}\);", source)
+            self.assertEqual([int(message, 0) for message in registrations], [code])
+            self.assertNotIn(f"->{legacy}({entity});", source)
+            # Only the other outdoor device gets the automatic entity.
+            self.assertEqual(source.count(f"->add_nasa_service_sensor(0x{code:X},"), 1)
+        self.assertIn("->set_outdoor_current_sensor(default_current);", source)
+        self.assertIn("->set_outdoor_current_sensor(legacy_current);", source)
+        self.assertRegex(source, r"return 0\.2f;")
+
+    def test_manual_codes_suppress_automatic_entities_across_types(self):
+        config = self.validated_config(
+            telemetry=True,
+            devices=[
+                {"address": "10.00.00", "custom_sensor": [{"name": "Raw mode", "message": 0x8003}]},
+                {"address": "10.00.01"},
+                {"address": "20.00.00", "custom_sensor": [{"name": "Raw demand", "message": 0x4028}]},
+                {"address": "20.00.01"},
+            ],
+        )
+        overridden_outdoor, outdoor, overridden_indoor, indoor = config["devices"]
+        self.assertNotIn("outdoor_operation_heatcool", overridden_outdoor)
+        self.assertIn("outdoor_operation_heatcool", outdoor)
+        self.assertEqual(
+            [entry["name"] for entry in overridden_indoor["custom_sensor"] if int(str(entry["message"]), 0) == 0x4028],
+            ["Raw demand"],
+        )
+        self.assertIn(
+            0x4028, {int(str(entry["message"]), 0) for entry in indoor["nasa_service_telemetry"]}
+        )
+
+    def test_service_telemetry_is_typed_and_limited_to_nasa_devices(self):
+        config = self.validated_config(
+            telemetry=True,
+            devices=[
+                {"address": address}
+                for address in ("10.00.00", "20.00.00", "20.00.01", "00", "50.00.00")
+            ],
+        )
+        self.assertFalse(config["debug_log_diagnostics"])
+        outdoor, indoor_a, indoor_b, *other = config["devices"]
+        expected_outdoor = {
+            0x8017: "binary", 0x8046: "binary", 0x8206: "sensor", 0x8208: "sensor",
+            0x821C: "sensor", 0x8229: "sensor", 0x822A: "sensor", 0x822B: "sensor",
+            0x822C: "sensor", 0x822D: "sensor", 0x82F5: "text",
+        }
+        expected_indoor = {
+            0x4027: "binary", 0x4028: "binary", 0x4076: "text",
+            0x4217: "sensor", 0x4218: "sensor", 0x461E: "text",
+        }
+        names = set()
+        for device, expected in (
+            (outdoor, expected_outdoor), (indoor_a, expected_indoor), (indoor_b, expected_indoor),
+        ):
+            entries = device.get("nasa_service_telemetry", [])
+            self.assertEqual(len(entries), len(expected), device["address"])
+            self.assertEqual({int(str(entry["message"]), 0): entry["type"] for entry in entries}, expected)
+            for entry in entries:
+                code = int(str(entry["message"]), 0)
+                self.assertIn(device["address"], entry["name"])
+                self.assertNotIn(entry["name"], names)
+                names.add(entry["name"])
+                if code != 0x4028:
+                    self.assertEqual(entry["entity_category"], "diagnostic")
+                if entry["type"] == "sensor":
+                    self.assertEqual(entry["filters"], [{"throttle": "10s"}])
+                    if code in (0x8206, 0x8208, 0x821C):
+                        self.assertEqual(entry["accuracy_decimals"], 1)
+                        self.assertEqual(entry["unit_of_measurement"], "°C" if code == 0x821C else "kgf/cm²")
+                    else:
+                        self.assertEqual(entry.get("unit_of_measurement", ""), "")
+                if entry["type"] == "binary":
+                    self.assertEqual(entry.get("device_class"), "problem" if code == 0x4027 else None)
+        for device in other:
+            self.assertNotIn("nasa_service_telemetry", device)
+
+    def test_service_codegen_preserves_manual_configurations(self):
+        result = self.run_esphome(
+            "compile", "--only-generate",
+            telemetry=True,
+            devices=[
+                {
+                    "address": "10.00.00",
+                    "custom_sensor": [
+                        {"id": "my_pressure", "name": "My pressure", "message": 0x8206},
+                        {"id": "my_hot_gas", "name": "My hot gas", "message": 0x8017, "type": "binary"},
+                    ],
+                },
+                {
+                    "address": "20.00.01",
+                    "water_temperature": {
+                        "id": "my_valve",
+                        "name": "My valve",
+                        "message": 0x4217,
+                    },
+                },
+            ],
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        source = (self.workspace / "build/src/main.cpp").read_text(encoding="utf-8")
+        bindings = {}
+        for kind, message, sensor_id in re.findall(
+            r"->add_nasa_service_(sensor|binary_sensor|text_sensor)\(([^,]+), (\w+)\);",
+            source,
+        ):
+            code = int(message, 0)
+            self.assertNotIn(code, bindings)
+            bindings[code] = kind
+            self.assertTrue(
+                re.search(rf"App\.register_{kind}\({sensor_id}(?:, [^\n]+)?\);", source),
+                f"Missing ESPHome registration for {sensor_id}",
+            )
+        self.assertEqual(bindings, {
+            0x4027: "binary_sensor", 0x4028: "binary_sensor", 0x4076: "text_sensor",
+            0x4218: "sensor", 0x461E: "text_sensor",
+            0x8046: "binary_sensor", 0x8208: "sensor", 0x821C: "sensor",
+            0x8229: "sensor", 0x822A: "sensor", 0x822B: "sensor", 0x822C: "sensor",
+            0x822D: "sensor", 0x82F5: "text_sensor",
+        })
+        for method, code, entity in (
+            ("add_custom_sensor", 0x8206, "my_pressure"),
+            ("add_custom_binary_sensor", 0x8017, "my_hot_gas"),
+            ("add_custom_sensor", 0x4217, "my_valve"),
+        ):
+            registrations = re.findall(rf"->{method}\(([^,]+), {entity}\);", source)
+            self.assertEqual([int(message, 0) for message in registrations], [code])
         self.assertNotIn("App.register_switch(", source)
