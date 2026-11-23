@@ -95,6 +95,9 @@ These readings appear only in received traffic. The component does not query or 
 - Outdoor high and low pressures (`0x8206`, `0x8208`) use tenths of `kgf/cm2`, with no offset. They are not absolute-pressure or refrigerant-charge estimates.
 - Outdoor test completion (`0x8046`) says whether the test completed, not whether it passed.
 - Outdoor overload detection (`0x82F5`) reports the high-byte count and low-byte status. The log preserves the full word and does not assign meanings to individual status values.
+- Indoor error history (`0x461E`) adds a summary after the raw records when an indoor response or notification includes at least ten payload bytes.
+  The five slots appear as three-digit hexadecimal codes in payload order, as displayed by Samsung S-NET Pro 2.
+  The log does not infer which slots are empty, when the errors occurred, or whether any error is active.
 
 ## Identifying Indoor Device Addresses
 

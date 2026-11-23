@@ -338,6 +338,40 @@ namespace
         assert(capture_lines(packet) == std::vector<std::string>{invalid});
     }
 
+    void test_error_history_summary_gating()
+    {
+        auto packet = make_structure_packet(10, 0);
+        auto &message = packet.messages.front();
+        message.messageNumber = static_cast<MessageNumber>(0x461E);
+        const std::string prefix = "NASA_DIAG src=20.00.01 dst=b3.00.ff dt=notification seq=1 index=0 code=0x461E type=structure";
+        const auto notification = capture_lines(packet);
+        assert(notification.size() == 2);
+        expect_line(notification[0], prefix + " len=10 offset=0 hex=00010203040506070809");
+        expect_line(notification[1], prefix + " len=10 name=indoor_error_history codes=0x001,0x203,0x405,0x607,0x809 status=decoded confidence=documented");
+
+        for (DataType type : {DataType::Read, DataType::Write, DataType::Request, DataType::Ack, DataType::Nack, DataType::Undefined})
+        {
+            packet.command.dataType = type;
+            const auto lines = capture_lines(packet);
+            assert(lines.size() == 1 && lines[0].find(" offset=0 hex=00010203040506070809") != std::string::npos);
+        }
+        packet.command.dataType = DataType::Response;
+        packet.sa.klass = AddressClass::Outdoor;
+        assert(capture_lines(packet).size() == 1);
+        packet.command.dataType = DataType::Notification;
+        packet.sa.klass = AddressClass::Indoor;
+        message.size = 11;
+        message.structure.size = 9;
+        assert(capture_lines(packet) == std::vector<std::string>{prefix + " len=9 offset=0 hex=000102030405060708"});
+        message.structure.size = 10;
+        assert(capture_lines(packet) == std::vector<std::string>{prefix + " status=invalid_structure"});
+        message.size = 12;
+        packet.messages.push_back(scalar(0x4000, Enum, 1));
+        const auto multiple = capture_lines(packet);
+        assert(multiple.size() == 2);
+        expect_line(multiple[0], prefix + " status=invalid_structure");
+    }
+
     // Two fields make dropped, duplicated, or reordered records visible within a reception.
     constexpr const char *INDOOR_NOTIFICATION = "320016200001b300ffc0140102420400e9421c03cb555734";
     const std::string ROOM_DIAGNOSTIC =
@@ -406,6 +440,30 @@ namespace
         assert(actual.size() == expected.size());
         for (std::size_t i = 0; i < expected.size(); ++i)
             expect_line(actual[i], expected[i]);
+    }
+
+    void test_error_history_response_is_passive()
+    {
+        const auto previous_processing = std::exchange(protocol_processing, ProtocolProcessing::NASA);
+        const bool previous_diagnostics = std::exchange(debug_log_diagnostics, true);
+        RxTarget target;
+        const auto lines = capture_diagnostics([&]()
+        {
+            // Indoor response with a full 46-byte payload and a nonzero first high nibble.
+            test_process_data("32003e200001500000c0150801461ea1230bcd0000ffffffff"
+                              "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20212223242f6e34", target);
+        });
+        debug_log_diagnostics = previous_diagnostics;
+        protocol_processing = previous_processing;
+        assert(target.all_publish_data.empty());
+        const std::vector<Callback> callbacks = {{"address", "20.00.01"}};
+        assert(target.callbacks == callbacks);
+        const std::string prefix = "NASA_DIAG src=20.00.01 dst=50.00.00 dt=response seq=8 index=0 code=0x461E type=structure len=46";
+        expect_records(lines, {
+            prefix + " offset=0 hex=A1230BCD0000FFFFFFFF0102030405060708090A0B0C0D0E0F10111213141516",
+            prefix + " offset=32 hex=1718191A1B1C1D1E1F2021222324",
+            prefix + " name=indoor_error_history codes=0x123,0xBCD,0x000,0xFFF,0xFFF status=decoded confidence=documented",
+        });
     }
 
     void test_energy_counter_preserves_wire_value()
@@ -692,6 +750,8 @@ int main()
     test_scalar_logging_keeps_order_and_duplicates();
     test_structure_fragments_are_lossless();
     test_invalid_structure_metadata_has_no_payload();
+    test_error_history_summary_gating();
+    test_error_history_response_is_passive();
     test_unaccepted_nasa_rx_is_silent();
     test_accepted_nasa_rx_is_passive();
     test_diagnostics_preserve_power_driven_display_read();

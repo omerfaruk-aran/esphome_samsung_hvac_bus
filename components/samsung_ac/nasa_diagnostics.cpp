@@ -16,6 +16,7 @@ namespace esphome
         {
             constexpr char DIAGNOSTIC_TAG[] = "samsung_ac.diagnostics";
             constexpr std::size_t STRUCTURE_CHUNK_SIZE = 32;
+            constexpr std::size_t INDOOR_ERROR_HISTORY_SLOTS = 5;
 
             enum class Conversion
             {
@@ -105,6 +106,8 @@ namespace esphome
             constexpr EnumValue DEICE_STEP[] = {{1, "STEP_1"}, {2, "STEP_2"}, {3, "STEP_3"}, {7, "FINAL_STEP"}, {255, "NO_DEFROST"}};
             constexpr EnumValue OUTDOOR_ERROR[] = {{0, "NO_ERROR"}};
 
+            // Sources include captured NASA traffic, the project's protocol notes, and Samsung
+            // S-NET Pro 2 (1.13.9): the NASA.ptc rules and the behavior of Communicator.dll.
             constexpr Descriptor DICTIONARY[] = {
                 // Identification and configuration
                 {0x0023, "standby_mode"},
@@ -374,6 +377,7 @@ namespace esphome
                 case Conversion::HighWordTenths:
                     return {fixed_decimal(raw >> 16, 10, 1), descriptor->unit};
                 case Conversion::OverloadCountStatus:
+                    // S-NET Pro 2's ProcessVariableElement splits 0x82F5 into count and status bytes.
                     return {"count:" + std::to_string(raw >> 8) + ",status:" + std::to_string(raw & 0xFF), descriptor->unit};
                 case Conversion::WhToKwh:
                     return {fixed_decimal(raw, 1000, 3), descriptor->unit};
@@ -431,12 +435,35 @@ namespace esphome
                 ESP_LOGD(DIAGNOSTIC_TAG, "%s", line.c_str());
             }
 
-            void log_structure(std::string line, const MessageSet &message, std::size_t index, std::size_t field_count)
+            void log_indoor_error_history(std::string line, const Buffer &payload)
             {
-                append_field_prefix(line, index, static_cast<uint16_t>(message.messageNumber), "structure");
+                if (payload.size < INDOOR_ERROR_HISTORY_SLOTS * 2)
+                    return;
+
+                // Samsung S-NET Pro 2's ProcessStructureElemenet displays the last
+                // three hex digits of each of the first five two-byte slots.
+                // Keep the complete payload in the raw records; slot meaning can vary.
+                line += " name=indoor_error_history codes=";
+                for (std::size_t slot = 0; slot < INDOOR_ERROR_HISTORY_SLOTS; ++slot)
+                {
+                    if (slot != 0)
+                        line += ',';
+                    const auto code = (static_cast<uint16_t>(payload.data[2 * slot] & 0x0F) << 8) |
+                                      payload.data[2 * slot + 1];
+                    line += "0x";
+                    append_hex(line, code, 3);
+                }
+                log_line(line + " status=decoded confidence=documented");
+            }
+
+            void log_structure(std::string line, const Packet &packet, std::size_t index)
+            {
+                const auto &message = packet.messages[index];
+                const auto code = static_cast<uint16_t>(message.messageNumber);
+                append_field_prefix(line, index, code, "structure");
 
                 // The parser can leave the union inactive when a structure is not the sole field.
-                if (field_count != 1 || message.size < 2 || message.size > sizeof(Buffer::data) + 2)
+                if (packet.messages.size() != 1 || message.size < 2 || message.size > sizeof(Buffer::data) + 2)
                 {
                     log_line(line + " status=invalid_structure");
                     return;
@@ -466,6 +493,11 @@ namespace esphome
                         append_hex(fragment, message.structure.data[i], 2);
                     log_line(fragment);
                 }
+
+                const auto data_type = packet.command.dataType;
+                if (code == 0x461E && packet.sa.klass == AddressClass::Indoor &&
+                    (data_type == DataType::Response || data_type == DataType::Notification))
+                    log_indoor_error_history(line, message.structure);
             }
         } // namespace
 
@@ -489,7 +521,7 @@ namespace esphome
             {
                 const auto &message = packet.messages[index];
                 if (message.type == Structure)
-                    log_structure(prefix, message, index, packet.messages.size());
+                    log_structure(prefix, packet, index);
                 else
                     log_line(format_scalar(prefix, packet.command.dataType, message, index));
             }
